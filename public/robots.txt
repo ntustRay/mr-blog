@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ntustray.github.io/mr-blog/sitemap-index.xml
