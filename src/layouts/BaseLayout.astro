@@ -1,0 +1,60 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+const siteName = 'MR Blog';
+const pageTitle = title === siteName ? siteName : `${title} | ${siteName}`;
+const canonicalURL = Astro.site
+  ? new URL(Astro.url.pathname, Astro.site)
+  : Astro.url;
+const base = import.meta.env.BASE_URL.endsWith('/')
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+---
+
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#111827" />
+
+    <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+    <link rel="canonical" href={canonicalURL} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalURL} />
+
+    <title>{pageTitle}</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href={base}>MR Blog</a>
+        <nav aria-label="主要導覽">
+          <a href={base}>文章</a>
+          <a href="https://github.com/ntustRay" target="_blank" rel="noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <small>© {new Date().getFullYear()} MR Blog. Built with Astro.</small>
+      </div>
+    </footer>
+  </body>
+</html>
