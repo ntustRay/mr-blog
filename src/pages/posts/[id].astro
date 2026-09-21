@@ -1,22 +1,33 @@
 ---
 import { getCollection, render, type CollectionEntry } from 'astro:content';
+import PostNavigation from '../../components/PostNavigation.astro';
 import TableOfContents from '../../components/TableOfContents.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+    (a, b) =>
+      a.data.pubDate.valueOf() - b.data.pubDate.valueOf() ||
+      a.id.localeCompare(b.id),
+  );
 
-  return posts.map((post) => ({
+  return posts.map((post, index) => ({
     params: { id: post.id },
-    props: { post },
+    props: {
+      post,
+      previousPost: posts[index - 1] ?? null,
+      nextPost: posts[index + 1] ?? null,
+    },
   }));
 }
 
 interface Props {
   post: CollectionEntry<'blog'>;
+  previousPost: CollectionEntry<'blog'> | null;
+  nextPost: CollectionEntry<'blog'> | null;
 }
 
-const { post } = Astro.props;
+const { post, previousPost, nextPost } = Astro.props;
 const { Content, headings } = await render(post);
 ---
 
@@ -44,5 +55,10 @@ const { Content, headings } = await render(post);
     <div class="prose">
       <Content />
     </div>
+
+    <PostNavigation
+      previousPost={previousPost}
+      nextPost={nextPost}
+    />
   </article>
 </BaseLayout>

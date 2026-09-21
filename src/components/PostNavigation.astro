@@ -1,0 +1,42 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  previousPost: CollectionEntry<'blog'> | null;
+  nextPost: CollectionEntry<'blog'> | null;
+}
+
+const { previousPost, nextPost } = Astro.props;
+const base = import.meta.env.BASE_URL.endsWith('/')
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+
+const getPostHref = (post: CollectionEntry<'blog'>) =>
+  `${base}posts/${post.id}/`;
+---
+
+{(previousPost || nextPost) && (
+  <nav class="post-navigation" aria-label="文章導覽">
+    {previousPost && (
+      <a
+        class="post-navigation__item"
+        href={getPostHref(previousPost)}
+        rel="prev"
+      >
+        <span class="post-navigation__label">← 上一篇</span>
+        <strong>{previousPost.data.title}</strong>
+      </a>
+    )}
+
+    {nextPost && (
+      <a
+        class="post-navigation__item post-navigation__item--next"
+        href={getPostHref(nextPost)}
+        rel="next"
+      >
+        <span class="post-navigation__label">下一篇 →</span>
+        <strong>{nextPost.data.title}</strong>
+      </a>
+    )}
+  </nav>
+)}

@@ -58,18 +58,18 @@ a {
   letter-spacing: -0.03em;
 }
 
-nav {
+.site-header nav {
   display: flex;
   gap: 20px;
 }
 
-nav a {
+.site-header nav a {
   color: #64748b;
   font-size: 0.92rem;
   text-decoration: none;
 }
 
-nav a:hover,
+.site-header nav a:hover,
 .brand:hover,
 .post-card h3 a:hover {
   color: #4f46e5;
@@ -255,6 +255,43 @@ nav a:hover,
   background: transparent;
 }
 
+.post-navigation {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 56px;
+  padding-top: 28px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.post-navigation__item {
+  display: grid;
+  gap: 6px;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  text-decoration: none;
+}
+
+.post-navigation__item--next {
+  grid-column: 2;
+  text-align: right;
+}
+
+.post-navigation__item:hover {
+  border-color: #a5b4fc;
+}
+
+.post-navigation__label {
+  color: #94a3b8;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.post-navigation strong {
+  line-height: 1.35;
+}
+
 .site-footer {
   padding: 56px 0;
   color: #94a3b8;
@@ -280,11 +317,13 @@ nav a:hover,
   .section-heading,
   .post-card,
   .article-header,
-  .toc {
+  .toc,
+  .post-navigation,
+  .post-navigation__item {
     border-color: #1f2937;
   }
 
-  nav a,
+  .site-header nav a,
   .hero-description,
   .post-card p,
   .article-description,
@@ -310,5 +349,14 @@ nav a:hover,
 
   .article {
     padding: 56px 0;
+  }
+
+  .post-navigation {
+    grid-template-columns: 1fr;
+  }
+
+  .post-navigation__item--next {
+    grid-column: 1;
+    text-align: left;
   }
 }
