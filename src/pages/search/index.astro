@@ -1,0 +1,29 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const base = import.meta.env.BASE_URL.endsWith('/')
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+---
+
+<BaseLayout
+  title="搜尋"
+  description="搜尋 MR Blog 的技術文章。"
+  searchAssets
+>
+  <section class="page-header">
+    <p class="eyebrow">SEARCH</p>
+    <h1>搜尋</h1>
+    <p>搜尋文章標題與內容。</p>
+  </section>
+
+  <section class="search-panel" aria-label="文章搜尋">
+    <pagefind-config
+      base-url={base}
+      bundle-path={`${base}pagefind/`}
+      excerpt-length="24"
+    />
+    <pagefind-input placeholder="搜尋文章…" />
+    <pagefind-results />
+  </section>
+</BaseLayout>

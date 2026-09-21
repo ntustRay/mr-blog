@@ -117,6 +117,16 @@ a {
   color: #64748b;
 }
 
+.search-panel {
+  min-height: 320px;
+  padding-bottom: 40px;
+}
+
+pagefind-input,
+pagefind-results {
+  display: block;
+}
+
 .section-heading {
   display: flex;
   align-items: baseline;

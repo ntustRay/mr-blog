@@ -36,7 +36,7 @@ const { Content, headings } = await render(post);
   title={post.data.title}
   description={post.data.description}
 >
-  <article class="article">
+  <article class="article" data-pagefind-body>
     <header class="article-header">
       <div class="post-meta">
         <time datetime={post.data.pubDate.toISOString()}>
