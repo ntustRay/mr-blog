@@ -1,0 +1,29 @@
+---
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  headings: Heading[];
+}
+
+const { headings } = Astro.props;
+const visibleHeadings = headings.filter(
+  ({ depth }) => depth === 2 || depth === 3,
+);
+---
+
+{visibleHeadings.length > 1 && (
+  <nav class="toc" aria-label="文章目錄">
+    <p class="toc-title">文章目錄</p>
+    <ol>
+      {visibleHeadings.map((heading) => (
+        <li class:list={{ 'toc-item--nested': heading.depth === 3 }}>
+          <a href={`#${heading.slug}`}>{heading.text}</a>
+        </li>
+      ))}
+    </ol>
+  </nav>
+)}
