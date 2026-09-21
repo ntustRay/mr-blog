@@ -101,6 +101,22 @@ a {
   font-size: 1.1rem;
 }
 
+.page-header {
+  padding: 72px 0 40px;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: clamp(2.4rem, 8vw, 4rem);
+  line-height: 1;
+  letter-spacing: -0.055em;
+}
+
+.page-header > p:last-child {
+  margin: 18px 0 0;
+  color: #64748b;
+}
+
 .section-heading {
   display: flex;
   align-items: baseline;
@@ -131,9 +147,30 @@ a {
 .post-meta {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 8px 14px;
   color: #94a3b8;
   font-size: 0.82rem;
+}
+
+.tag-list {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tag {
+  padding: 2px 8px;
+  border: 1px solid #c7d2fe;
+  border-radius: 999px;
+  color: #4f46e5;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.tag:hover {
+  border-color: #818cf8;
 }
 
 .post-card h3 {
@@ -157,6 +194,31 @@ a {
   font-size: 0.9rem;
   font-weight: 700;
   text-decoration: none;
+}
+
+.tag-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  padding-bottom: 40px;
+}
+
+.tag-card {
+  display: grid;
+  gap: 6px;
+  padding: 18px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  text-decoration: none;
+}
+
+.tag-card:hover {
+  border-color: #a5b4fc;
+}
+
+.tag-card span {
+  color: #94a3b8;
+  font-size: 0.82rem;
 }
 
 .article {
@@ -319,12 +381,19 @@ a {
   .article-header,
   .toc,
   .post-navigation,
-  .post-navigation__item {
+  .post-navigation__item,
+  .tag-card {
     border-color: #1f2937;
+  }
+
+  .tag {
+    border-color: #3730a3;
+    color: #a5b4fc;
   }
 
   .site-header nav a,
   .hero-description,
+  .page-header > p:last-child,
   .post-card p,
   .article-description,
   .prose p,
@@ -345,6 +414,10 @@ a {
 
   .hero {
     padding: 72px 0 52px;
+  }
+
+  .page-header {
+    padding: 56px 0 32px;
   }
 
   .article {

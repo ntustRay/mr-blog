@@ -1,0 +1,89 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import TagList from '../../components/TagList.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getTagSlug } from '../../utils/tags';
+
+interface TagGroup {
+  tag: string;
+  posts: CollectionEntry<'blog'>[];
+}
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  const groups = new Map<string, TagGroup>();
+
+  for (const post of posts) {
+    for (const tag of post.data.tags) {
+      const slug = getTagSlug(tag);
+      const existing = groups.get(slug);
+
+      if (existing && existing.tag !== tag) {
+        throw new Error(
+          `Tags "${existing.tag}" and "${tag}" produce the same slug "${slug}".`,
+        );
+      }
+
+      if (existing) {
+        existing.posts.push(post);
+      } else {
+        groups.set(slug, { tag, posts: [post] });
+      }
+    }
+  }
+
+  return [...groups.entries()].map(([slug, group]) => ({
+    params: { tag: slug },
+    props: {
+      tag: group.tag,
+      posts: [...group.posts].sort(
+        (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+      ),
+    },
+  }));
+}
+
+interface Props {
+  tag: string;
+  posts: CollectionEntry<'blog'>[];
+}
+
+const { tag, posts } = Astro.props;
+const base = import.meta.env.BASE_URL.endsWith('/')
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+---
+
+<BaseLayout
+  title={`#${tag}`}
+  description={`${tag} 相關文章，共 ${posts.length} 篇。`}
+>
+  <section class="page-header">
+    <p class="eyebrow">TAG</p>
+    <h1>#{tag}</h1>
+    <p>{posts.length} 篇文章</p>
+  </section>
+
+  <div class="post-list">
+    {posts.map((post) => (
+      <article class="post-card">
+        <div class="post-meta">
+          <time datetime={post.data.pubDate.toISOString()}>
+            {post.data.pubDate.toLocaleDateString('zh-TW')}
+          </time>
+          <TagList tags={post.data.tags} />
+        </div>
+
+        <h3>
+          <a href={`${base}posts/${post.id}/`}>{post.data.title}</a>
+        </h3>
+
+        <p>{post.data.description}</p>
+
+        <a class="read-more" href={`${base}posts/${post.id}/`}>
+          閱讀文章 →
+        </a>
+      </article>
+    ))}
+  </div>
+</BaseLayout>

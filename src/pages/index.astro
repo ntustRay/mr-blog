@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import TagList from '../components/TagList.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
 const posts = (await getCollection('blog', ({ data }) => !data.draft))
@@ -35,9 +36,7 @@ const base = import.meta.env.BASE_URL.endsWith('/')
             <time datetime={post.data.pubDate.toISOString()}>
               {post.data.pubDate.toLocaleDateString('zh-TW')}
             </time>
-            {post.data.tags.length > 0 && (
-              <span>{post.data.tags.join(' · ')}</span>
-            )}
+            <TagList tags={post.data.tags} />
           </div>
 
           <h3>
