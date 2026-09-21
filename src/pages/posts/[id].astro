@@ -30,11 +30,14 @@ interface Props {
 
 const { post, previousPost, nextPost } = Astro.props;
 const { Content, headings } = await render(post);
+const ogImage = post.data.coverImage ?? `og/${post.id}.png`;
 ---
 
 <BaseLayout
   title={post.data.title}
   description={post.data.description}
+  ogImage={ogImage}
+  ogType="article"
 >
   <article class="article" data-pagefind-body>
     <header class="article-header">
