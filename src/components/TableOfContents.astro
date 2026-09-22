@@ -15,23 +15,30 @@ const visibleHeadings = headings.filter(
   ({ depth }) => depth === 2 || depth === 3,
 );
 
-const items = visibleHeadings.map((heading) => (
-  <li class:list={{ 'toc-item--nested': heading.depth === 3 }}>
-    <a href={`#${heading.slug}`}>{heading.text}</a>
-  </li>
-));
 ---
 
 {visibleHeadings.length > 1 && (
   collapsible ? (
     <details class="toc toc--mobile">
       <summary class="toc-title">On this page</summary>
-      <ol>{items}</ol>
+      <ol>
+        {visibleHeadings.map((heading) => (
+          <li class:list={{ 'toc-item--nested': heading.depth === 3 }}>
+            <a href={`#${heading.slug}`}>{heading.text}</a>
+          </li>
+        ))}
+      </ol>
     </details>
   ) : (
     <nav class="toc toc--desktop" aria-label="On this page">
       <p class="toc-title">On this page</p>
-      <ol>{items}</ol>
+      <ol>
+        {visibleHeadings.map((heading) => (
+          <li class:list={{ 'toc-item--nested': heading.depth === 3 }}>
+            <a href={`#${heading.slug}`}>{heading.text}</a>
+          </li>
+        ))}
+      </ol>
     </nav>
   )
 )}
