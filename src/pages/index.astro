@@ -2,11 +2,25 @@
 import { getCollection } from 'astro:content';
 import CategoryLink from '../components/CategoryLink.astro';
 import TagList from '../components/TagList.astro';
+import { siteConfig } from '../config/site';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCategorySlug } from '../utils/categories';
 import { formatDate } from '../utils/date';
 
 const posts = (await getCollection('blog', ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const latestPosts = posts.slice(0, 6);
+
+const categoryCounts = new Map<string, number>();
+for (const post of posts) {
+  categoryCounts.set(
+    post.data.category,
+    (categoryCounts.get(post.data.category) ?? 0) + 1,
+  );
+}
+const categories = [...categoryCounts.entries()].sort(
+  ([a], [b]) => a.localeCompare(b, siteConfig.locale),
+);
 
 const base = import.meta.env.BASE_URL.endsWith('/')
   ? import.meta.env.BASE_URL
@@ -14,25 +28,47 @@ const base = import.meta.env.BASE_URL.endsWith('/')
 ---
 
 <BaseLayout
-  title="MR Blog"
-  description="記錄技術、開發實作與持續學習。"
+  title={siteConfig.name}
+  description={siteConfig.description}
 >
   <section class="hero">
-    <p class="eyebrow">MINGRAY'S NOTES</p>
-    <h1>MR Blog</h1>
-    <p class="hero-description">
-      記錄技術、開發實作與持續學習。
-    </p>
+    <p class="eyebrow">FRONTEND ENGINEERING NOTES</p>
+    <h1>{siteConfig.author.name}</h1>
+    <p class="hero-role">Frontend Engineer</p>
+    <p class="hero-description">{siteConfig.description}</p>
+
+    <div class="hero-actions">
+      <a class="button-link" href="#latest-posts">Read Posts</a>
+      <a
+        class="secondary-link"
+        href={siteConfig.author.url}
+        target="_blank"
+        rel="noreferrer"
+      >
+        GitHub
+      </a>
+    </div>
+
+    <ul class="focus-topics" aria-label="Focus topics">
+      {siteConfig.topics.map((topic) => <li>{topic}</li>)}
+    </ul>
   </section>
 
-  <section aria-labelledby="posts-heading">
+  <section
+    id="latest-posts"
+    class="home-section"
+    aria-labelledby="posts-heading"
+  >
     <div class="section-heading">
-      <h2 id="posts-heading">最新文章</h2>
-      <span>{posts.length} 篇</span>
+      <h2 id="posts-heading">Latest Posts</h2>
+      <div class="section-heading__actions">
+        <span>{posts.length} posts</span>
+        <a href={`${base}archive/`}>View Archive →</a>
+      </div>
     </div>
 
     <div class="post-list">
-      {posts.map((post) => (
+      {latestPosts.map((post) => (
         <article class="post-card">
           <div class="post-meta">
             <CategoryLink category={post.data.category} />
@@ -49,10 +85,34 @@ const base = import.meta.env.BASE_URL.endsWith('/')
           <p>{post.data.description}</p>
 
           <a class="read-more" href={`${base}posts/${post.id}/`}>
-            閱讀文章 →
+            Read article →
           </a>
         </article>
       ))}
     </div>
   </section>
+
+  {categories.length > 0 && (
+    <section class="home-section" aria-labelledby="categories-heading">
+      <div class="section-heading">
+        <h2 id="categories-heading">Categories</h2>
+        <div class="section-heading__actions">
+          <span>{categories.length}</span>
+          <a href={`${base}categories/`}>View All →</a>
+        </div>
+      </div>
+
+      <div class="category-grid">
+        {categories.map(([category, count]) => (
+          <a
+            class="category-card"
+            href={`${base}categories/${getCategorySlug(category)}/`}
+          >
+            <strong>{category}</strong>
+            <span>{count} posts</span>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
 </BaseLayout>
