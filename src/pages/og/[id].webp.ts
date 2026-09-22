@@ -29,13 +29,13 @@ export const GET = (async ({ params }) => {
     tags: post.data.tags,
   });
 
-  const png = await sharp(Buffer.from(svg))
-    .png({ compressionLevel: 9 })
+  const webp = await sharp(Buffer.from(svg))
+    .webp({ quality: 90 })
     .toBuffer();
 
-  return new Response(new Uint8Array(png), {
+  return new Response(new Uint8Array(webp), {
     headers: {
-      'Content-Type': 'image/png',
+      'Content-Type': 'image/webp',
       'Cache-Control': 'public, max-age=31536000, immutable',
     },
   });

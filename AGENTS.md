@@ -55,6 +55,14 @@
 - For technical comparisons, a useful structure is often: Problem → Options → Trade-offs → Decision → Implementation / Example.
 - Add images, screenshots, charts, or diagrams only when they materially improve understanding.
 
+## Images
+
+- Use WebP for all raster images by default, including article images, screenshots, `coverImage`, the default OG image, and generated per-post OG images.
+- `coverImage` frontmatter values must reference a `.webp` file.
+- Image-generation endpoints must output WebP with the correct `image/webp` content type.
+- Do not add PNG, JPEG, or GIF files unless WebP cannot satisfy a documented technical or compatibility requirement.
+- Keep SVG for vector assets such as icons when it is smaller and more appropriate than a raster image.
+
 ## Frontmatter
 
 Use the project frontmatter schema consistently:

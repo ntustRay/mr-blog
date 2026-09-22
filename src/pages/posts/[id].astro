@@ -30,7 +30,7 @@ interface Props {
 
 const { post, previousPost, nextPost } = Astro.props;
 const { Content, headings } = await render(post);
-const ogImage = post.data.coverImage ?? `og/${post.id}.png`;
+const ogImage = post.data.coverImage ?? `og/${post.id}.webp`;
 ---
 
 <BaseLayout

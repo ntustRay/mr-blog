@@ -14,7 +14,10 @@ const blog = defineCollection({
     updatedDate: z.coerce.date().optional(),
     tags: z.array(z.string()).default([]),
     category: z.string().optional(),
-    coverImage: z.string().optional(),
+    coverImage: z
+      .string()
+      .regex(/\.webp(?:[?#].*)?$/iu, 'coverImage must use WebP')
+      .optional(),
     draft: z.boolean().default(false),
   }),
 });
