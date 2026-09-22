@@ -49,6 +49,8 @@
 - Avoid unrelated boilerplate.
 - Do not introduce architecture or patterns merely to make an example look production-grade.
 - Examples should be correct enough to use as a practical reference.
+- Specify the fenced-code language whenever it is known.
+- When a filename materially improves context, use code fence metadata such as `title="src/utils/example.ts"`; omit filenames that are only decorative.
 
 ## Article Structure
 

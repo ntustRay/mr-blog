@@ -499,18 +499,65 @@ pagefind-results {
   background: #e2e8f0;
 }
 
-.prose pre {
-  position: relative;
-  overflow-x: auto;
-  padding: 18px 72px 18px 18px;
+.code-block {
+  margin-block: 1.15em;
+  overflow: hidden;
   border-radius: 12px;
   background: #0f172a;
 }
 
+.code-block__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 40px;
+  padding: 6px 10px 6px 14px;
+  border-bottom: 1px solid #334155;
+  background: #111827;
+}
+
+.code-block__meta {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 10px;
+}
+
+.code-block__filename {
+  overflow: hidden;
+  color: #e2e8f0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.code-block__language {
+  flex: 0 0 auto;
+  color: #94a3b8;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.prose pre {
+  overflow-x: auto;
+  margin-block: 1.15em;
+  padding: 18px;
+  border-radius: 12px;
+  background: #0f172a;
+}
+
+.prose .code-block pre {
+  margin: 0;
+  border-radius: 0;
+}
+
 .code-copy-button {
-  position: absolute;
-  top: 10px;
-  right: 10px;
+  flex: 0 0 auto;
   padding: 5px 9px;
   border: 1px solid #475569;
   border-radius: 7px;
