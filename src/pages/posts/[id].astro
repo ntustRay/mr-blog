@@ -4,6 +4,8 @@ import PostNavigation from '../../components/PostNavigation.astro';
 import TableOfContents from '../../components/TableOfContents.astro';
 import TagList from '../../components/TagList.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import CopyLink from '../../components/CopyLink.astro';
+import { formatDate } from '../../utils/date';
 
 export async function getStaticPaths() {
   const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
@@ -31,6 +33,33 @@ interface Props {
 const { post, previousPost, nextPost } = Astro.props;
 const { Content, headings } = await render(post);
 const ogImage = post.data.coverImage ?? `og/${post.id}.webp`;
+const base = import.meta.env.BASE_URL.endsWith('/')
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const articleURL = new URL(
+  `${base}posts/${post.id}/`,
+  Astro.site ?? Astro.url.origin,
+);
+const imageURL = /^https?:\/\//u.test(ogImage)
+  ? new URL(ogImage)
+  : new URL(`${base}${ogImage.replace(/^\/+/, '')}`, Astro.site ?? Astro.url.origin);
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: post.data.title,
+  description: post.data.description,
+  datePublished: post.data.pubDate.toISOString(),
+  dateModified: (post.data.updatedDate ?? post.data.pubDate).toISOString(),
+  image: imageURL.href,
+  url: articleURL.href,
+  mainEntityOfPage: articleURL.href,
+  inLanguage: 'zh-Hant',
+  author: {
+    '@type': 'Person',
+    name: 'MingRay',
+    url: 'https://github.com/ntustRay',
+  },
+};
 ---
 
 <BaseLayout
@@ -38,18 +67,20 @@ const ogImage = post.data.coverImage ?? `og/${post.id}.webp`;
   description={post.data.description}
   ogImage={ogImage}
   ogType="article"
+  structuredData={structuredData}
 >
   <article class="article" data-pagefind-body>
     <header class="article-header">
       <div class="post-meta">
         <time datetime={post.data.pubDate.toISOString()}>
-          {post.data.pubDate.toLocaleDateString('zh-TW')}
+          {formatDate(post.data.pubDate)}
         </time>
         <TagList tags={post.data.tags} />
       </div>
 
       <h1>{post.data.title}</h1>
       <p class="article-description">{post.data.description}</p>
+      <CopyLink />
     </header>
 
     <TableOfContents headings={headings} />

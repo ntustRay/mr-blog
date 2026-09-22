@@ -7,6 +7,7 @@ interface Props {
   searchAssets?: boolean;
   ogImage?: string;
   ogType?: 'website' | 'article';
+  structuredData?: Record<string, unknown>;
 }
 
 const {
@@ -15,6 +16,7 @@ const {
   searchAssets = false,
   ogImage = 'og-default.webp',
   ogType = 'website',
+  structuredData,
 } = Astro.props;
 
 const siteName = 'MR Blog';
@@ -31,6 +33,27 @@ const ogImageURL = /^https?:\/\//u.test(ogImage)
       `${base}${ogImage.replace(/^\/+/, '')}`,
       Astro.site ?? Astro.url.origin,
     );
+const adsenseClient = import.meta.env.PUBLIC_GOOGLE_ADSENSE_CLIENT;
+
+if (adsenseClient && !/^ca-pub-\d+$/u.test(adsenseClient)) {
+  throw new Error(
+    'PUBLIC_GOOGLE_ADSENSE_CLIENT must use the ca-pub-<digits> format.',
+  );
+}
+
+const websiteStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: siteName,
+  description: '記錄技術、開發實作與持續學習。',
+  url: new URL(base, Astro.site ?? Astro.url.origin).href,
+  inLanguage: 'zh-Hant',
+};
+const serializedStructuredData = JSON.stringify(
+  structuredData
+    ? [websiteStructuredData, structuredData]
+    : websiteStructuredData,
+).replaceAll('<', '\\u003c');
 ---
 
 <!doctype html>
@@ -80,6 +103,21 @@ const ogImageURL = /^https?:\/\//u.test(ogImage)
     <meta name="twitter:image" content={ogImageURL} />
     <meta name="twitter:image:alt" content={pageTitle} />
 
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={serializedStructuredData}
+    ></script>
+
+    {adsenseClient && (
+      <script
+        is:inline
+        async
+        crossorigin="anonymous"
+        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseClient}`}
+      ></script>
+    )}
+
     <title>{pageTitle}</title>
   </head>
   <body>
@@ -89,7 +127,9 @@ const ogImageURL = /^https?:\/\//u.test(ogImage)
         <nav aria-label="主要導覽">
           <a href={base}>文章</a>
           <a href={`${base}tags/`}>標籤</a>
+          <a href={`${base}archive/`}>封存</a>
           <a href={`${base}search/`}>搜尋</a>
+          <a href={`${base}about/`}>關於</a>
           <a href="https://github.com/ntustRay" target="_blank" rel="noreferrer">GitHub</a>
         </nav>
       </div>
@@ -102,6 +142,11 @@ const ogImageURL = /^https?:\/\//u.test(ogImage)
     <footer class="site-footer">
       <div class="container">
         <small>© {new Date().getFullYear()} MR Blog. Built with Astro.</small>
+        <nav aria-label="頁尾導覽">
+          <a href={`${base}privacy/`}>隱私權</a>
+          <a href={`${base}contact/`}>聯絡</a>
+          <a href={`${base}rss.xml`}>RSS</a>
+        </nav>
       </div>
     </footer>
   </body>

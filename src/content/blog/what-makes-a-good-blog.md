@@ -2,6 +2,7 @@
 title: "一個好的技術 Blog 應該具備什麼？"
 description: "整理個人技術 Blog 從內容、SEO、搜尋、效能到 AdSense 的核心需求，並附上可直接執行的 TODO checklist。"
 pubDate: 2026-09-20
+updatedDate: 2026-09-22
 tags:
   - Blog
   - Astro
@@ -189,19 +190,19 @@ CMS
 
 ## P0 — 文章閱讀體驗
 
-- [ ] Table of Contents
-- [ ] Code syntax highlighting
-- [ ] Prev / Next article
-- [ ] Mobile typography check
-- [ ] Long article spacing check
+- [x] Table of Contents
+- [x] Code syntax highlighting
+- [x] Prev / Next article
+- [x] Mobile typography check
+- [x] Long article spacing check
 
 ## P1 — 導航與內容探索
 
-- [ ] Tags page
-- [ ] Tag detail page
-- [ ] Search
-- [ ] Archive page
-- [ ] Category 設計是否真的需要
+- [x] Tags page
+- [x] Tag detail page
+- [x] Search
+- [x] Archive page
+- [x] Category 設計是否真的需要：目前文章量以 Tags 即可，不新增重複分類
 
 ## P1 — SEO
 
@@ -209,42 +210,43 @@ CMS
 - [x] Canonical URL
 - [x] robots.txt
 - [x] Sitemap
-- [ ] Open Graph image
-- [ ] Article-specific Open Graph metadata
-- [ ] Structured data / JSON-LD
+- [x] Open Graph image
+- [x] Article-specific Open Graph metadata
+- [x] Structured data / JSON-LD
 
 ## P1 — Feed
 
-- [ ] RSS
-- [ ] RSS discovery link
-- [ ] RSS metadata check
+- [x] RSS
+- [x] RSS discovery link
+- [x] RSS metadata check
 
 ## P2 — AdSense
 
-- [ ] About page
-- [ ] Privacy Policy
-- [ ] Contact page
-- [ ] ads.txt
-- [ ] Google AdSense integration
-- [ ] Ad placement design
-- [ ] Cookie / Consent requirement review
+- [x] About page
+- [x] Privacy Policy
+- [x] Contact page
+- [x] `ads.txt` baseline：目前明確宣告尚無授權廣告商
+- [x] Google AdSense integration hook 與 publisher ID 格式驗證
+- [ ] 啟用 Google AdSense：等待帳號核准與 publisher ID
+- [x] Ad placement design
+- [x] Cookie / Consent requirement review：目前沒有非必要 Cookie，不需 consent banner
 
 ## P2 — 品牌與分享
 
 - [ ] 自訂 domain
-- [ ] OG image template
-- [ ] Copy link
-- [ ] Social links
-- [ ] Favicon / logo final version
+- [x] OG image template
+- [x] Copy link
+- [x] Social links
+- [x] Favicon / logo final version
 
 ## P3 — 維護與品質
 
-- [ ] Markdown article template
-- [ ] Draft workflow
-- [ ] Broken link check
-- [ ] Lighthouse check
-- [ ] GitHub Actions build verification
-- [ ] Dependabot / dependency update strategy
+- [x] Markdown article template
+- [x] Draft workflow
+- [x] Broken link check
+- [x] Lighthouse CI check
+- [x] GitHub Actions build verification
+- [x] Dependabot / dependency update strategy
 
 ---
 
@@ -266,12 +268,10 @@ AdSense
 其他功能
 ```
 
-下一步最值得先完成的是：
+目前程式與內容層面的 MVP 已完成。尚待外部資料的項目只有：
 
-1. TOC
-2. Tags
-3. Search
-4. RSS
-5. OG image
+1. 提供並設定自訂 domain。
+2. Google AdSense 帳號通過核准後，設定 `PUBLIC_GOOGLE_ADSENSE_CLIENT`。
+3. 使用同一個 publisher ID 更新 `public/ads.txt`，再啟用實際廣告版位。
 
-這五項完成後，MR Blog 就會從「可以寫文章」進入「成熟可長期使用的技術 Blog」。
+在這三項完成前，網站不會載入 AdSense script，也不會使用非必要 Cookie。

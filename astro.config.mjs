@@ -3,7 +3,7 @@ import { defineConfig } from 'astro/config';
 
 export default defineConfig({
   site: 'https://ntustray.github.io',
-  base: '/mr-blog',
+  base: process.env.SITE_BASE ?? '/mr-blog',
   trailingSlash: 'always',
   integrations: [sitemap()],
 });

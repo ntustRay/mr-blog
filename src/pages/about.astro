@@ -1,0 +1,38 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="關於"
+  description="關於 MingRay 與 MR Blog：專注前端工程、TypeScript、React、資料視覺化與實作經驗。"
+>
+  <article class="content-page">
+    <header class="page-header">
+      <p class="eyebrow">ABOUT</p>
+      <h1>關於 MR Blog</h1>
+      <p>把做過的工程問題，整理成之後仍然找得到、用得上的技術筆記。</p>
+    </header>
+
+    <div class="prose">
+      <h2>我是 MingRay</h2>
+      <p>
+        我是一名前端工程師，主要使用 TypeScript、React 與 Next.js，近期專注於大型資料集、Canvas 圖表與 DuckDB 整合。
+      </p>
+      <p>
+        這裡記錄實際開發中的設計選擇、效能取捨、踩坑與可重複使用的解法。文章會優先說明問題、限制與決策理由，而不是只留下最後一段程式碼。
+      </p>
+
+      <h2>內容原則</h2>
+      <ul>
+        <li>以可驗證的實作與官方資料為主。</li>
+        <li>清楚區分經驗、推論與外部資料。</li>
+        <li>保留 trade-off，不把特定情境的選擇寫成唯一答案。</li>
+        <li>維持簡單、快速且容易長期更新的閱讀體驗。</li>
+      </ul>
+
+      <p>
+        你可以在 <a href="https://github.com/ntustRay">GitHub</a> 查看我的公開專案，或透過<a href="../contact/">聯絡頁面</a>提供文章建議。
+      </p>
+    </div>
+  </article>
+</BaseLayout>

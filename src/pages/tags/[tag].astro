@@ -2,6 +2,7 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import TagList from '../../components/TagList.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { formatDate } from '../../utils/date';
 import { getTagSlug } from '../../utils/tags';
 
 interface TagGroup {
@@ -69,7 +70,7 @@ const base = import.meta.env.BASE_URL.endsWith('/')
       <article class="post-card">
         <div class="post-meta">
           <time datetime={post.data.pubDate.toISOString()}>
-            {post.data.pubDate.toLocaleDateString('zh-TW')}
+            {formatDate(post.data.pubDate)}
           </time>
           <TagList tags={post.data.tags} />
         </div>

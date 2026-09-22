@@ -1,0 +1,35 @@
+<div class="copy-link">
+  <button type="button" data-copy-link>
+    <span aria-hidden="true">↗</span>
+    <span data-copy-label>複製文章連結</span>
+  </button>
+  <span class="copy-link__status" data-copy-status aria-live="polite"></span>
+</div>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>('[data-copy-link]');
+
+  for (const button of buttons) {
+    button.addEventListener('click', async () => {
+      const label = button.querySelector<HTMLElement>('[data-copy-label]');
+      const status = button.parentElement?.querySelector<HTMLElement>(
+        '[data-copy-status]',
+      );
+
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+
+        if (label) label.textContent = '已複製';
+        if (status) status.textContent = '文章連結已複製到剪貼簿。';
+      } catch {
+        if (label) label.textContent = '複製失敗';
+        if (status) status.textContent = '請從瀏覽器網址列手動複製連結。';
+      }
+
+      window.setTimeout(() => {
+        if (label) label.textContent = '複製文章連結';
+        if (status) status.textContent = '';
+      }, 2400);
+    });
+  }
+</script>

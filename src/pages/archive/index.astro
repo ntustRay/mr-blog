@@ -1,0 +1,47 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { formatShortDate } from '../../utils/date';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+const postsByYear = new Map<number, CollectionEntry<'blog'>[]>();
+
+for (const post of posts) {
+  const year = post.data.pubDate.getUTCFullYear();
+  const yearPosts = postsByYear.get(year) ?? [];
+  yearPosts.push(post);
+  postsByYear.set(year, yearPosts);
+}
+
+const base = import.meta.env.BASE_URL.endsWith('/')
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+---
+
+<BaseLayout title="文章封存" description="按年份瀏覽 MR Blog 的所有文章。">
+  <section class="page-header">
+    <p class="eyebrow">ARCHIVE</p>
+    <h1>文章封存</h1>
+    <p>{posts.length} 篇文章，按發布時間整理。</p>
+  </section>
+
+  <div class="archive-list">
+    {[...postsByYear.entries()].map(([year, yearPosts]) => (
+      <section class="archive-year" aria-labelledby={`year-${year}`}>
+        <h2 id={`year-${year}`}>{year}</h2>
+        <ol>
+          {yearPosts.map((post) => (
+            <li>
+              <time datetime={post.data.pubDate.toISOString()}>
+                {formatShortDate(post.data.pubDate)}
+              </time>
+              <a href={`${base}posts/${post.id}/`}>{post.data.title}</a>
+            </li>
+          ))}
+        </ol>
+      </section>
+    ))}
+  </div>
+</BaseLayout>

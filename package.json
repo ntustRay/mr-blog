@@ -5,7 +5,9 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && pagefind --site dist",
+    "build": "astro build && pagefind --site dist && npm run check:links",
+    "check:links": "node scripts/check-links.mjs",
+    "lighthouse": "lhci autorun",
     "preview": "astro preview",
     "astro": "astro"
   },
@@ -15,6 +17,7 @@
     "astro": "^7.3.3"
   },
   "devDependencies": {
+    "@lhci/cli": "^0.15.1",
     "pagefind": "^1.5.2",
     "sharp": "^0.35.4"
   },
