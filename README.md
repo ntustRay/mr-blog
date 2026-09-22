@@ -16,6 +16,16 @@ npm run build
 npm run preview
 ```
 
+## Site configuration
+
+Site-wide metadata and the homepage focus topics live in:
+
+```text
+src/config/site.ts
+```
+
+Update that file instead of duplicating the site name, author, description, locale, or focus topics across pages.
+
 ## Write a post
 
 Create a Markdown file in:
@@ -34,6 +44,9 @@ pubDate: 2026-09-20
 category: Web Development
 tags:
   - Astro
+references:
+  - title: "Astro documentation"
+    url: "https://docs.astro.build/"
 draft: false
 ---
 ```

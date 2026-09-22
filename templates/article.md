@@ -2,10 +2,14 @@
 title: "文章標題"
 description: "用一到兩句話說明問題、限制與讀者會得到什麼。"
 pubDate: 2026-09-22
+# updatedDate: 2026-09-22
 category: Web Development
 tags:
   - TypeScript
 # coverImage: /images/example.webp
+# references:
+#   - title: "Official documentation"
+#     url: "https://example.com/docs"
 draft: true
 ---
 

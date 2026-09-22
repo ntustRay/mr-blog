@@ -18,6 +18,14 @@ const blog = defineCollection({
       .string()
       .regex(/\.webp(?:[?#].*)?$/iu, 'coverImage must use WebP')
       .optional(),
+    references: z
+      .array(
+        z.object({
+          title: z.string().trim().min(1),
+          url: z.string().url(),
+        }),
+      )
+      .default([]),
     draft: z.boolean().default(false),
   }),
 });

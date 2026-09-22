@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { siteConfig } from '../config/site';
 
 interface Props {
   title: string;
@@ -19,7 +20,7 @@ const {
   structuredData,
 } = Astro.props;
 
-const siteName = 'MR Blog';
+const siteName = siteConfig.name;
 const pageTitle = title === siteName ? siteName : `${title} | ${siteName}`;
 const canonicalURL = Astro.site
   ? new URL(Astro.url.pathname, Astro.site)
@@ -44,10 +45,10 @@ if (adsenseClient && !/^ca-pub-\d+$/u.test(adsenseClient)) {
 const websiteStructuredData = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
-  name: siteName,
-  description: '記錄技術、開發實作與持續學習。',
+  name: siteConfig.name,
+  description: siteConfig.description,
   url: new URL(base, Astro.site ?? Astro.url.origin).href,
-  inLanguage: 'zh-Hant',
+  inLanguage: siteConfig.locale,
 };
 const serializedStructuredData = JSON.stringify(
   structuredData
@@ -57,7 +58,7 @@ const serializedStructuredData = JSON.stringify(
 ---
 
 <!doctype html>
-<html lang="zh-Hant">
+<html lang={siteConfig.locale}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
@@ -70,7 +71,7 @@ const serializedStructuredData = JSON.stringify(
     <link
       rel="alternate"
       type="application/rss+xml"
-      title="MR Blog RSS"
+      title={`${siteConfig.name} RSS`}
       href={`${base}rss.xml`}
     />
 
@@ -123,7 +124,7 @@ const serializedStructuredData = JSON.stringify(
   <body>
     <header class="site-header">
       <div class="container header-inner">
-        <a class="brand" href={base}>MR Blog</a>
+        <a class="brand" href={base}>{siteConfig.name}</a>
         <nav aria-label="Main navigation">
           <a href={base}>Posts</a>
           <a href={`${base}categories/`}>Categories</a>
@@ -131,7 +132,7 @@ const serializedStructuredData = JSON.stringify(
           <a href={`${base}archive/`}>Archive</a>
           <a href={`${base}search/`}>Search</a>
           <a href={`${base}about/`}>About</a>
-          <a href="https://github.com/ntustRay" target="_blank" rel="noreferrer">GitHub</a>
+          <a href={siteConfig.author.url} target="_blank" rel="noreferrer">GitHub</a>
         </nav>
       </div>
     </header>
@@ -142,7 +143,7 @@ const serializedStructuredData = JSON.stringify(
 
     <footer class="site-footer">
       <div class="container">
-        <small>© {new Date().getFullYear()} MR Blog. Built with Astro.</small>
+        <small>© {new Date().getFullYear()} {siteConfig.name}. Built with Astro.</small>
         <nav aria-label="Footer navigation">
           <a href={`${base}privacy/`}>Privacy</a>
           <a href={`${base}contact/`}>Contact</a>

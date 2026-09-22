@@ -1,6 +1,7 @@
 import rss from '@astrojs/rss';
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
+import { siteConfig } from '../config/site';
 
 export const GET: APIRoute = async (context) => {
   if (!context.site) {
@@ -16,10 +17,10 @@ export const GET: APIRoute = async (context) => {
     : `${import.meta.env.BASE_URL}/`;
 
   return rss({
-    title: 'MR Blog',
-    description: '記錄技術、開發實作與持續學習。',
+    title: siteConfig.name,
+    description: siteConfig.description,
     site: context.site,
-    customData: '<language>zh-Hant</language>',
+    customData: `<language>${siteConfig.locale}</language>`,
     items: posts.map((post) => ({
       title: post.data.title,
       description: post.data.description,

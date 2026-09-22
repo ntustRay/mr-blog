@@ -4,6 +4,7 @@
 
 - This repository is a personal technical blog built with Astro and TypeScript.
 - Blog posts live under `src/content/blog/`.
+- Site-wide metadata and homepage focus topics live in `src/config/site.ts`; update that file instead of duplicating those values across pages.
 - The site is static-first and deployed to GitHub Pages.
 - Prefer simple, maintainable solutions appropriate for a content-focused blog.
 
@@ -39,6 +40,7 @@
 - Never invent statements such as 「我測試後發現……」、「我遇到這個問題……」 or 「我最後選擇……」 unless the user actually provided that experience.
 - Use official or primary sources for version-specific behavior, benchmarks, APIs, specifications, or other claims where freshness matters.
 - Stable, uncontroversial general explanations do not require citations.
+- When an article materially depends on external documentation, benchmarks, specifications, or third-party research, add those sources to the optional `references` frontmatter and cite them inline where the claim needs local context.
 
 ## Code Examples
 
@@ -54,6 +56,7 @@
 - Do not force every article into an identical outline. Use headings that naturally fit the topic.
 - For technical comparisons, a useful structure is often: Problem → Options → Trade-offs → Decision → Implementation / Example.
 - Add images, screenshots, charts, or diagrams only when they materially improve understanding.
+- Keep references as structured frontmatter when possible so the article layout can render them consistently.
 
 ## Images
 
@@ -75,9 +78,11 @@ updatedDate:
 tags:
 category:
 coverImage:
+references:
 draft:
 ```
 
+- `references` is an optional list of `title` + absolute `url` objects used for meaningful external sources.
 - Fields without a meaningful value may remain optional where supported by the schema.
 - Never invent fake metadata just to populate a field.
 
@@ -89,6 +94,7 @@ draft:
 - Do not create minor spelling, casing, or naming variations of an existing tag.
 - Add a new tag only when it has meaningful long-term classification value.
 - Reuse an existing category unless a new top-level section has meaningful long-term value.
+- Keep the number of top-level categories small; do not split closely related topics into separate categories without a clear long-term need.
 
 ## SEO
 
