@@ -14,7 +14,6 @@ const { headings, collapsible = false } = Astro.props;
 const visibleHeadings = headings.filter(
   ({ depth }) => depth === 2 || depth === 3,
 );
-
 ---
 
 {visibleHeadings.length > 1 && (
