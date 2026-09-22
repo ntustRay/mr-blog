@@ -7,23 +7,31 @@ interface Heading {
 
 interface Props {
   headings: Heading[];
+  collapsible?: boolean;
 }
 
-const { headings } = Astro.props;
+const { headings, collapsible = false } = Astro.props;
 const visibleHeadings = headings.filter(
   ({ depth }) => depth === 2 || depth === 3,
 );
+
+const items = visibleHeadings.map((heading) => (
+  <li class:list={{ 'toc-item--nested': heading.depth === 3 }}>
+    <a href={`#${heading.slug}`}>{heading.text}</a>
+  </li>
+));
 ---
 
 {visibleHeadings.length > 1 && (
-  <nav class="toc" aria-label="文章目錄">
-    <p class="toc-title">文章目錄</p>
-    <ol>
-      {visibleHeadings.map((heading) => (
-        <li class:list={{ 'toc-item--nested': heading.depth === 3 }}>
-          <a href={`#${heading.slug}`}>{heading.text}</a>
-        </li>
-      ))}
-    </ol>
-  </nav>
+  collapsible ? (
+    <details class="toc toc--mobile">
+      <summary class="toc-title">On this page</summary>
+      <ol>{items}</ol>
+    </details>
+  ) : (
+    <nav class="toc toc--desktop" aria-label="On this page">
+      <p class="toc-title">On this page</p>
+      <ol>{items}</ol>
+    </nav>
+  )
 )}

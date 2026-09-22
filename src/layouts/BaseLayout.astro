@@ -11,6 +11,7 @@ interface Props {
   structuredData?: Record<string, unknown>;
   publishedTime?: string;
   modifiedTime?: string;
+  wide?: boolean;
 }
 
 const {
@@ -22,6 +23,7 @@ const {
   structuredData,
   publishedTime,
   modifiedTime,
+  wide = false,
 } = Astro.props;
 
 const siteName = siteConfig.name;
@@ -149,7 +151,7 @@ const serializedStructuredData = JSON.stringify(
       </div>
     </header>
 
-    <main class="container">
+    <main class:list={['container', { 'container--wide': wide }]}>
       <slot />
     </main>
 

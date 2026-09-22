@@ -83,52 +83,59 @@ const structuredData = {
   structuredData={structuredData}
   publishedTime={post.data.pubDate.toISOString()}
   modifiedTime={(post.data.updatedDate ?? post.data.pubDate).toISOString()}
+  wide
 >
-  <article class="article" data-pagefind-body>
-    <nav class="breadcrumbs" aria-label="Breadcrumb">
-      <a href={base}>Posts</a>
-      <span aria-hidden="true">/</span>
-      <a href={`${base}categories/${getCategorySlug(post.data.category)}/`}>
-        {post.data.category}
-      </a>
-    </nav>
+  <article class="article">
+    <div class="article-main" data-pagefind-body>
+      <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <a href={base}>Posts</a>
+        <span aria-hidden="true">/</span>
+        <a href={`${base}categories/${getCategorySlug(post.data.category)}/`}>
+          {post.data.category}
+        </a>
+      </nav>
 
-    <header class="article-header">
-      <div class="post-meta">
-        <CategoryLink category={post.data.category} />
-        <span>
-          Published <time datetime={post.data.pubDate.toISOString()}>
-            {formatDate(post.data.pubDate)}
-          </time>
-        </span>
-        {post.data.updatedDate && (
+      <header class="article-header">
+        <div class="post-meta">
+          <CategoryLink category={post.data.category} />
           <span>
-            Updated <time datetime={post.data.updatedDate.toISOString()}>
-              {formatDate(post.data.updatedDate)}
+            Published <time datetime={post.data.pubDate.toISOString()}>
+              {formatDate(post.data.pubDate)}
             </time>
           </span>
-        )}
-        <TagList tags={post.data.tags} />
+          {post.data.updatedDate && (
+            <span>
+              Updated <time datetime={post.data.updatedDate.toISOString()}>
+                {formatDate(post.data.updatedDate)}
+              </time>
+            </span>
+          )}
+          <TagList tags={post.data.tags} />
+        </div>
+
+        <h1>{post.data.title}</h1>
+        <p class="article-description">{post.data.description}</p>
+        <CopyLink />
+      </header>
+
+      <TableOfContents headings={headings} collapsible />
+
+      <div class="prose">
+        <Content />
       </div>
 
-      <h1>{post.data.title}</h1>
-      <p class="article-description">{post.data.description}</p>
-      <CopyLink />
-    </header>
+      <CodeCopyEnhancer />
+      <References references={post.data.references} />
+      <RelatedPosts posts={relatedPosts} />
 
-    <TableOfContents headings={headings} />
-
-    <div class="prose">
-      <Content />
+      <PostNavigation
+        previousPost={previousPost}
+        nextPost={nextPost}
+      />
     </div>
 
-    <CodeCopyEnhancer />
-    <References references={post.data.references} />
-    <RelatedPosts posts={relatedPosts} />
-
-    <PostNavigation
-      previousPost={previousPost}
-      nextPost={nextPost}
-    />
+    <aside class="article-sidebar">
+      <TableOfContents headings={headings} />
+    </aside>
   </article>
 </BaseLayout>
