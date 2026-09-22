@@ -277,6 +277,24 @@ pagefind-results {
   padding: 80px 0;
 }
 
+.breadcrumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 22px;
+  color: #94a3b8;
+  font-size: 0.8rem;
+}
+
+.breadcrumbs a {
+  text-decoration: none;
+}
+
+.breadcrumbs a:hover {
+  color: #4f46e5;
+}
+
 .article-header {
   padding-bottom: 32px;
   border-bottom: 1px solid #e5e7eb;
@@ -403,15 +421,89 @@ pagefind-results {
 }
 
 .prose pre {
+  position: relative;
   overflow-x: auto;
-  padding: 18px;
+  padding: 18px 72px 18px 18px;
   border-radius: 12px;
   background: #0f172a;
+}
+
+.code-copy-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 5px 9px;
+  border: 1px solid #475569;
+  border-radius: 7px;
+  color: #cbd5e1;
+  background: #1e293b;
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.code-copy-button:hover {
+  border-color: #94a3b8;
+  color: #ffffff;
 }
 
 .prose pre code {
   padding: 0;
   background: transparent;
+}
+
+.references,
+.related-posts {
+  margin-top: 52px;
+  padding-top: 28px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.references h2,
+.related-posts h2 {
+  margin: 0 0 18px;
+  font-size: 1.1rem;
+}
+
+.references ol {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding-left: 22px;
+}
+
+.references a {
+  color: #4f46e5;
+  text-underline-offset: 0.18em;
+}
+
+.related-post-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.related-post-card {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  text-decoration: none;
+}
+
+.related-post-card:hover {
+  border-color: #a5b4fc;
+}
+
+.related-post-card strong {
+  line-height: 1.35;
+}
+
+.related-post-card span {
+  color: #94a3b8;
+  font-size: 0.78rem;
 }
 
 .post-navigation {
@@ -618,6 +710,9 @@ pagefind-results {
   .toc,
   .post-navigation,
   .post-navigation__item,
+  .references,
+  .related-posts,
+  .related-post-card,
   .tag-card,
   .category-card,
   .content-page .page-header,

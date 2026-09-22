@@ -1,0 +1,26 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  posts: CollectionEntry<'blog'>[];
+}
+
+const { posts } = Astro.props;
+const base = import.meta.env.BASE_URL.endsWith('/')
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+---
+
+{posts.length > 0 && (
+  <section class="related-posts" aria-labelledby="related-posts-heading">
+    <h2 id="related-posts-heading">Related Posts</h2>
+    <div class="related-post-grid">
+      {posts.map((post) => (
+        <a class="related-post-card" href={`${base}posts/${post.id}/`}>
+          <span>{post.data.category}</span>
+          <strong>{post.data.title}</strong>
+        </a>
+      ))}
+    </div>
+  </section>
+)}

@@ -1,0 +1,35 @@
+<script>
+  for (const pre of document.querySelectorAll<HTMLElement>('.prose pre')) {
+    if (pre.dataset.copyEnhanced === 'true') {
+      continue;
+    }
+
+    const code = pre.querySelector('code');
+    if (!code) {
+      continue;
+    }
+
+    const source = code.textContent ?? '';
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'code-copy-button';
+    button.textContent = 'Copy';
+    button.setAttribute('aria-label', 'Copy code to clipboard');
+
+    button.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(source);
+        button.textContent = 'Copied';
+      } catch {
+        button.textContent = 'Copy failed';
+      }
+
+      window.setTimeout(() => {
+        button.textContent = 'Copy';
+      }, 1600);
+    });
+
+    pre.dataset.copyEnhanced = 'true';
+    pre.append(button);
+  }
+</script>
