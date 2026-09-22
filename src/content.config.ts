@@ -13,7 +13,7 @@ const blog = defineCollection({
     pubDate: z.coerce.date(),
     updatedDate: z.coerce.date().optional(),
     tags: z.array(z.string()).default([]),
-    category: z.string().optional(),
+    category: z.string().trim().min(1),
     coverImage: z
       .string()
       .regex(/\.webp(?:[?#].*)?$/iu, 'coverImage must use WebP')

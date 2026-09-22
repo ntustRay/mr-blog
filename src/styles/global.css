@@ -179,6 +179,30 @@ pagefind-results {
   gap: 6px;
 }
 
+.category {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #4338ca;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.category::before {
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  background: #6366f1;
+  content: '';
+}
+
+.category:hover {
+  color: #312e81;
+}
+
 .tag {
   padding: 2px 8px;
   border: 1px solid #c7d2fe;
@@ -216,14 +240,16 @@ pagefind-results {
   text-decoration: none;
 }
 
-.tag-grid {
+.tag-grid,
+.category-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 12px;
   padding-bottom: 40px;
 }
 
-.tag-card {
+.tag-card,
+.category-card {
   display: grid;
   gap: 6px;
   padding: 18px;
@@ -232,13 +258,19 @@ pagefind-results {
   text-decoration: none;
 }
 
-.tag-card:hover {
+.tag-card:hover,
+.category-card:hover {
   border-color: #a5b4fc;
 }
 
-.tag-card span {
+.tag-card span,
+.category-card span {
   color: #94a3b8;
   font-size: 0.82rem;
+}
+
+.category-card {
+  border-left: 4px solid #6366f1;
 }
 
 .article {
@@ -587,6 +619,7 @@ pagefind-results {
   .post-navigation,
   .post-navigation__item,
   .tag-card,
+  .category-card,
   .content-page .page-header,
   .archive-year li,
   .contact-card {
@@ -596,6 +629,18 @@ pagefind-results {
   .tag {
     border-color: #3730a3;
     color: #a5b4fc;
+  }
+
+  .category {
+    color: #a5b4fc;
+  }
+
+  .category:hover {
+    color: #c7d2fe;
+  }
+
+  .category-card {
+    border-left-color: #6366f1;
   }
 
   .site-header nav a,

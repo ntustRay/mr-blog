@@ -124,12 +124,13 @@ const serializedStructuredData = JSON.stringify(
     <header class="site-header">
       <div class="container header-inner">
         <a class="brand" href={base}>MR Blog</a>
-        <nav aria-label="主要導覽">
-          <a href={base}>文章</a>
-          <a href={`${base}tags/`}>標籤</a>
-          <a href={`${base}archive/`}>封存</a>
-          <a href={`${base}search/`}>搜尋</a>
-          <a href={`${base}about/`}>關於</a>
+        <nav aria-label="Main navigation">
+          <a href={base}>Posts</a>
+          <a href={`${base}categories/`}>Categories</a>
+          <a href={`${base}tags/`}>Tags</a>
+          <a href={`${base}archive/`}>Archive</a>
+          <a href={`${base}search/`}>Search</a>
+          <a href={`${base}about/`}>About</a>
           <a href="https://github.com/ntustRay" target="_blank" rel="noreferrer">GitHub</a>
         </nav>
       </div>
@@ -142,9 +143,9 @@ const serializedStructuredData = JSON.stringify(
     <footer class="site-footer">
       <div class="container">
         <small>© {new Date().getFullYear()} MR Blog. Built with Astro.</small>
-        <nav aria-label="頁尾導覽">
-          <a href={`${base}privacy/`}>隱私權</a>
-          <a href={`${base}contact/`}>聯絡</a>
+        <nav aria-label="Footer navigation">
+          <a href={`${base}privacy/`}>Privacy</a>
+          <a href={`${base}contact/`}>Contact</a>
           <a href={`${base}rss.xml`}>RSS</a>
         </nav>
       </div>

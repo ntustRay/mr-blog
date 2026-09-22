@@ -3,6 +3,7 @@ title: "一個好的技術 Blog 應該具備什麼？"
 description: "整理個人技術 Blog 從內容、SEO、搜尋、效能到 AdSense 的核心需求，並附上可直接執行的 TODO checklist。"
 pubDate: 2026-09-20
 updatedDate: 2026-09-22
+category: Blogging
 tags:
   - Blog
   - Astro
@@ -202,7 +203,7 @@ CMS
 - [x] Tag detail page
 - [x] Search
 - [x] Archive page
-- [x] Category 設計是否真的需要：目前文章量以 Tags 即可，不新增重複分類
+- [x] Category 作為文章大類，Tags 作為更細的主題標記
 
 ## P1 — SEO
 

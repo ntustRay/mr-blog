@@ -1,0 +1,44 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCategorySlug } from '../../utils/categories';
+
+const posts = await getCollection('blog', ({ data }) => !data.draft);
+const categoryCounts = new Map<string, number>();
+
+for (const post of posts) {
+  const { category } = post.data;
+  categoryCounts.set(category, (categoryCounts.get(category) ?? 0) + 1);
+}
+
+const categories = [...categoryCounts.entries()].sort(([a], [b]) =>
+  a.localeCompare(b, 'zh-Hant'),
+);
+
+const base = import.meta.env.BASE_URL.endsWith('/')
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+---
+
+<BaseLayout
+  title="Categories"
+  description="依文章大類瀏覽 MR Blog 的內容。"
+>
+  <section class="page-header">
+    <p class="eyebrow">CATEGORIES</p>
+    <h1>Categories</h1>
+    <p>Category 是文章的大方向；Tags 則標記更細的技術與主題。</p>
+  </section>
+
+  <div class="category-grid">
+    {categories.map(([category, count]) => (
+      <a
+        class="category-card"
+        href={`${base}categories/${getCategorySlug(category)}/`}
+      >
+        <strong>{category}</strong>
+        <span>{count} 篇文章</span>
+      </a>
+    ))}
+  </div>
+</BaseLayout>

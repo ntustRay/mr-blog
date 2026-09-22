@@ -31,6 +31,7 @@ Example frontmatter:
 title: "Post title"
 description: "Short description"
 pubDate: 2026-09-20
+category: Web Development
 tags:
   - Astro
 draft: false

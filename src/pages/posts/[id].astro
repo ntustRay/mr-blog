@@ -1,5 +1,6 @@
 ---
 import { getCollection, render, type CollectionEntry } from 'astro:content';
+import CategoryLink from '../../components/CategoryLink.astro';
 import PostNavigation from '../../components/PostNavigation.astro';
 import TableOfContents from '../../components/TableOfContents.astro';
 import TagList from '../../components/TagList.astro';
@@ -53,6 +54,7 @@ const structuredData = {
   image: imageURL.href,
   url: articleURL.href,
   mainEntityOfPage: articleURL.href,
+  articleSection: post.data.category,
   inLanguage: 'zh-Hant',
   author: {
     '@type': 'Person',
@@ -72,6 +74,7 @@ const structuredData = {
   <article class="article" data-pagefind-body>
     <header class="article-header">
       <div class="post-meta">
+        <CategoryLink category={post.data.category} />
         <time datetime={post.data.pubDate.toISOString()}>
           {formatDate(post.data.pubDate)}
         </time>

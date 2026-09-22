@@ -2,6 +2,7 @@
 title: "Hello, MR Blog"
 description: "MR Blog 的第一篇文章：從一個簡單、快速、可長期維護的技術部落格開始。"
 pubDate: 2026-09-20
+category: Blogging
 tags:
   - Astro
   - Blog

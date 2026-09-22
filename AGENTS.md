@@ -83,10 +83,12 @@ draft:
 
 ## Tags and Categories
 
+- Every published article must have one broad `category`.
+- Use categories for stable top-level sections and tags for narrower technologies or topics.
 - Reuse existing tags whenever they accurately describe the article.
 - Do not create minor spelling, casing, or naming variations of an existing tag.
 - Add a new tag only when it has meaningful long-term classification value.
-- Do not add categories merely because the schema supports them.
+- Reuse an existing category unless a new top-level section has meaningful long-term value.
 
 ## SEO
 
