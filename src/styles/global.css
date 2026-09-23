@@ -476,6 +476,25 @@ pagefind-results {
   letter-spacing: -0.025em;
 }
 
+.prose :is(h2, h3) {
+  position: relative;
+}
+
+.heading-anchor {
+  margin-left: 0.45em;
+  color: #94a3b8;
+  font-size: 0.8em;
+  font-weight: 700;
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.prose :is(h2, h3):hover .heading-anchor,
+.heading-anchor:focus-visible {
+  opacity: 1;
+}
+
 .prose p,
 .prose li {
   color: #334155;
@@ -909,6 +928,12 @@ pagefind-results {
 
   .toc--mobile {
     display: block;
+  }
+}
+
+@media (hover: none) {
+  .heading-anchor {
+    opacity: 0.7;
   }
 }
 

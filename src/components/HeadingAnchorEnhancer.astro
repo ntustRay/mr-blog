@@ -1,0 +1,20 @@
+<script>
+  const headings = document.querySelectorAll<HTMLHeadingElement>(
+    '.prose :is(h2, h3)[id]',
+  );
+
+  for (const heading of headings) {
+    if (heading.querySelector('.heading-anchor')) {
+      continue;
+    }
+
+    const id = heading.id;
+    const label = heading.textContent?.trim() || 'section';
+    const anchor = document.createElement('a');
+    anchor.className = 'heading-anchor';
+    anchor.href = `#${id}`;
+    anchor.textContent = '#';
+    anchor.setAttribute('aria-label', `Link to section: ${label}`);
+    heading.append(anchor);
+  }
+</script>

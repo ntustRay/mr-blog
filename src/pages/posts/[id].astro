@@ -2,6 +2,7 @@
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import CategoryLink from '../../components/CategoryLink.astro';
 import CodeCopyEnhancer from '../../components/CodeCopyEnhancer.astro';
+import HeadingAnchorEnhancer from '../../components/HeadingAnchorEnhancer.astro';
 import CopyLink from '../../components/CopyLink.astro';
 import PostNavigation from '../../components/PostNavigation.astro';
 import References from '../../components/References.astro';
@@ -125,6 +126,7 @@ const structuredData = {
       </div>
 
       <CodeCopyEnhancer />
+      <HeadingAnchorEnhancer />
       <References references={post.data.references} />
       <RelatedPosts posts={relatedPosts} />
 
