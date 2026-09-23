@@ -1,0 +1,71 @@
+<script>
+  const headings = [
+    ...document.querySelectorAll<HTMLHeadingElement>('.prose :is(h2, h3)[id]'),
+  ];
+  const tocLinks = [
+    ...document.querySelectorAll<HTMLAnchorElement>('.toc a[href^="#"]'),
+  ];
+
+  if (headings.length > 0 && tocLinks.length > 0) {
+    const linksById = new Map<string, HTMLAnchorElement[]>();
+
+    for (const link of tocLinks) {
+      const id = link.getAttribute('href')?.slice(1);
+      if (!id) {
+        continue;
+      }
+
+      const links = linksById.get(id) ?? [];
+      links.push(link);
+      linksById.set(id, links);
+    }
+
+    let activeId = '';
+    let animationFrame = 0;
+
+    const setActiveHeading = (id: string) => {
+      if (id === activeId) {
+        return;
+      }
+
+      for (const link of tocLinks) {
+        link.removeAttribute('aria-current');
+      }
+
+      for (const link of linksById.get(id) ?? []) {
+        link.setAttribute('aria-current', 'location');
+      }
+
+      activeId = id;
+    };
+
+    const updateActiveHeading = () => {
+      animationFrame = 0;
+
+      const headerOffset = 120;
+      let nextActiveId = '';
+
+      for (const heading of headings) {
+        if (heading.getBoundingClientRect().top > headerOffset) {
+          break;
+        }
+
+        nextActiveId = heading.id;
+      }
+
+      setActiveHeading(nextActiveId);
+    };
+
+    const scheduleUpdate = () => {
+      if (animationFrame !== 0) {
+        return;
+      }
+
+      animationFrame = window.requestAnimationFrame(updateActiveHeading);
+    };
+
+    window.addEventListener('scroll', scheduleUpdate, { passive: true });
+    window.addEventListener('resize', scheduleUpdate);
+    updateActiveHeading();
+  }
+</script>

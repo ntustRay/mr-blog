@@ -458,8 +458,13 @@ pagefind-results {
   text-decoration: none;
 }
 
-.toc a:hover {
+.toc a:hover,
+.toc a[aria-current='location'] {
   color: #4f46e5;
+}
+
+.toc a[aria-current='location'] {
+  font-weight: 800;
 }
 
 .prose {

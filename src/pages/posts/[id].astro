@@ -9,6 +9,7 @@ import References from '../../components/References.astro';
 import RelatedPosts from '../../components/RelatedPosts.astro';
 import TableOfContents from '../../components/TableOfContents.astro';
 import TagList from '../../components/TagList.astro';
+import TocActiveEnhancer from '../../components/TocActiveEnhancer.astro';
 import { siteConfig } from '../../config/site';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCategorySlug } from '../../utils/categories';
@@ -127,6 +128,7 @@ const structuredData = {
 
       <CodeCopyEnhancer />
       <HeadingAnchorEnhancer />
+      <TocActiveEnhancer />
       <References references={post.data.references} />
       <RelatedPosts posts={relatedPosts} />
 
