@@ -2,9 +2,12 @@ export const siteConfig = {
   name: 'MR Blog',
   author: {
     name: 'MingRay',
+    role: 'Full-Stack Engineer',
     url: 'https://github.com/ntustRay',
   },
-  description: '前端工程、TypeScript、React、DuckDB、Canvas 與效能實作筆記。',
+  eyebrow: 'FULL-STACK ENGINEERING NOTES',
+  description:
+    '全端工程、TypeScript、React、Next.js、DuckDB、Canvas 與效能實作筆記。',
   locale: 'zh-Hant',
   topics: [
     'TypeScript',

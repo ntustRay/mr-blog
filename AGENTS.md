@@ -3,6 +3,7 @@
 ## Project
 
 - This repository is a personal technical blog built with Astro and TypeScript.
+- The author's public positioning is **Full-Stack Engineer**. Do not narrow the site identity to frontend-only wording unless the user explicitly asks to change that positioning.
 - Blog posts live under `src/content/blog/`.
 - Site-wide metadata and homepage focus topics live in `src/config/site.ts`; update that file instead of duplicating those values across pages.
 - The site is static-first and deployed to GitHub Pages.

@@ -6,18 +6,31 @@ import { siteConfig } from '../config/site';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCategorySlug } from '../utils/categories';
 import { formatDate } from '../utils/date';
+import { getTagSlug } from '../utils/tags';
 
 const posts = (await getCollection('blog', ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 const latestPosts = posts.slice(0, 6);
 
 const categoryCounts = new Map<string, number>();
+const categoryNames = new Map<string, string>();
+const tagNames = new Map<string, string>();
+
+const normalizeTopic = (value: string) =>
+  value.normalize('NFKC').trim().toLocaleLowerCase('en-US');
+
 for (const post of posts) {
   categoryCounts.set(
     post.data.category,
     (categoryCounts.get(post.data.category) ?? 0) + 1,
   );
+  categoryNames.set(normalizeTopic(post.data.category), post.data.category);
+
+  for (const tag of post.data.tags) {
+    tagNames.set(normalizeTopic(tag), tag);
+  }
 }
+
 const categories = [...categoryCounts.entries()].sort(
   ([a], [b]) => a.localeCompare(b, siteConfig.locale),
 );
@@ -25,6 +38,20 @@ const categories = [...categoryCounts.entries()].sort(
 const base = import.meta.env.BASE_URL.endsWith('/')
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
+
+const focusTopics = siteConfig.topics.map((topic) => {
+  const key = normalizeTopic(topic);
+  const category = categoryNames.get(key);
+  const tag = tagNames.get(key);
+
+  const href = category
+    ? `${base}categories/${getCategorySlug(category)}/`
+    : tag
+      ? `${base}tags/${getTagSlug(tag)}/`
+      : null;
+
+  return { label: topic, href };
+});
 ---
 
 <BaseLayout
@@ -32,13 +59,30 @@ const base = import.meta.env.BASE_URL.endsWith('/')
   description={siteConfig.description}
 >
   <section class="hero">
-    <p class="eyebrow">FRONTEND ENGINEERING NOTES</p>
+    <p class="eyebrow">{siteConfig.eyebrow}</p>
     <h1>{siteConfig.author.name}</h1>
-    <p class="hero-role">Frontend Engineer</p>
+    <p class="hero-role">{siteConfig.author.role}</p>
     <p class="hero-description">{siteConfig.description}</p>
 
     <ul class="focus-topics" aria-label="Focus topics">
-      {siteConfig.topics.map((topic) => <li>{topic}</li>)}
+      {focusTopics.map((topic) => (
+        <li>
+          {topic.href ? (
+            <a class="topic-chip topic-chip--available" href={topic.href}>
+              {topic.label}
+            </a>
+          ) : (
+            <button
+              class="topic-chip topic-chip--empty"
+              type="button"
+              aria-disabled="true"
+              title="No posts yet"
+            >
+              {topic.label}
+            </button>
+          )}
+        </li>
+      ))}
     </ul>
   </section>
 

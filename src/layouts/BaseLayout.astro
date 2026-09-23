@@ -34,6 +34,12 @@ const canonicalURL = Astro.site
 const base = import.meta.env.BASE_URL.endsWith('/')
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
+const relativePath =
+  base === '/'
+    ? Astro.url.pathname
+    : Astro.url.pathname.startsWith(base)
+      ? `/${Astro.url.pathname.slice(base.length)}`
+      : Astro.url.pathname;
 const ogImageURL = /^https?:\/\//u.test(ogImage)
   ? new URL(ogImage)
   : new URL(
@@ -47,6 +53,39 @@ if (adsenseClient && !/^ca-pub-\d+$/u.test(adsenseClient)) {
     'PUBLIC_GOOGLE_ADSENSE_CLIENT must use the ca-pub-<digits> format.',
   );
 }
+
+const navigation = [
+  {
+    label: 'Posts',
+    href: base,
+    active: relativePath === '/' || relativePath.startsWith('/posts/'),
+  },
+  {
+    label: 'Categories',
+    href: `${base}categories/`,
+    active: relativePath.startsWith('/categories/'),
+  },
+  {
+    label: 'Tags',
+    href: `${base}tags/`,
+    active: relativePath.startsWith('/tags/'),
+  },
+  {
+    label: 'Archive',
+    href: `${base}archive/`,
+    active: relativePath.startsWith('/archive/'),
+  },
+  {
+    label: 'Search',
+    href: `${base}search/`,
+    active: relativePath.startsWith('/search/'),
+  },
+  {
+    label: 'About',
+    href: `${base}about/`,
+    active: relativePath.startsWith('/about/'),
+  },
+] as const;
 
 const websiteStructuredData = {
   '@context': 'https://schema.org',
@@ -140,13 +179,17 @@ const serializedStructuredData = JSON.stringify(
       <div class="container header-inner">
         <a class="brand" href={base}>{siteConfig.name}</a>
         <nav aria-label="Main navigation">
-          <a href={base}>Posts</a>
-          <a href={`${base}categories/`}>Categories</a>
-          <a href={`${base}tags/`}>Tags</a>
-          <a href={`${base}archive/`}>Archive</a>
-          <a href={`${base}search/`}>Search</a>
-          <a href={`${base}about/`}>About</a>
-          <a href={siteConfig.author.url} target="_blank" rel="noreferrer">GitHub</a>
+          {navigation.map((item) => (
+            <a
+              href={item.href}
+              aria-current={item.active ? 'page' : undefined}
+            >
+              {item.label}
+            </a>
+          ))}
+          <a href={siteConfig.author.url} target="_blank" rel="noreferrer">
+            GitHub
+          </a>
         </nav>
       </div>
     </header>
