@@ -481,19 +481,22 @@ pagefind-results {
 
 .article {
   display: grid;
-  grid-template-columns: minmax(0, var(--article-main-width)) minmax(180px, 240px);
-  gap: 48px;
+  grid-template-columns: minmax(0, 1fr) minmax(200px, 240px);
+  gap: 64px;
   align-items: start;
   padding: 80px 0;
 }
 
 .article-main {
+  width: min(100%, var(--article-main-width));
   min-width: 0;
+  justify-self: center;
 }
 
 .article-sidebar {
   position: sticky;
   top: 96px;
+  width: 100%;
   align-self: start;
 }
 
