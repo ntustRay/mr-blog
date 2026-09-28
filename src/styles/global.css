@@ -701,13 +701,6 @@ pagefind-results {
   scrollbar-width: thin;
 }
 
-.prose :is(thead, tbody) {
-  display: table;
-  width: 100%;
-  min-width: 640px;
-  table-layout: fixed;
-}
-
 .prose th,
 .prose td {
   padding: 11px 14px;
