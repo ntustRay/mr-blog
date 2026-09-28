@@ -705,7 +705,7 @@ pagefind-results {
   display: table;
   width: 100%;
   min-width: 640px;
-  table-layout: auto;
+  table-layout: fixed;
 }
 
 .prose th,

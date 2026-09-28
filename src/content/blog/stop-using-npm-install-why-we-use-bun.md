@@ -27,6 +27,14 @@ references:
     url: "https://docs.npmjs.com/cli/v11/commands/npm-ci/"
   - title: "State of JavaScript 2025 — Other Tools"
     url: "https://2025.stateofjs.com/en-US/other-tools/"
+  - title: "GitHub — npm/cli"
+    url: "https://github.com/npm/cli"
+  - title: "GitHub — yarnpkg/berry"
+    url: "https://github.com/yarnpkg/berry"
+  - title: "GitHub — pnpm/pnpm"
+    url: "https://github.com/pnpm/pnpm"
+  - title: "GitHub — oven-sh/bun"
+    url: "https://github.com/oven-sh/bun"
 ---
 
 我現在不太想再把 `npm i` 當預設答案。
@@ -39,12 +47,14 @@ references:
 
 ## 現在有哪些選擇？
 
-| Tool | 我會怎麼看 | 優點 | 主要代價 |
-|---|---|---|---|
-| npm | baseline | Node.js 內建、相容性最好 | install 與 disk efficiency 不突出 |
-| Yarn 4 | 強但有自己的一套世界 | PnP、Constraints | migration、IDE / tooling 設定較多 |
-| pnpm | 最穩的升級選項 | 快、節省空間、strict dependencies、monorepo 成熟 | symlink / hoisting 偶爾會碰到 legacy tooling |
-| Bun | 最值得看的後起之秀 | install 很快、CLI 整合度高 | CI image、lockfile、lifecycle scripts 都要重新確認 |
+| Tool | GitHub Stars* | 我會怎麼看 | 優點 | 主要代價 |
+|---|---:|---|---|---|
+| npm | 10.2k | baseline | Node.js 內建、相容性最好 | install、disk efficiency 不突出 |
+| Yarn 4 | 8.1k | 功能強、但有自己的 ecosystem | PnP、Constraints | migration、IDE / tooling 設定較多 |
+| pnpm | 36.7k | 最穩的升級選項 | 快、節省空間、strict dependencies | symlink / hoisting 偶爾碰到 legacy tooling |
+| Bun | 96.1k | 最值得看的後起之秀 | install 快、CLI 整合度高 | CI image、lockfile、lifecycle scripts 要重新確認 |
+
+\* GitHub Stars 截至 **2026-09-28**，只代表 repo 關注度，不等於 adoption。Bun repo 同時包含 runtime、package manager、bundler、test runner，因此不能直接拿 Stars 當市占率。
 
 這不是只看聲量。
 
