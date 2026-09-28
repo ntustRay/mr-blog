@@ -35,6 +35,14 @@ references:
     url: "https://github.com/pnpm/pnpm"
   - title: "GitHub — oven-sh/bun"
     url: "https://github.com/oven-sh/bun"
+  - title: "npm — npm"
+    url: "https://www.npmjs.com/package/npm"
+  - title: "npm — yarn"
+    url: "https://www.npmjs.com/package/yarn"
+  - title: "npm — pnpm"
+    url: "https://www.npmjs.com/package/pnpm"
+  - title: "npm — bun"
+    url: "https://www.npmjs.com/package/bun"
 ---
 
 我現在不太想再把 `npm i` 當預設答案。
@@ -47,16 +55,32 @@ references:
 
 ## 現在有哪些選擇？
 
-| Tool | GitHub Stars* | 我會怎麼看 | 優點 | 主要代價 |
-|---|---:|---|---|---|
-| npm | 10.2k | baseline | Node.js 內建、相容性最好 | install、disk efficiency 不突出 |
-| Yarn 4 | 8.1k | 功能強、但有自己的 ecosystem | PnP、Constraints | migration、IDE / tooling 設定較多 |
-| pnpm | 36.7k | 最穩的升級選項 | 快、節省空間、strict dependencies | symlink / hoisting 偶爾碰到 legacy tooling |
-| Bun | 96.1k | 最值得看的後起之秀 | install 快、CLI 整合度高 | CI image、lockfile、lifecycle scripts 要重新確認 |
+| Tool | 我會怎麼看 | 優點 | 主要代價 |
+|---|---|---|---|
+| npm | baseline | 相容性最好 | 效率沒有特別突出 |
+| Yarn 4 | 功能強 | PnP、Constraints | migration / tooling 成本較高 |
+| pnpm | 穩定升級 | 快、節省空間、strict dependencies | 偶爾碰到 symlink / hoisting 相容性 |
+| Bun | 後起之秀 | install 快、CLI 整合度高 | CI / lockfile / lifecycle scripts 要重新確認 |
 
-\* GitHub Stars 截至 **2026-09-28**，只代表 repo 關注度，不等於 adoption。Bun repo 同時包含 runtime、package manager、bundler、test runner，因此不能直接拿 Stars 當市占率。
+## 聲量與使用訊號
 
-這不是只看聲量。
+截至 **2026-09-28**：
+
+| Tool | GitHub Stars | npm weekly downloads* |
+|---|---:|---:|
+| npm | 10.2k | 約 18.1M |
+| Yarn 4 / Berry | 8.1k | 約 6.8M** |
+| pnpm | 36.7k | 約 94.6M |
+| Bun | 96.1k | 約 4.0M |
+
+這兩個數字只能當「關注度 / distribution activity」，不能直接當 market share：
+
+- Bun 的 GitHub repo 同時包含 runtime、package manager、bundler、test runner，Stars 天生會比單一 package manager 更容易累積。
+- npm 隨 Node.js 一起安裝，npm package 本身的 downloads 會低估實際使用量。
+- Bun 也可以透過 shell installer、Homebrew 等方式安裝，npm downloads 同樣不是完整使用量。
+- **Yarn 的 npm download 數字是 `yarn@1.22.x`（Classic），不是 Yarn 4 的 adoption。**
+
+所以我會把這些數據當成趨勢訊號，不拿來決定誰「市占最高」。
 
 State of JavaScript 2025 的 monorepo tools 調查中，10,251 位受訪者裡：
 
