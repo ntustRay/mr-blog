@@ -136,6 +136,14 @@ Bun 最直接的吸引力就是快。
 
 Bun 官方目前宣稱 `bun install` 在特定情境可比 `npm install` **快到 25x**。這是 vendor benchmark，不該直接當成所有專案都會得到 25x，但 local install 的速度差異確實是它最明顯的賣點。
 
+對團隊來說，我更在意的是**累積時間**。
+
+如果一次 install 每個人要等 1–2 分鐘，10 人團隊每次就是 **10–20 person-minutes**。一次看起來很小，但只要它反覆發生在 clone、切 branch、更新 dependency、重建環境，就會一直吃掉工程時間。
+
+這類改善不會讓某個 feature 突然快一倍，卻會默默降低每天的等待與 context switch。長期來看，developer environment 裡這些小摩擦少一點，團隊真正能拿來寫 code、review、debug 的時間就多一點。
+
+這也是我們選 Bun 很重要的原因：**省下來的不是一次 install 的幾十秒，而是整個團隊長期累積的等待時間。**
+
 而且 Bun 不要求你立刻把 Node.js runtime 全換掉。
 
 現有 Node.js project 只要有 `package.json`，就可以先從：
