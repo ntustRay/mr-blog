@@ -19,7 +19,7 @@
   "devDependencies": {
     "@lhci/cli": "^0.15.1",
     "pagefind": "^1.5.2",
-    "sharp": "^0.35.4"
+    "sharp": "^0.35.5"
   },
   "engines": {
     "node": ">=22.12.0"
