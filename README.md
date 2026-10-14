@@ -68,6 +68,25 @@ The build also generates the Pagefind index and checks internal links.
 Pull requests and pushes to `main` run the quality workflow, including
 Lighthouse CI.
 
+## Public view counters
+
+Busuanzi displays **Total views** in the footer and **Views** in each
+article's metadata. No account, API key, or database is required.
+
+- Counts are page views (PV), not unique visitors. Reloads may count again.
+- Counts begin when tracking is enabled; earlier visits cannot be recovered.
+- The service groups the site total by hostname. Other sites on the same
+  hostname using Busuanzi share that total; article counts are URL-specific.
+- Tracking loads only on the configured production origin and base path,
+  so local development, previews, and Lighthouse do not increment it.
+- An unavailable or blocked counter stays as `—`, rather than a misleading `0`.
+- GitHub Pages only serves the static site; the totals are stored by the
+  third-party service and depend on its availability.
+
+Integration: `src/components/ViewCount.astro` and
+`src/components/ViewCountLoader.astro`.
+Provider documentation: https://ibruce.info/2015/04/04/busuanzi/
+
 ## Optional AdSense setup
 
 The AdSense script is disabled unless a valid client ID is provided:
@@ -81,8 +100,9 @@ the exact publisher record from Google. The planned placement is limited to
 one in-article slot after the introduction and one slot before post navigation;
 avoid sticky or interstitial ads that interrupt reading.
 
-The current site does not use non-essential cookies, so it does not show a
-consent banner. Review this again before enabling AdSense or analytics.
+The view-counter integration is disclosed on the privacy page. Review that
+policy and any consent requirements again before enabling AdSense or
+additional analytics.
 
 ## Deployment
 

@@ -1,0 +1,36 @@
+---
+interface Props {
+  scope: 'site' | 'page';
+}
+
+const { scope } = Astro.props;
+const label = scope === 'site' ? 'Total views' : 'Views';
+---
+
+<span
+  class="view-count"
+  data-pagefind-ignore
+  title="瀏覽次數（PV），從啟用統計後累積；無法取得資料時顯示 —。"
+>
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+    <circle cx="12" cy="12" r="3" />
+  </svg>
+  <span>{label} <span class="view-count-value" id={`busuanzi_value_${scope}_pv`}>—</span></span>
+</span>
+
+<style>
+  .view-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--subtle);
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+
+  .view-count-value {
+    color: var(--text-strong);
+    font-variant-numeric: tabular-nums;
+  }
+</style>

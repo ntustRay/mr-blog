@@ -1032,6 +1032,13 @@ pagefind-results {
   font-size: 0.78rem;
 }
 
+.footer-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 20px;
+}
+
 .site-footer a {
   text-decoration: none;
 }
