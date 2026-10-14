@@ -1,6 +1,8 @@
 ---
 import '../styles/global.css';
 import { siteConfig } from '../config/site';
+import ViewCount from '../components/ViewCount.astro';
+import ViewCountLoader from '../components/ViewCountLoader.astro';
 
 interface Props {
   title: string;
@@ -200,7 +202,10 @@ const serializedStructuredData = JSON.stringify(
 
     <footer class="site-footer">
       <div class="container">
-        <small>© {new Date().getFullYear()} {siteConfig.name}. Built with Astro.</small>
+        <div class="footer-info">
+          <small>© {new Date().getFullYear()} {siteConfig.name}. Built with Astro.</small>
+          <ViewCount scope="site" />
+        </div>
         <nav aria-label="Footer navigation">
           <a href={`${base}privacy/`}>Privacy</a>
           <a href={`${base}contact/`}>Contact</a>
@@ -208,5 +213,6 @@ const serializedStructuredData = JSON.stringify(
         </nav>
       </div>
     </footer>
+    <ViewCountLoader />
   </body>
 </html>
