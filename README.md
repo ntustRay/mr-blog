@@ -90,9 +90,17 @@ Provider documentation: https://ibruce.info/2015/04/04/busuanzi/
 ## Article comments
 
 Every published post uses `ArticleComments.astro`, rendered after post navigation.
-The giscus widget loads **only after the reader opens the comments panel**.
-There is no giscus preconnect, script, iframe, or request on the initial page load.
-This avoids adding the third-party widget to the initial rendering workload;
+The giscus widget loads when the comments panel comes within 200px of the
+viewport, or when the reader opens it manually. Its official metadata messages
+automatically expand discussions with at least one comment. Empty discussions
+stay collapsed, and an explicit reader toggle takes precedence over later
+metadata updates. Replies belong to existing top-level comments.
+
+There is no unconditional giscus script, iframe, or preconnect on page load.
+Short articles can load it immediately if the panel is already near the viewport.
+Browsers without IntersectionObserver retain manual loading. Provider failures
+leave the manual retry and GitHub fallback available. No API proxy or tokens
+are required; metadata is accepted only from this widget's iframe and giscus.app.
 Lighthouse scores still depend on the full page and measurement conditions.
 
 ### One-time GitHub setup

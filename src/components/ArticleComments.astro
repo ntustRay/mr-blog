@@ -44,10 +44,16 @@ const discussionsURL = `https://github.com/${commentsConfig.repo}/discussions`;
   if (panel) {
     const container = panel.querySelector<HTMLElement>('.giscus');
     const status = panel.querySelector<HTMLElement>('[data-comments-status]');
+    const summary = panel.querySelector<HTMLElement>('summary');
     let started = false;
+    let userControlled = false;
 
-    panel.addEventListener('toggle', () => {
-      if (!panel.open || started || !container || !status) return;
+    summary?.addEventListener('click', () => {
+      userControlled = true;
+    });
+
+    const loadComments = () => {
+      if (started || !container || !status) return;
       started = true;
       status.textContent = '正在載入留言…';
 
@@ -64,11 +70,13 @@ const discussionsURL = `https://github.com/${commentsConfig.repo}/discussions`;
         term: panel.dataset.term,
         strict: '1',
         reactionsEnabled: '0',
-        emitMetadata: '0',
+        emitMetadata: '1',
         inputPosition: 'top',
         theme: 'dark_dimmed',
         lang: 'zh-TW',
-        loading: 'lazy',
+        // Loading is gated by viewport proximity. The iframe must load even
+        // while <details> is closed so it can report whether comments exist.
+        loading: 'eager',
       };
 
       for (const [name, value] of Object.entries(attributes)) {
@@ -86,7 +94,41 @@ const discussionsURL = `https://github.com/${commentsConfig.repo}/discussions`;
 
       // The official client places its iframe in the existing .giscus element.
       panel.appendChild(script);
+    };
+
+    panel.addEventListener('toggle', () => {
+      if (panel.open) loadComments();
     });
+
+    window.addEventListener('message', (event: MessageEvent<unknown>) => {
+      const iframe = container?.querySelector<HTMLIFrameElement>('iframe.giscus-frame');
+      if (
+        userControlled ||
+        event.origin !== 'https://giscus.app' ||
+        !iframe?.contentWindow ||
+        event.source !== iframe.contentWindow
+      ) return;
+
+      const payload = event.data;
+      if (typeof payload !== 'object' || payload === null || !('giscus' in payload)) return;
+      const metadata = payload.giscus;
+      if (typeof metadata !== 'object' || metadata === null || !('discussion' in metadata)) return;
+      const discussion = metadata.discussion;
+      if (typeof discussion !== 'object' || discussion === null || !('totalCommentCount' in discussion)) return;
+      const count = discussion.totalCommentCount;
+      if (typeof count === 'number' && Number.isSafeInteger(count) && count > 0) {
+        panel.open = true;
+      }
+    });
+
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        observer.disconnect();
+        loadComments();
+      }, { rootMargin: '200px 0px' });
+      observer.observe(panel);
+    }
   }
 </script>
 
