@@ -13,7 +13,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <div class="prose">
       <h2>目前收集的資料</h2>
       <p>
-        MR Blog 不提供帳號、留言或表單功能，也不會主動要求姓名、Email 或其他個人資料。
+        MR Blog 不提供站內帳號或表單，也不會主動要求姓名、Email 或其他個人資料。文章留言使用下方說明的第三方服務。
       </p>
 
       <h2>網站託管</h2>
@@ -27,6 +27,17 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       </p>
       <p>
         載入計數服務時，第三方會接收到連線 IP、瀏覽器資訊與當前頁面網址等請求資料。本站引用的計數腳本本身不設定 Cookie；第三方服務的資料處理方式以其實際運作與政策為準。若瀏覽器停用 JavaScript、阻擋服務，或服務暫時無法連線，計數會顯示「—」。
+      </p>
+
+      <h2>文章留言</h2>
+      <p>
+        本站的留言功能使用<a href="https://giscus.app/zh-TW" target="_blank" rel="noreferrer">giscus</a>。留言區在每篇文章下方，只有點選「載入留言」才會連線至 giscus；未開啟留言區時，不會因留言功能向 giscus 發送請求。
+      </p>
+      <p>
+        開啟留言區後，giscus 與 GitHub 會接收到頁面網址、連線 IP 與瀏覽器資訊等請求資料。發表留言需登入 GitHub 並授權 giscus，留言內容與 GitHub 個人檔案資訊會公開儲存在本部落格的 GitHub Discussions。giscus 的官方客戶端會使用瀏覽器 localStorage 保存登入 session；相關資料處理依 giscus 與 GitHub 的政策及實際運作為準。
+      </p>
+      <p>
+        請勿在留言中提供密碼、個資或公司機密。作者可透過 GitHub 管理或刪除留言；停用 JavaScript 或服務無法連線時，可改由 GitHub Discussions 參與討論。
       </p>
 
       <h2>廣告</h2>
