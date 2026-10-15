@@ -11,6 +11,7 @@ import TableOfContents from '../../components/TableOfContents.astro';
 import TagList from '../../components/TagList.astro';
 import TocActiveEnhancer from '../../components/TocActiveEnhancer.astro';
 import ViewCount from '../../components/ViewCount.astro';
+import ArticleComments from '../../components/ArticleComments.astro';
 import { siteConfig } from '../../config/site';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCategorySlug } from '../../utils/categories';
@@ -138,6 +139,7 @@ const structuredData = {
         previousPost={previousPost}
         nextPost={nextPost}
       />
+      <ArticleComments postId={post.id} />
     </div>
 
     <aside class="article-sidebar">

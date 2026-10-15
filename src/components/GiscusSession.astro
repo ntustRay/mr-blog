@@ -1,0 +1,17 @@
+<!-- Run before external resources: OAuth may return a session in the URL.
+     Use the official client's storage format, then remove it from Referer URLs. -->
+<script is:inline>
+  (() => {
+    const giscusURL = new URL(window.location.href);
+    const giscusSession = giscusURL.searchParams.get('giscus');
+    if (giscusSession) {
+      try {
+        localStorage.setItem('giscus-session', JSON.stringify(giscusSession));
+      } catch {
+        // A storage-blocking browser can still use the GitHub fallback link.
+      }
+      giscusURL.searchParams.delete('giscus');
+      window.history.replaceState(window.history.state, '', giscusURL.href);
+    }
+  })();
+</script>

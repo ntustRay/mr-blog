@@ -3,6 +3,8 @@ import '../styles/global.css';
 import { siteConfig } from '../config/site';
 import ViewCount from '../components/ViewCount.astro';
 import ViewCountLoader from '../components/ViewCountLoader.astro';
+import GiscusSession from '../components/GiscusSession.astro';
+import { commentsConfig } from '../config/comments';
 
 interface Props {
   title: string;
@@ -112,6 +114,7 @@ const serializedStructuredData = JSON.stringify(
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
     <meta name="theme-color" content="#111827" />
+    {ogType === 'article' && commentsConfig.enabled && commentsConfig.categoryId && <GiscusSession />}
 
     <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
     <link rel="canonical" href={canonicalURL} />
@@ -142,6 +145,7 @@ const serializedStructuredData = JSON.stringify(
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalURL} />
+    {ogType === 'article' && <meta name="giscus:backlink" content={canonicalURL} />}
     <meta property="og:image" content={ogImageURL} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />

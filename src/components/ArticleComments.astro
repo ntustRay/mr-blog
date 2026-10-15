@@ -1,0 +1,146 @@
+---
+import { commentsConfig } from '../config/comments';
+
+interface Props {
+  postId: string;
+}
+
+const { postId } = Astro.props;
+const enabled = commentsConfig.enabled && commentsConfig.categoryId.length > 0;
+const discussionsURL = `https://github.com/${commentsConfig.repo}/discussions`;
+---
+
+{enabled && (
+  <section class="article-comments" aria-labelledby="comments-heading" data-pagefind-ignore>
+    <h2 id="comments-heading">留言</h2>
+    <p class="comments-description">使用 GitHub 帳號留言，內容會公開顯示。</p>
+    <details
+      class="comments-panel"
+      data-comments
+      data-repo={commentsConfig.repo}
+      data-repo-id={commentsConfig.repoId}
+      data-category={commentsConfig.category}
+      data-category-id={commentsConfig.categoryId}
+      data-term={`posts/${postId}`}
+    >
+      <summary>載入留言</summary>
+      <div class="comments-content">
+        <p class="comments-status" data-comments-status role="status"></p>
+        <div class="giscus" id="comments"></div>
+        <a class="comments-fallback" href={discussionsURL} target="_blank" rel="noopener noreferrer">
+          前往 GitHub Discussions ↗
+        </a>
+      </div>
+    </details>
+    <noscript>
+      <p>瀏覽器未啟用 JavaScript，可<a href={discussionsURL}>前往 GitHub Discussions</a>參與討論。</p>
+    </noscript>
+  </section>
+)}
+
+<script>
+  const panel = document.querySelector<HTMLDetailsElement>('[data-comments]');
+
+  if (panel) {
+    const container = panel.querySelector<HTMLElement>('.giscus');
+    const status = panel.querySelector<HTMLElement>('[data-comments-status]');
+    let started = false;
+
+    panel.addEventListener('toggle', () => {
+      if (!panel.open || started || !container || !status) return;
+      started = true;
+      status.textContent = '正在載入留言…';
+
+      const script = document.createElement('script');
+      script.src = 'https://giscus.app/client.js';
+      script.async = true;
+      script.crossOrigin = 'anonymous';
+      const attributes = {
+        repo: panel.dataset.repo,
+        repoId: panel.dataset.repoId,
+        category: panel.dataset.category,
+        categoryId: panel.dataset.categoryId,
+        mapping: 'specific',
+        term: panel.dataset.term,
+        strict: '1',
+        reactionsEnabled: '0',
+        emitMetadata: '0',
+        inputPosition: 'top',
+        theme: 'dark_dimmed',
+        lang: 'zh-TW',
+        loading: 'lazy',
+      };
+
+      for (const [name, value] of Object.entries(attributes)) {
+        if (value) script.dataset[name] = value;
+      }
+
+      script.addEventListener('load', () => {
+        status.textContent = '';
+      });
+      script.addEventListener('error', () => {
+        status.textContent = '留言暫時無法載入，可透過下方 GitHub 連結參與討論。關閉後重新展開可重試。';
+        script.remove();
+        started = false;
+      });
+
+      // The official client places its iframe in the existing .giscus element.
+      panel.appendChild(script);
+    });
+  }
+</script>
+
+<style>
+  .article-comments {
+    margin-top: 48px;
+    padding-top: 28px;
+    border-top: 1px solid var(--line);
+  }
+
+  h2 {
+    margin: 0 0 8px;
+    font-size: 1.35rem;
+    color: var(--text-strong);
+  }
+
+  .comments-description,
+  .comments-status,
+  .comments-fallback {
+    color: var(--muted);
+    font-size: 0.875rem;
+  }
+
+  .comments-description {
+    margin: 0 0 16px;
+  }
+
+  .comments-panel {
+    border: 1px solid var(--line);
+    border-radius: 4px;
+  }
+
+  summary {
+    padding: 16px 20px;
+    color: var(--text-strong);
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .comments-content {
+    padding: 0 16px 20px;
+  }
+
+  .comments-status:empty {
+    display: none;
+  }
+
+  .giscus {
+    min-height: 320px;
+  }
+
+  .comments-fallback {
+    display: inline-block;
+    margin-top: 12px;
+    text-underline-offset: 3px;
+  }
+</style>
