@@ -1,5 +1,5 @@
 ---
-title: "[Insight] Agent-Native 的共享 Action：聊天與 UI 怎麼操作同一份資料？"
+title: "[News] Agent-Native 的共享 Action：聊天與 UI 怎麼操作同一份資料？"
 description: "Builder.io 推出 Agent-Native Beta，讓 UI 與 Agent 共用 actions、資料和畫面狀態。值得借用的是操作契約與狀態同步，不必為了多一個聊天入口重寫整套應用。"
 pubDate: 2026-10-16
 updatedDate: 2026-10-17

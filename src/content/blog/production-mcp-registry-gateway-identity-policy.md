@@ -1,5 +1,5 @@
 ---
-title: "[Insight] MCP 接上正式環境，Registry、Gateway、Identity、Policy 各管什麼？"
+title: "[News] MCP 接上正式環境，Registry、Gateway、Identity、Policy 各管什麼？"
 description: "能呼叫工具只是起點。把 MCP 的發現、連線、身分與業務授權拆清楚，才能知道每個請求究竟被誰允許。"
 pubDate: 2026-10-14
 updatedDate: 2026-10-17

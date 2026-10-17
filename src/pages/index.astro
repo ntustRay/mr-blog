@@ -12,7 +12,6 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 const latestPosts = posts.slice(0, 6);
 
-const categoryCounts = new Map<string, number>();
 const categoryNames = new Map<string, string>();
 const tagNames = new Map<string, string>();
 
@@ -20,20 +19,12 @@ const normalizeTopic = (value: string) =>
   value.normalize('NFKC').trim().toLocaleLowerCase('en-US');
 
 for (const post of posts) {
-  categoryCounts.set(
-    post.data.category,
-    (categoryCounts.get(post.data.category) ?? 0) + 1,
-  );
   categoryNames.set(normalizeTopic(post.data.category), post.data.category);
 
   for (const tag of post.data.tags) {
     tagNames.set(normalizeTopic(tag), tag);
   }
 }
-
-const categories = [...categoryCounts.entries()].sort(
-  ([a], [b]) => a.localeCompare(b, siteConfig.locale),
-);
 
 const base = import.meta.env.BASE_URL.endsWith('/')
   ? import.meta.env.BASE_URL
@@ -93,10 +84,6 @@ const focusTopics = siteConfig.topics.map((topic) => {
   >
     <div class="section-heading">
       <h2 id="posts-heading">Latest Posts</h2>
-      <div class="section-heading__actions">
-        <span>{posts.length} posts</span>
-        <a href={`${base}archive/`}>View Archive →</a>
-      </div>
     </div>
 
     <div class="post-list">
@@ -122,29 +109,10 @@ const focusTopics = siteConfig.topics.map((topic) => {
         </article>
       ))}
     </div>
+
+    <nav class="post-list-footer" aria-label="Browse all posts">
+      <span>{posts.length} posts</span>
+      <a href={`${base}archive/`}>View Archive →</a>
+    </nav>
   </section>
-
-  {categories.length > 0 && (
-    <section class="home-section" aria-labelledby="categories-heading">
-      <div class="section-heading">
-        <h2 id="categories-heading">Categories</h2>
-        <div class="section-heading__actions">
-          <span>{categories.length}</span>
-          <a href={`${base}categories/`}>View All →</a>
-        </div>
-      </div>
-
-      <div class="category-grid">
-        {categories.map(([category, count]) => (
-          <a
-            class="category-card"
-            href={`${base}categories/${getCategorySlug(category)}/`}
-          >
-            <strong>{category}</strong>
-            <span>{count} posts</span>
-          </a>
-        ))}
-      </div>
-    </section>
-  )}
 </BaseLayout>

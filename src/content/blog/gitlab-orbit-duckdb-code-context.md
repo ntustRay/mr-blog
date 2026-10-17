@@ -1,5 +1,5 @@
 ---
-title: "[Review] GitLab Orbit 把 Code Context 放進 DuckDB，適合哪些搜尋問題？"
+title: "[News] GitLab Orbit 把 Code Context 放進 DuckDB，適合哪些搜尋問題？"
 description: "Orbit Local 用 parser 建立 code graph，讓 Agent 透過 SQL 找 definitions 與 references。它補上結構搜尋，但仍需要回頭讀 source code。"
 pubDate: 2026-10-14
 updatedDate: 2026-10-17

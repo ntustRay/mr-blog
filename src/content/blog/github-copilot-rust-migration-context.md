@@ -1,5 +1,5 @@
 ---
-title: "[Insight] GitHub 把 Copilot Runtime 改成 80 萬行 Rust：長任務靠什麼撐住？"
+title: "[News] GitHub 把 Copilot Runtime 改成 80 萬行 Rust：長任務靠什麼撐住？"
 description: "88 小時只是其中一個 subsystem port。GitHub 的真正案例，是數月、128 個 PR，以及長 session 的 context 與驗證管理。"
 pubDate: 2026-10-14
 updatedDate: 2026-10-17

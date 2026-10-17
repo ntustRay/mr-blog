@@ -309,6 +309,30 @@ pagefind-results {
   gap: 14px;
 }
 
+.post-list-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 24px;
+  margin-top: 24px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.post-list-footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--accent);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.post-list-footer a:hover {
+  text-decoration: underline;
+}
+
 .post-card {
   position: relative;
   padding: 24px;
