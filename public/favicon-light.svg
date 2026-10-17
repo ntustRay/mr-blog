@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 128 128" role="img" aria-label="MingRay brand icon light">
+  <title>MingRay Brand Icon — Light</title>
+  <desc>Light background app icon with MingRay monogram in Graphite. Editable SVG.</desc>
+  <style>
+    .bg { fill: #EDF0EA; }
+    .mark { fill: #1C2021; }
+    .accent { fill: #AFC3A7; }
+  </style>
+  <rect class="bg" x="6" y="6" width="116" height="116" rx="18" />
+  <path class="mark" d="M31 35 L60 58 L86 35 L96 35 L96 45 L70 65.5 L70 70 L60 77 L43 63 L43 94 L31 94 Z"/>
+  <path class="mark" d="M95.4 52.9 Q96 52.5 96 54 L96 94 L84 94 L84 70 L75.1 70 Q73.1 70 74.5 67.5 L93.4 53.7 Q94.9 52.6 95.4 52.9 Z"/>
+</svg>

@@ -1,4 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="14" fill="#111827"/>
-  <path d="M14 44V20h7l11 14 11-14h7v24h-8V32L32 45 22 32v12z" fill="#fff"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 128 128" role="img" aria-label="MingRay brand icon dark">
+  <title>MingRay Brand Icon — Dark</title>
+  <desc>Dark background app icon with MingRay monogram in Sage green. Editable SVG.</desc>
+  <style>
+    /* Edit these three values to recolor */
+    .bg { fill: #1C2021; }
+    .mark { fill: #AFC3A7; }
+    .light { fill: #EDF0EA; }
+  </style>
+  <rect class="bg" x="6" y="6" width="116" height="116" rx="18" />
+  <!-- Main monogram -->
+  <path class="mark" d="M31 35 L60 58 L86 35 L96 35 L96 45 L70 65.5 L70 70 L60 77 L43 63 L43 94 L31 94 Z"/>
+  <path class="mark" d="M95.4 52.9 Q96 52.5 96 54 L96 94 L84 94 L84 70 L75.1 70 Q73.1 70 74.5 67.5 L93.4 53.7 Q94.9 52.6 95.4 52.9 Z"/>
 </svg>

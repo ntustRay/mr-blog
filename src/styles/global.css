@@ -92,13 +92,11 @@ a {
   letter-spacing: -0.03em;
 }
 
-.brand::before {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: none;
-  content: '';
+.brand-icon {
+  display: block;
+  width: 26px;
+  height: 26px;
+  flex: none;
 }
 
 .site-header nav {
