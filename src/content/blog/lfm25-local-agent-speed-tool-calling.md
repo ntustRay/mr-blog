@@ -1,7 +1,8 @@
 ---
-title: "LFM2.5 本機 Agent：跑得快之前，先確認工具真的會動"
+title: "[Review] LFM2.5 本機 Agent：跑得快之前，先確認工具真的會動"
 description: "Liquid AI 推出 LFM2.5-24B-A2B。從權重大小、官方評測到 tool calling 設定，整理本機 Agent 值得試用的地方，以及不能只看 tokens/s 的原因。"
 pubDate: 2026-10-15
+updatedDate: 2026-10-17
 category: AI
 tags: [AI Agents, Harness]
 draft: false
@@ -26,7 +27,7 @@ Liquid AI 在 **2026 年 10 月 13 日**發布 LFM2.5-24B-A2B，主打本機 Age
 
 本文依官方文件整理，沒有自行下載模型或重跑效能評測。以下指令是文件範例的調整版，並非本文的實測紀錄。
 
-## TL;DR
+## 這篇的重點
 
 - 每個 token 啟用的參數少，能降低運算量；硬體仍要容納整體權重與執行時的額外記憶體。
 - 官方評測有工具任務的優勢，也有網頁操作與 coding 的落後項目。

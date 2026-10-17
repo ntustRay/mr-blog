@@ -1,8 +1,8 @@
 ---
-title: "一個好的技術 Blog 應該具備什麼？"
-description: "整理個人技術 Blog 從內容、SEO、搜尋、效能到 AdSense 的核心需求，並附上可直接執行的 TODO checklist。"
+title: "[Insight] MR Blog 的取捨：先留下工程判斷，再補網站功能"
+description: "MR Blog 以個人學習、實作與工程判斷為核心；整理內容、分類與靜態網站功能的取捨，以及新增功能前的驗收問題。"
 pubDate: 2026-09-20
-updatedDate: 2026-09-22
+updatedDate: 2026-10-17
 category: Blogging
 tags:
   - Blog
@@ -12,267 +12,59 @@ tags:
 draft: false
 ---
 
-如果目標是做一個 **個人技術 Blog**，而且未來可能加入 **Google AdSense**，真正重要的不是功能越多越好，而是：
+這個 Blog 優先留下正在解決的問題、接下來會遇到的挑戰，以及可能改變做法的新知。網站功能的工作，是讓這些紀錄容易撰寫、回頭查找和更新。
 
-> **好讀、找得到、跑得快、容易維護。**
+2026-09 的初版偏重網站 MVP、SEO 與 AdSense checklist。2026-10-17 依新的編輯方向修訂：選題先回到學習與工程需求，網站維護清單也不再作為文章的主要內容。
 
-以下是目前 MR Blog 的目標規格與 TODO。
+## 這篇的重點
 
-## 1. 內容要好讀
+文章應留下可追溯的證據、判斷與未知；網站則保持好讀、找得到、容易維護。搜尋、分享與流量可以改善內容的可達性，但不決定接下來該研究什麼。
 
-閱讀體驗永遠是第一優先。
+## 文章值得留下什麼？
 
-需要注意：
+一份實作紀錄可以讓未來遇到相同問題時，找回當時的限制、選擇與驗證。只有「這個工具很好用」，過幾個月很難判斷還適不適用；若寫清楚 dependency layout、CI 條件與沒有覆蓋的規則，就能重新評估。
 
-- 字體大小與行高舒服
-- 文章寬度不要過寬
-- Code block 清楚易讀
-- Mobile 版閱讀正常
-- 不加入沒有必要的動畫
-- 長文章要能快速理解結構
+每篇聚焦一個主要問題，交付一個判斷、可用做法，或具體的下一步實驗。探索尚未完成也能寫，只要清楚區分已知與待驗證，不把外部案例寫成自身經驗。
 
-技術 Blog 的核心仍然是內容，不應該讓 UI 搶走文章本身的注意力。
+例如 visual regression 的問題，可以先問「總時間花在截圖、diff，還是 I/O？」再決定要測哪個工具。單純列出熱門工具，還不足以幫下一次工程決策。
 
-## 2. 文章結構要一致
+## 類型、Category 與 Tags 各有用途
 
-每篇文章應該有固定格式：
+| 分類方式 | 回答的問題 | 例子 |
+| --- | --- | --- |
+| 標題前綴 | 文章主要提供什麼？ | [News]、[Insight]、[Review]、[Guide] |
+| Category | 屬於哪個大主題？ | AI、Engineering、Blogging |
+| Tags | 涉及哪些技術或議題？ | TypeScript、DuckDB、Skills |
 
-- Title
-- Description
-- Publish date
-- Tags
-- Optional cover image
-- Table of Contents
-- Prev / Next article
+類型在確定主要問題後再選，不需要平均分配。每日趨勢雷達是素材池；只有和當下需求有關的項目才值得延伸。
 
-固定結構可以讓文章更容易閱讀，也能降低未來維護成本。
+文章 metadata 與導覽可以一致，正文不必固定成同一套章節。工具比較需要條件與取捨，排錯需要重現和驗證，短觀點文則不必為了格式補 code。
 
-## 3. 要有搜尋與分類
+## 網站功能要讓紀錄更容易使用
 
-文章少的時候看不出差異，但當文章數量增加後，這會變成必要功能。
+MR Blog 目前以 Markdown 撰寫內容，由 Astro 建置靜態頁面，再透過 GitHub Actions 部署到 GitHub Pages。這符合以內容為主、希望降低維護成本的需求。
 
-應該至少提供：
+新增功能前可以用以下問題判斷：
 
-- Tags
-- Category
-- Search
-- Archive
+| 功能 | 值得解的問題 | 驗收方式 |
+| --- | --- | --- |
+| 閱讀排版、code highlighting | 長文與程式碼難閱讀 | 桌面和手機檢查長段落、表格與 code |
+| TOC、分類、搜尋、archive | 舊內容難找 | 用實際問題查到對應文章 |
+| 固定 URL、metadata、RSS | 引用、分享或訂閱不穩定 | 建置後檢查連結與輸出 |
+| 留言、統計 | 收集回饋與觀察使用情況 | 確認載入成本、外部依賴和資料處理方式 |
 
-目標不是做複雜推薦系統，而是讓讀者能快速找到舊文章。
+後兩項需要配合實際網站設定評估，不從「靜態網站」直接推論沒有外部資料傳輸。現有網站已加入留言與瀏覽統計，舊文的「暫時不需要留言」僅代表當時取捨。
 
-## 4. SEO 基礎要完整
+## 每次更新，保留一個可檢查的結果
 
-至少需要：
+內容修訂應保留原發布日期，必要時標示 updatedDate，並維持既有 URL。更新的是哪個證據或條件，也應在有影響時說清楚。
 
-- `<title>`
-- Meta description
-- Canonical URL
-- Open Graph
-- Sitemap
-- robots.txt
-- Semantic HTML
-- 每篇文章有固定 URL
+網站端可先執行 repository 的建置與內部連結檢查：
 
-Blog 如果沒有 SEO，內容寫得再好也很難被搜尋到。
-
-## 5. 分享體驗要正常
-
-文章貼到 LINE、Slack、Facebook 或 LinkedIn 時，應該可以正常顯示預覽。
-
-需要：
-
-- Open Graph title
-- Open Graph description
-- Open Graph image
-- Canonical URL
-- Copy link
-
-OG image 不一定一開始就要自動產生，但應該列入後續規劃。
-
-## 6. 效能要保持簡單
-
-目前 Blog 的架構應該以 static 為主。
-
-原則：
-
-- Static HTML 優先
-- 圖片壓縮
-- 少 JavaScript
-- 不因為使用 React 就全面 hydration
-- 保持 Core Web Vitals 良好
-
-Blog 不需要 Server、Database 或複雜 state management。
-
-如果一個功能可以在 build time 解決，就不要搬到 runtime。
-
-## 7. AdSense 前置準備
-
-未來加入 Google AdSense 前，至少需要：
-
-- Privacy Policy
-- About
-- Contact
-- `ads.txt`
-- 合理的廣告 placement
-- 視追蹤方式決定是否需要 Cookie / Consent
-
-廣告應該是附加層，不應該破壞主要閱讀體驗。
-
-## 8. 維護成本要低
-
-理想流程應該是：
-
-```text
-新增 Markdown
-↓
-git commit
-↓
-push main
-↓
-GitHub Actions
-↓
-GitHub Pages
+```bash
+npm run build
 ```
 
-新增文章不應該需要：
+通過建置代表內容能產生頁面、連結能通過既有檢查，仍不能證明文章主張正確或所有畫面都已驗收。內容證據、程式驗證與視覺檢查需要各自有結果。
 
-- Database
-- CMS
-- Admin panel
-- Server
-- 手動 deploy
-
-Blog 的維護成本越低，才越容易長期持續寫。
-
----
-
-# MR Blog MVP
-
-目前希望維持這個範圍：
-
-```text
-Home
-├─ Latest Posts
-├─ Tags
-└─ Search
-
-Post
-├─ Title
-├─ Date
-├─ Tags
-├─ TOC
-├─ Code Highlight
-└─ Prev / Next
-
-Other
-├─ About
-├─ RSS
-├─ Sitemap
-├─ OG Image
-├─ robots.txt
-└─ ads.txt
-```
-
-暫時不需要：
-
-```text
-留言系統
-登入
-會員
-Database
-CMS
-推薦演算法
-複雜後台
-```
-
----
-
-# TODO Checklist
-
-## P0 — 文章閱讀體驗
-
-- [x] Table of Contents
-- [x] Code syntax highlighting
-- [x] Prev / Next article
-- [x] Mobile typography check
-- [x] Long article spacing check
-
-## P1 — 導航與內容探索
-
-- [x] Tags page
-- [x] Tag detail page
-- [x] Search
-- [x] Archive page
-- [x] Category 作為文章大類，Tags 作為更細的主題標記
-
-## P1 — SEO
-
-- [x] Meta description
-- [x] Canonical URL
-- [x] robots.txt
-- [x] Sitemap
-- [x] Open Graph image
-- [x] Article-specific Open Graph metadata
-- [x] Structured data / JSON-LD
-
-## P1 — Feed
-
-- [x] RSS
-- [x] RSS discovery link
-- [x] RSS metadata check
-
-## P2 — AdSense
-
-- [x] About page
-- [x] Privacy Policy
-- [x] Contact page
-- [x] `ads.txt` baseline：目前明確宣告尚無授權廣告商
-- [x] Google AdSense integration hook 與 publisher ID 格式驗證
-- [ ] 啟用 Google AdSense：等待帳號核准與 publisher ID
-- [x] Ad placement design
-- [x] Cookie / Consent requirement review：目前沒有非必要 Cookie，不需 consent banner
-
-## P2 — 品牌與分享
-
-- [ ] 自訂 domain
-- [x] OG image template
-- [x] Copy link
-- [x] Social links
-- [x] Favicon / logo final version
-
-## P3 — 維護與品質
-
-- [x] Markdown article template
-- [x] Draft workflow
-- [x] Broken link check
-- [x] Lighthouse CI check
-- [x] GitHub Actions build verification
-- [x] Dependabot / dependency update strategy
-
----
-
-# 優先順序
-
-目前實作順序先定成：
-
-```text
-文章體驗
-↓
-SEO
-↓
-Tags / Search
-↓
-RSS
-↓
-AdSense
-↓
-其他功能
-```
-
-目前程式與內容層面的 MVP 已完成。尚待外部資料的項目只有：
-
-1. 提供並設定自訂 domain。
-2. Google AdSense 帳號通過核准後，設定 `PUBLIC_GOOGLE_ADSENSE_CLIENT`。
-3. 使用同一個 publisher ID 更新 `public/ads.txt`，再啟用實際廣告版位。
-
-在這三項完成前，網站不會載入 AdSense script，也不會使用非必要 Cookie。
+接下來增加搜尋、分析或商業功能前，都可以回到同一個問題：它是否讓知識更容易留下、找回或修正？若答案還不明確，就先保留時間處理正在研究的工程問題。

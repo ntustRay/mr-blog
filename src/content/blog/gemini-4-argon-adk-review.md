@@ -1,7 +1,8 @@
 ---
-title: "Gemini 4 Argon 跑了 11 小時，ADK 團隊只接受 2 個優化"
+title: "[Insight] Gemini 4 Argon 跑了 11 小時，ADK 團隊只接受 2 個優化"
 description: "Google 的 ADK 效能案例，最值得看的地方是被拒絕的修改：測試通過、benchmark 變快，仍然可能不適合合併。"
 pubDate: 2026-10-14
+updatedDate: 2026-10-17
 category: AI
 tags: [AI Agents, Coding Agents, Harness]
 draft: false

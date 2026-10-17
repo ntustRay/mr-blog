@@ -1,7 +1,8 @@
 ---
-title: "不要再只會 npm i：2026 我們為什麼改用 Bun"
-description: "比較 npm、pnpm、Yarn 與 Bun 的效能、成熟度與 CI/CD trade-off，整理我們最後選 Bun，以及上 CI 後真正要處理的問題。"
+title: "[Review] npm、pnpm、Yarn 與 Bun：重新評估依賴安裝與 CI 成本"
+description: "依官方文件比較 npm、pnpm、Yarn 與 Bun，聚焦安裝效能的測量條件、dependency layout 與 CI 遷移成本，提供可驗證的選型方式。"
 pubDate: 2026-09-28
+updatedDate: 2026-10-17
 category: Engineering
 tags:
   - JavaScript
@@ -11,257 +12,88 @@ tags:
   - CI/CD
 draft: false
 references:
-  - title: "Bun Docs — bun install"
+  - title: "Bun — bun install"
     url: "https://bun.com/docs/pm/cli/install"
-  - title: "Bun Docs — Lockfile"
+  - title: "Bun — Lockfile"
     url: "https://bun.com/docs/pm/lockfile"
-  - title: "Bun Docs — Lifecycle scripts"
+  - title: "Bun — Lifecycle scripts"
     url: "https://bun.com/docs/pm/lifecycle"
   - title: "pnpm — Motivation"
     url: "https://pnpm.io/motivation"
   - title: "pnpm — Benchmarks"
     url: "https://pnpm.io/benchmarks"
-  - title: "Yarn — Plug'n'Play"
+  - title: "Yarn — Plug’n’Play"
     url: "https://yarnpkg.com/features/pnp"
-  - title: "npm Docs — npm ci"
+  - title: "npm — npm ci"
     url: "https://docs.npmjs.com/cli/v11/commands/npm-ci/"
-  - title: "State of JavaScript 2025 — Other Tools"
-    url: "https://2025.stateofjs.com/en-US/other-tools/"
-  - title: "GitHub — npm/cli"
-    url: "https://github.com/npm/cli"
-  - title: "GitHub — yarnpkg/berry"
-    url: "https://github.com/yarnpkg/berry"
-  - title: "GitHub — pnpm/pnpm"
-    url: "https://github.com/pnpm/pnpm"
-  - title: "GitHub — oven-sh/bun"
-    url: "https://github.com/oven-sh/bun"
-  - title: "npm — npm"
-    url: "https://www.npmjs.com/package/npm"
-  - title: "npm — yarn"
-    url: "https://www.npmjs.com/package/yarn"
-  - title: "npm — pnpm"
-    url: "https://www.npmjs.com/package/pnpm"
-  - title: "npm — bun"
-    url: "https://www.npmjs.com/package/bun"
 ---
 
-我現在不太想再把 `npm i` 當預設答案。
+更換 package manager 前，先確認要改善什麼：安裝等待、重複佔用的磁碟空間，還是 workspace 的依賴管理？如果這些都不是瓶頸，換工具可能只增加一份 lockfile 遷移工作。
 
-不是 npm 不能用，而是 package manager 已經有更好的選項。我們團隊目前用 **Bun**。Local 開發很舒服，但搬到 CI/CD 後確實多了一些要處理的事情。
+本文是文件型評估，依 2026-10-17 可查閱的官方資料修訂，沒有四套工具在同一個專案的實測。Bun 值得加入候選，但「安裝較快」需要自己的測量，不能直接推成團隊交付速度提升。
 
-先講結論：
+## 這篇的重點
 
-> **新專案我會優先看 Bun；如果團隊要最低風險、成熟 monorepo，我會選 pnpm。npm 留給相容性優先的情境。**
+- 需要維持既有 Node.js 流程時，先用 npm 作為 baseline；重視共享 store 與依賴隔離時，可優先評估 pnpm。
+- Bun 可先作為 package manager 導入，另行決定要不要換 runtime。依賴腳本與 CI 環境是必要驗收項目。
+- Yarn 的 PnP 改變依賴解析方式；有明確需求再承擔整合成本。以下建議都以既有工具與依賴能正常工作為前提。
 
-## 現在有哪些選擇？
+## 比較的是哪一段工作？
 
-| Tool | 我會怎麼看 | 優點 | 主要代價 |
-|---|---|---|---|
-| npm | baseline | 相容性最好 | 效率沒有特別突出 |
-| Yarn 4 | 功能強 | PnP、Constraints | migration / tooling 成本較高 |
-| pnpm | 穩定升級 | 快、節省空間、strict dependencies | 偶爾碰到 symlink / hoisting 相容性 |
-| Bun | 後起之秀 | install 快、CLI 整合度高 | CI / lockfile / lifecycle scripts 要重新確認 |
+| 工具 | 文件可確認的設計 | 評估時要付出的成本 |
+| --- | --- | --- |
+| npm | 隨一般 Node.js 安裝提供，`npm ci` 用既有 lockfile 安裝 | 仍要測安裝等待與磁碟使用是否成為瓶頸 |
+| pnpm | 透過共享 store 與連結組織套件 | 檢查依賴是否偷用未宣告套件，以及工具對 layout 的假設 |
+| Yarn | PnP 使用 loader 解析依賴，也可選擇 node_modules linker | 檢查 IDE、build tools 與第三方套件的整合方式 |
+| Bun | 提供獨立的 package manager，可用於 Node.js 專案 | 核對 Bun 版本、依賴 scripts、native packages 與 CI cache |
 
-## 聲量與使用訊號
+依據分別是 [npm ci](https://docs.npmjs.com/cli/v11/commands/npm-ci/)、[pnpm motivation](https://pnpm.io/motivation)、[Yarn PnP](https://yarnpkg.com/features/pnp) 與 [bun install](https://bun.com/docs/pm/cli/install)。這些設計差異不能直接排列成穩定性排名；某個 repository 能不能用，仍取決於依賴和部署路徑。
 
-截至 **2026-09-28**：
+例如 PnP 能讓依賴解析更明確，但需要配合它的工具鏈。若既有專案依賴傳統 node_modules layout，導入時就要把整合工作算進去，不能只比較安裝秒數。
 
-| Tool | GitHub Stars | npm weekly downloads* |
-|---|---:|---:|
-| npm | 10.2k | 約 18.1M |
-| Yarn 4 / Berry | 8.1k | 約 6.8M** |
-| pnpm | 36.7k | 約 94.6M |
-| Bun | 96.1k | 約 4.0M |
+## 效能數字要連著 Cache 條件讀
 
-這兩個數字只能當「關注度 / distribution activity」，不能直接當 market share：
+[Bun 官方文件](https://bun.com/docs/pm/cli/install)以安裝速度作為主要賣點；[pnpm 的 benchmark](https://pnpm.io/benchmarks)則區分 lockfile、cache 與 node_modules 是否存在。不同狀態的結果可能有很大差距，不能各挑最快的一列來排冠軍。
 
-- Bun 的 GitHub repo 同時包含 runtime、package manager、bundler、test runner，Stars 天生會比單一 package manager 更容易累積。
-- npm 隨 Node.js 一起安裝，npm package 本身的 downloads 會低估實際使用量。
-- Bun 也可以透過 shell installer、Homebrew 等方式安裝，npm downloads 同樣不是完整使用量。
-- **Yarn 的 npm download 數字是 `yarn@1.22.x`（Classic），不是 Yarn 4 的 adoption。**
+Stars 與 weekly downloads 無法回答某個專案換工具後能少等多久。缺少版本與測量條件的效能倍數，也不適合作為採用依據。
 
-所以我會把這些數據當成趨勢訊號，不拿來決定誰「市占最高」。
+可以先設計三組測試，版本、作業系統、CPU architecture、registry 和專案 commit 保持一致：
 
-State of JavaScript 2025 的 monorepo tools 調查中，10,251 位受訪者裡：
+| 情境 | 要控制的條件 | 代表的工作 |
+| --- | --- | --- |
+| Cold install | 沒有 node_modules，使用隔離的空 cache | 新 runner 或新工作區 |
+| Warm cache install | 保留套件 cache，重建 node_modules | 使用 cache 的 CI |
+| No-change install | 保留 cache、node_modules 與 lockfile | 開發中的重複安裝 |
 
-- pnpm：3,940
-- npm Workspaces：2,129
-- Yarn Workspaces：1,341
-- `bun install`：1,123
+各工具先產生並提交自己的 lockfile，再使用對應的固定 lockfile 模式。不同 manager 的解析結果未必完全相同，應檢查 dependency tree，並記錄差異。重複執行、記錄中位數與範圍，避免把網路抖動當成工具收益。
 
-pnpm 已經很成熟；Bun 還不是主流第一，但成長速度很難忽略。
+還要接著跑 build、測試和部署 smoke test。安裝成功但 native dependency 無法載入，這次遷移就還沒完成。
 
-## 為什麼不是 npm？
+## Bun 可以分階段導入
 
-npm 最大優勢一直都是「不用選」。
+使用 Bun 安裝依賴，不等於必須同時改用 Bun runtime。可以先維持原本的 Node.js build 與服務啟動方式，只驗證 package manager 這個變因。
 
-Node.js 裝完就有，第三方工具通常也優先確保 npm 能跑。CI 使用 `npm ci` 也已經能做到 lockfile 固定與 reproducible install。
-
-所以舊專案如果跑得穩，我不會為了追工具硬換。
-
-但新專案重新選一次，我會更在意：
-
-- install time
-- CI time
-- dependency isolation
-- monorepo
-- disk usage
-- security defaults
-
-在這些項目上，npm 已經很少是我最想選的那一個。
-
-## pnpm：目前最穩的替代方案
-
-pnpm 的核心優勢很實際：**content-addressable store**。
-
-相同 dependency 不需要每個 project 都完整複製一份；同時它的 dependency layout 也比傳統 flat `node_modules` 更容易抓出 phantom dependency。
-
-pnpm 官方 benchmark 也長期把 npm、Yarn、pnpm、Bun 放在相同 fixture 測試。數字會隨版本與環境改變，所以我不拿某一次秒數當定論，但方向很穩定：**pnpm 通常明顯快過 npm，Bun 則常在 install performance 更激進。**
-
-如果我要幫一個多人、長期維護、monorepo 比重高的團隊選 package manager，pnpm 仍然是很安全的答案。
-
-## Yarn 4：能力很強，但我不會優先導入
-
-Yarn 4 的 PnP 可以直接繞過傳統 `node_modules`，Constraints 也很適合管理大型 workspace。
-
-代價就是 ecosystem assumptions 會改變。
-
-一些 IDE、tooling 或舊 package 對傳統 `node_modules` 有隱性依賴。Yarn 官方也有專門文件處理 PnP compatibility。
-
-如果團隊已經在用 Yarn 4，我不會叫它換掉；但 greenfield project，我不會為了 PnP 主動增加這層 migration cost。
-
-## 我們最後用 Bun
-
-Bun 最直接的吸引力就是快。
-
-Bun 官方目前宣稱 `bun install` 在特定情境可比 `npm install` **快到 25x**。這是 vendor benchmark，不該直接當成所有專案都會得到 25x，但 local install 的速度差異確實是它最明顯的賣點。
-
-對團隊來說，我更在意的是**累積時間**。
-
-如果一次 install 每個人要等 1–2 分鐘，10 人團隊每次就是 **10–20 person-minutes**。一次看起來很小，但只要它反覆發生在 clone、切 branch、更新 dependency、重建環境，就會一直吃掉工程時間。
-
-這類改善不會讓某個 feature 突然快一倍，卻會默默降低每天的等待與 context switch。長期來看，developer environment 裡這些小摩擦少一點，團隊真正能拿來寫 code、review、debug 的時間就多一點。
-
-這也是我們選 Bun 很重要的原因：**省下來的不是一次 install 的幾十秒，而是整個團隊長期累積的等待時間。**
-
-而且 Bun 不要求你立刻把 Node.js runtime 全換掉。
-
-現有 Node.js project 只要有 `package.json`，就可以先從：
-
-```bash
-bun install
-```
-
-開始。
-
-這也是我們會選它的原因：**package manager 可以先換，runtime 不必一起賭。**
-
-## 真正的代價在 CI/CD
-
-Local 從 npm 換 Bun 很簡單，CI/CD 才是比較容易卡的地方。
-
-### 1. CI runner 本來沒有 Bun
-
-npm 跟 Node.js 綁在一起；Bun 通常要多一個 setup step。
-
-GitHub Actions 官方做法是：
-
-```yaml
-- uses: oven-sh/setup-bun@v2
-
-- run: bun ci
-```
-
-如果公司用自己的 Docker image、GitLab Runner 或 Azure pipeline，也要把 Bun version 明確放進 image 或 pipeline。
-
-我會直接 **pin Bun version**，避免 developer machine 和 CI 各跑不同版本。
-
-### 2. CI 不要直接照搬 `bun install`
-
-正式 CI 應該用：
-
-```bash
-bun ci
-```
-
-它等同：
+依 [lockfile 文件](https://bun.com/docs/pm/lockfile)，將產生的 `bun.lock` 納入版本控制；CI 使用固定 lockfile 模式：
 
 ```bash
 bun install --frozen-lockfile
 ```
 
-`package.json` 和 `bun.lock` 不一致就 fail。
+這個指令要求 package.json 與 lockfile 一致，但不保證外部服務、平台 binary 或所有安裝 scripts 都能重現。Bun 版本、Node.js 版本與 runner image 仍要固定。
 
-這是好事，但 migration 初期很容易因此第一次就在 pipeline 爆掉：有人更新 dependency，卻沒有一起 commit lockfile。
+[Lifecycle scripts 文件](https://bun.com/docs/pm/lifecycle)說明，Bun 對 dependency scripts 有自己的信任規則，並有預設信任清單與 `trustedDependencies` 等機制。不能直接假設它和原本 npm 安裝的執行結果相同。
 
-### 3. lifecycle scripts 行為跟 npm 不完全一樣
+對需要 postinstall 的套件，應查明腳本做什麼、是否需要執行，再決定信任方式。驗收時使用乾淨環境，避免 local 已有的 binary 掩蓋 CI 問題。
 
-這是我覺得最容易被低估的差異。
+Cache 也要重新量。可以先以 OS、architecture、Bun 版本和 lockfile hash 作為分隔條件，再看命中率與還原成本；不要直接複製原本 npm 的 cache 路徑。
 
-Bun 基於 security 考量，不會任意執行 dependency 的 lifecycle scripts；需要時透過 `trustedDependencies` 明確允許。
+## 什麼條件會改變選擇？
 
-某些 native package、binary installer 或 build dependency 會依賴 `postinstall`。Local 看起來正常，換 CI image、換 platform 後才可能露出問題。
+| 條件 | 建議起點 | 通過什麼才換 |
+| --- | --- | --- |
+| 既有 npm 專案穩定，安裝佔時低 | 保持 npm | 新方案收益足以支付遷移和維護成本 |
+| 多專案或 monorepo，關注 store 與依賴隔離 | 評估 pnpm | workspace、工具解析與部署通過驗收 |
+| 明確需要 PnP 或已有 Yarn 維護經驗 | 評估／保留 Yarn | IDE 和 build 流程可維持 |
+| 安裝等待明顯，願意管理新的工具版本 | 評估 Bun | 同環境測量改善，scripts 與平台相容性通過 |
 
-遇到這種狀況，不要先退回：
-
-```bash
-npm install
-```
-
-先確認 dependency 是否真的需要 lifecycle script，以及是否應該加入 trust list。
-
-### 4. cache 要重新設計
-
-Bun 的 global install cache 預設在：
-
-```text
-~/.bun/install/cache
-```
-
-原本 CI cache 如果只針對 npm cache，換 Bun 後等於沒吃到。
-
-另外 native / platform-specific dependencies 讓 cache 不能無腦跨 OS 共用。實務上我會至少把這些放進 cache key：
-
-```text
-OS + architecture + Bun version + bun.lock hash
-```
-
-速度快是一回事，**CI deterministic** 才是正式環境真正重要的事。
-
-## Bun 的 benefit 與風險
-
-目前我會繼續用 Bun。
-
-理由很單純：
-
-- install 快
-- CLI 簡單
-- Node.js project 可以漸進導入
-- workspace、isolated install、lockfile 都已經有
-- package manager、runtime、test runner 未來有機會收斂成同一套 tooling
-
-但它的風險也比 pnpm 大：
-
-- release cadence 快，CI 要 pin version
-- 行為不一定完全等同 npm
-- lifecycle scripts / native dependencies 要額外確認
-- 團隊最後很容易從「只換 package manager」一路用到 Bun runtime、test、build，migration scope 會擴大
-
-所以我現在不會說「所有人都該換 Bun」。
-
-我的選法比較明確：
-
-```text
-Legacy / 相容性最高    → npm
-大型 monorepo / 穩定優先 → pnpm
-已經深度使用 PnP       → Yarn
-新專案 / 願意承擔新工具成本 → Bun
-```
-
-我們現在選 Bun。
-
-它確實讓 CI/CD 多了一點治理成本，但目前換到的 developer experience 和 install speed，對我們來說值得。
-
-真正要避免的不是 npm。
-
-而是 **2026 了還因為 Node.js 順便附 npm，就從來沒重新比較過。**
+這份比較支持把 Bun 納入實驗，還不足以宣稱每個新專案都該換。下一個有價值的結果，是在真實 repository 留下一組安裝與完整 CI 的 baseline，確認省下的時間沒有被後續故障吃掉。
