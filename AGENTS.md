@@ -24,11 +24,12 @@
 
 - For new articles, and existing articles whose titles the user explicitly asks to change, begin the frontmatter `title` with exactly one of `[News]`, `[Insight]`, `[Review]`, or `[Guide]`, followed by a space.
 - Select the type after identifying the article's primary purpose. Do not balance type counts or force topics to fill a type.
-- `[News]`: a time-sensitive release or event. State the event date, what changed, its relevance to the author's work or learning, and any adoption limits.
-- `[Insight]`: an interpretation, engineering judgment, or reflection. Support the reasoning, distinguish inference from evidence, and identify conditions that could change the judgment.
-- `[Review]`: evaluate a tool or compare choices. State the use case, evaluation basis (documentation, external benchmarks, or actual hands-on tests), trade-offs, and conditions that change the recommendation. Never imply hands-on testing when none occurred.
+- `[News]`: introduce external developments the author is learning about: model/tool releases, new capabilities, official engineering case studies, or ecosystem/documentation updates. Include the event date when known, or a documentation check date when introducing an existing capability; never imply that an old capability was just released. Explain what changed or became relevant, its connection to the author's needs, and adoption limits.
+- `[Insight]`: an author-led engineering question, original synthesis, or confirmed reflection whose main contribution is the reasoning itself. Support that reasoning, distinguish inference from evidence, and identify conditions that could change the judgment.
+- `[Review]`: a deliberate tool evaluation or comparison aimed at an adoption decision. State the use case, evaluation basis (documentation, external benchmarks, or actual hands-on tests), trade-offs, and conditions that change the recommendation. An introduction to a newly discovered tool alone belongs to `[News]`; never imply hands-on testing when none occurred.
 - `[Guide]`: complete a concrete task. Provide necessary prerequisites, focused steps or examples, and a way to verify the result. Do not imply commands were executed when they were only reviewed.
-- Classify research interpretation as `[Insight]` when its main value is a lasting engineering judgment; reserve `[News]` for reporting the event itself.
+- When a release, official case study, or newly discovered capability is the reason for the article, default to `[News]`. Adding caveats, engineering implications, a code example, or a validation checklist does not by itself turn it into `[Insight]`, `[Review]`, or `[Guide]`. Follow the author's explicit classification for existing articles.
+- Confirmed `[News]` examples include d1-ultra, Agent-Native, LFM2.5, Claude Mods, Gemini ADK optimization, GitHub Copilot's Rust migration, GitLab Orbit, LangChain model routing, Paperclip skill versioning, and the production MCP ecosystem overview. Do not reclassify these merely because they contain analysis.
 - The title prefix describes article type. Keep `category` for broad subject areas and `tags` for technologies/topics; do not add a frontmatter field or change the schema just to represent the prefix.
 - Do not change existing titles, slugs, URLs, or published article classifications in bulk unless explicitly requested.
 

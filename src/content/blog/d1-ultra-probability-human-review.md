@@ -1,5 +1,5 @@
 ---
-title: "[Insight] d1-ultra 回傳機率之後，Agent 何時該轉人工？"
+title: "[News] d1-ultra 回傳機率之後，Agent 何時該轉人工？"
 description: "Liquid AI 的 d1-ultra 把分類與判斷變成結構化機率。從 calibration、棄答門檻到 TypeScript 分流範例，整理接進 Agent 前真正需要驗證的事。"
 pubDate: 2026-10-17
 updatedDate: 2026-10-17

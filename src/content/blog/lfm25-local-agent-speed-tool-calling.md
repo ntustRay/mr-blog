@@ -1,5 +1,5 @@
 ---
-title: "[Review] LFM2.5 本機 Agent：跑得快之前，先確認工具真的會動"
+title: "[News] LFM2.5 本機 Agent：跑得快之前，先確認工具真的會動"
 description: "Liquid AI 推出 LFM2.5-24B-A2B。從權重大小、官方評測到 tool calling 設定，整理本機 Agent 值得試用的地方，以及不能只看 tokens/s 的原因。"
 pubDate: 2026-10-15
 updatedDate: 2026-10-17

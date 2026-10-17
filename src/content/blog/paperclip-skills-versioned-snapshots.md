@@ -1,5 +1,5 @@
 ---
-title: "[Insight] Paperclip 的 Skill Versioning：同名 Skill，Agent 可能讀到不同內容"
+title: "[News] Paperclip 的 Skill Versioning：同名 Skill，Agent 可能讀到不同內容"
 description: "從 Paperclip 的 source pinning 與版本語意，看 Skill 更新、重現與回退。GitHub snapshots、local live files 和 beta release pins 需要分開理解。"
 pubDate: 2026-10-14
 updatedDate: 2026-10-17
