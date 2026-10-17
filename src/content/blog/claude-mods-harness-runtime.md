@@ -1,7 +1,8 @@
 ---
-title: "Claude Mods 把擴充點放進 Runtime：什麼時候 Skill 已經不夠？"
+title: "[Insight] Claude Mods 把擴充點放進 Runtime：什麼時候 Skill 已經不夠？"
 description: "Claude Code 的 function hooks 讓 plugin 介入 engine events。從官方內建 Mods 看擴充邊界，以及為何規則、執行與測試需要分開。"
 pubDate: 2026-10-14
+updatedDate: 2026-10-17
 category: AI
 tags: [AI Agents, Harness, Skills]
 draft: false

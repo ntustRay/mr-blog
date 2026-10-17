@@ -1,7 +1,8 @@
 ---
-title: "Hello, MR Blog"
-description: "MR Blog 的第一篇文章：從一個簡單、快速、可長期維護的技術部落格開始。"
+title: "[Insight] Hello, MR Blog：留下學習與工程判斷"
+description: "MR Blog 的起點：以簡單的靜態網站，留下個人學習、實作問題與可持續修訂的工程判斷。"
 pubDate: 2026-09-20
+updatedDate: 2026-10-17
 category: Blogging
 tags:
   - Astro
@@ -27,6 +28,6 @@ Astro 很適合這種 content-first 的網站，而且之後如果真的需要�
 
 ## 接下來
 
-之後會在這裡持續整理技術筆記、開發實作與踩坑紀錄。
+這裡優先整理正在解決的問題、接下來的技術挑戰，以及值得驗證的新知。文章留下證據與取捨；尚未完成的探索，也記錄已知、未知與下一步。
 
 先從簡單、可維護的版本開始。

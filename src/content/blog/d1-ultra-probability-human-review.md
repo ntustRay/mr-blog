@@ -1,7 +1,8 @@
 ---
-title: "d1-ultra 回傳機率之後，Agent 何時該轉人工？"
+title: "[Insight] d1-ultra 回傳機率之後，Agent 何時該轉人工？"
 description: "Liquid AI 的 d1-ultra 把分類與判斷變成結構化機率。從 calibration、棄答門檻到 TypeScript 分流範例，整理接進 Agent 前真正需要驗證的事。"
 pubDate: 2026-10-17
+updatedDate: 2026-10-17
 category: AI
 tags: [AI Agents, TypeScript]
 draft: false
@@ -24,7 +25,7 @@ Liquid AI 在 **2026 年 10 月 15 日**發布 [d1-ultra](https://www.liquid.ai/
 
 真正值得討論的是：拿到機率以後，要怎麼保留「這次先不要自動處理」的空間？
 
-## TL;DR
+## 這篇的重點
 
 - Decision model 適合已定義選項的分類與判斷，不能直接替代負責規劃、呼叫工具的整個 Agent。
 - `0.9` 是模型對某個答案的機率估計，不是這次工作有九成機會順利完成。

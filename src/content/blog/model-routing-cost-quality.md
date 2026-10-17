@@ -1,7 +1,8 @@
 ---
-title: "Model Routing 省下 64% 成本，先看清楚它怎麼衡量品質"
+title: "[Insight] Model Routing 省下 64% 成本，先看清楚它怎麼衡量品質"
 description: "LangChain 在 973 個 Open SWE threads 測試 Model Routing。省成本的結果很明確，但 merged PR rate 有它的測量邊界。"
 pubDate: 2026-10-14
+updatedDate: 2026-10-17
 category: AI
 tags: [AI Agents, Coding Agents, Harness]
 draft: false
@@ -10,15 +11,15 @@ references:
     url: "https://www.langchain.com/blog/how-to-build-a-model-router-in-the-harness"
 ---
 
-每次請 Agent 改字、找檔案、分析架構，都用同一個最強模型，設定很省事。帳單也會把這個方便算進去。
+改字、找檔案和分析跨模組架構，對模型能力的需求不同。若想透過 routing 降低成本，需要先定義哪些交付品質不能退步。
 
-LangChain 在 Open SWE 的實驗顯示，依任務選模型可以省下不少錢。值得借用的地方，是它先看真實任務，再決定 routing criteria，最後用實際交付結果驗證。
+LangChain 在 Open SWE 的實驗比較 routing 與固定模型。以下解讀原始報告，沒有自行重跑實驗；重點是成本下降時，品質指標究竟涵蓋哪些結果。
 
-## 973 是 threads，不是 973 道固定 benchmark 題
+## 973 個 Threads 的測量範圍
 
 依 [LangChain 的原始報告](https://www.langchain.com/blog/how-to-build-a-model-router-in-the-harness)，A/B test 共包含 973 個 threads，比較 router 與固定使用最強模型的對照組：
 
-| 指標 | Routing | 固定最強模型 |
+| 指標 | Routing | 固定使用高能力模型 |
 | --- | ---: | ---: |
 | 每個 thread 的 median cost | $0.94 | $2.61 |
 | 最後有 PR merged 的 thread 比例 | 29.2% | 27.3% |

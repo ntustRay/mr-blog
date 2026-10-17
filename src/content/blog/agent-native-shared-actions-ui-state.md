@@ -1,7 +1,8 @@
 ---
-title: "Agent-Native 的共享 Action：聊天與 UI 怎麼操作同一份資料？"
+title: "[Insight] Agent-Native 的共享 Action：聊天與 UI 怎麼操作同一份資料？"
 description: "Builder.io 推出 Agent-Native Beta，讓 UI 與 Agent 共用 actions、資料和畫面狀態。值得借用的是操作契約與狀態同步，不必為了多一個聊天入口重寫整套應用。"
 pubDate: 2026-10-16
+updatedDate: 2026-10-17
 category: AI
 tags: [AI Agents, TypeScript, MCP]
 draft: false
@@ -26,7 +27,7 @@ Builder.io 在 **2026 年 10 月 14 日**推出 [Agent-Native Beta](https://site
 
 本文依官方文件與公開原始碼整理，查核日期為 2026-10-16。沒有安裝 Agent-Native，也沒有執行模型整合或效能評測；文中的 TypeScript 是獨立教學範例，不是它的 SDK API。
 
-## TL;DR
+## 這篇的重點
 
 - 按鈕和 Agent 可以共用同一個操作契約，減少兩份業務邏輯各自演進。
 - Agent 要知道「這份」指什麼，需要穩定的物件 ID 與畫面脈絡，不能只靠聊天紀錄。

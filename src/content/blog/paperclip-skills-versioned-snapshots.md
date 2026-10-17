@@ -1,7 +1,8 @@
 ---
-title: "Paperclip 的 Skill Versioning：同名 Skill，Agent 可能讀到不同內容"
+title: "[Insight] Paperclip 的 Skill Versioning：同名 Skill，Agent 可能讀到不同內容"
 description: "從 Paperclip 的 source pinning 與版本語意，看 Skill 更新、重現與回退。GitHub snapshots、local live files 和 beta release pins 需要分開理解。"
 pubDate: 2026-10-14
+updatedDate: 2026-10-17
 category: AI
 tags: [AI Agents, Skills]
 draft: false
@@ -14,7 +15,7 @@ Agent 昨天能順利開 PR，今天卻改了不該改的檔案。除了模型�
 
 如果任務紀錄只寫「使用 code-review skill」，遇到同名但不同內容的檔案，很難重現當時的行為。Paperclip 的 versioning 設計值得看，因為它把 Skill 的來源與實際內容分開記錄。
 
-本文依 2026-10-14 的[官方 Skills Reference](https://docs.paperclip.ing/reference/skills/)整理。原題目中的「Immutable Snapshot」需要縮小範圍：**不是所有 Skill 來源都固定不變，也不是所有 pin 都代表同一種能力。**
+本文依 2026-10-14 的[官方 Skills Reference](https://docs.paperclip.ing/reference/skills/)整理。GitHub snapshot、local live files 與 beta release pin 的固定範圍不同，重現前需要確認來源與執行時實際採用的內容。
 
 ## 來源決定更新方式
 
@@ -37,7 +38,7 @@ GitHub source pinning 固定的是匯入版本。另一項機制，是對 bundle
 
 官方文件把後者列為 experimental setting，關閉時既有 pins 可以保留，但不會被套用。這個限定很重要：不能把它寫成所有 skills、所有 adapters 都已具備的一般化版本鎖定。
 
-導入時要確認的是 runtime 最後讀到什麼，而不是設定畫面是否顯示一個版本號。
+導入時要記錄 runtime 最後讀到的內容，並核對設定中的版本是否確實生效。
 
 ## 多 Agent 先用完整身分辨識 Skill
 

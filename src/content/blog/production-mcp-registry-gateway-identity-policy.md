@@ -1,7 +1,8 @@
 ---
-title: "MCP 接上正式環境，Registry、Gateway、Identity、Policy 各管什麼？"
+title: "[Insight] MCP 接上正式環境，Registry、Gateway、Identity、Policy 各管什麼？"
 description: "能呼叫工具只是起點。把 MCP 的發現、連線、身分與業務授權拆清楚，才能知道每個請求究竟被誰允許。"
 pubDate: 2026-10-14
+updatedDate: 2026-10-17
 category: AI
 tags: [AI Agents, MCP]
 draft: false
@@ -16,7 +17,7 @@ references:
 
 本機上能呼叫 MCP tool，通常很快就能做出 demo。正式環境接著會問：誰在呼叫？代表哪個使用者？能讀哪個專案？離職後怎麼撤權？
 
-這些問題需要分層處理。**Registry、Gateway、Identity、Policy 是四種責任；不是 MCP 官方要求每個系統都部署的四套服務。** 以下是依官方文件整理的架構分析。
+這些問題需要分層處理。Registry、Gateway、Identity、Policy 表示四種責任，可以由既有服務承擔；MCP 並未要求每個系統都另外部署四套服務。 以下是依官方文件整理的架構分析。
 
 ## 四層責任分開看
 
