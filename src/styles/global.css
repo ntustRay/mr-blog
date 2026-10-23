@@ -537,6 +537,7 @@ pagefind-results {
 }
 
 .article-header {
+  overflow-wrap: anywhere;
   padding-bottom: 32px;
   border-bottom: 1px solid var(--line);
 }
@@ -649,6 +650,18 @@ pagefind-results {
 
 .prose {
   padding-top: 28px;
+  overflow-wrap: anywhere;
+}
+
+.prose img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin-inline: auto;
+}
+
+.references a {
+  overflow-wrap: anywhere;
 }
 
 .prose :is(h2, h3, h4, h5, h6) {

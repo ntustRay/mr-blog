@@ -3,6 +3,8 @@ export function getTagSlug(tag: string): string {
     .normalize('NFKC')
     .trim()
     .toLowerCase()
+    .replace(/\+\+/g, 'pp')
+    .replace(/#/g, 'sharp')
     .replace(/\s+/g, '-')
     .replace(/[^\p{L}\p{N}-]/gu, '')
     .replace(/-+/g, '-')
