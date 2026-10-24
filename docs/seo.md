@@ -3,7 +3,7 @@
 ## Google Search Console（需站長帳戶操作）
 
 1. 以 **URL-prefix** 方式加入 `https://ntustray.github.io/mr-blog/`。
-2. 在部署環境設定 `PUBLIC_GOOGLE_SITE_VERIFICATION`（Google 提供的 meta tag content），重新部署後完成驗證。
+2. 在 GitHub Repo 的 **Settings → Secrets and variables → Actions → Variables** 新增 `PUBLIC_GOOGLE_SITE_VERIFICATION`（Google 提供的 meta tag content，**僅填 token，不要貼整個 `<meta>`**）。部署工作流會將此變數傳給 Astro build。重新執行 Deploy workflow 後完成驗證。
 3. 提交 `https://ntustray.github.io/mr-blog/sitemap-index.xml`，並用 URL Inspection 抽查新文、2019–2021 舊文與 Category 頁。
 4. 每 28 天觀察 Impressions、Clicks、CTR、Indexed / Not indexed，將「已發現但未收錄」與「已收錄但曝光少」分開處理。
 
