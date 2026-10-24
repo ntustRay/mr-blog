@@ -12,7 +12,9 @@ interface Props {
   searchAssets?: boolean;
   ogImage?: string;
   ogType?: 'website' | 'article';
-  structuredData?: Record<string, unknown>;
+  structuredData?: Record<string, unknown> | Record<string, unknown>[];
+  seoTitle?: string;
+  noindex?: boolean;
   publishedTime?: string;
   modifiedTime?: string;
   wide?: boolean;
@@ -25,13 +27,16 @@ const {
   ogImage = 'og-default.webp',
   ogType = 'website',
   structuredData,
+  seoTitle,
+  noindex = false,
   publishedTime,
   modifiedTime,
   wide = false,
 } = Astro.props;
 
 const siteName = siteConfig.name;
-const pageTitle = title === siteName ? siteName : `${title} | ${siteName}`;
+const displayedTitle = seoTitle ?? title;
+const pageTitle = displayedTitle === siteName ? siteName : `${displayedTitle} | ${siteName}`;
 const canonicalURL = Astro.site
   ? new URL(Astro.url.pathname, Astro.site)
   : Astro.url;
@@ -99,11 +104,15 @@ const websiteStructuredData = {
   url: new URL(base, Astro.site ?? Astro.url.origin).href,
   inLanguage: siteConfig.locale,
 };
-const serializedStructuredData = JSON.stringify(
-  structuredData
-    ? [websiteStructuredData, structuredData]
-    : websiteStructuredData,
-).replaceAll('<', '\\u003c');
+const additionalStructuredData = Array.isArray(structuredData)
+  ? structuredData
+  : structuredData
+    ? [structuredData]
+    : [];
+const serializedStructuredData = JSON.stringify([
+  websiteStructuredData,
+  ...additionalStructuredData,
+]).replaceAll('<', '\\u003c');
 ---
 
 <!doctype html>
@@ -113,6 +122,7 @@ const serializedStructuredData = JSON.stringify(
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
     <meta name="theme-color" content="#1c2021" />
     {ogType === 'article' && commentsConfig.enabled && commentsConfig.categoryId && <GiscusSession />}
 

@@ -9,6 +9,8 @@ tags:
   - Bun
   - Biome
 draft: false
+relatedPostIds:
+  - stop-using-npm-install-why-we-use-bun
 references:
   - title: "Bun Docs — bun install"
     url: "https://bun.com/docs/pm/cli/install"

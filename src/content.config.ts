@@ -10,6 +10,7 @@ const blog = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string(),
+    seoTitle: z.string().trim().min(1).max(70).optional(),
     pubDate: z.coerce.date(),
     updatedDate: z.coerce.date().optional(),
     tags: z.array(z.string()).default([]),
@@ -26,6 +27,7 @@ const blog = defineCollection({
         }),
       )
       .default([]),
+    relatedPostIds: z.array(z.string().trim().min(1)).default([]),
     draft: z.boolean().default(false),
   }),
 });

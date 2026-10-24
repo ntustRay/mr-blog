@@ -1,6 +1,7 @@
 ---
 title: "[Insight] AI 都會寫程式了，刷 LeetCode 還在練什麼？"
 description: "從刷題與白板題看工程基本功：先對齊 Spec、Input／Output，再做出可驗證的解法，透過溝通與迭代改善。"
+seoTitle: "AI 時代還需要刷 LeetCode 嗎？從 Spec 到解題思維"
 pubDate: 2026-10-17
 updatedDate: 2026-10-18
 category: Engineering
