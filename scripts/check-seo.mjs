@@ -41,6 +41,8 @@ let articles = 0;
 for (const file of htmlFiles) {
   const html = await readFile(file, 'utf8');
   const relative = path.relative(dist, file).replaceAll(path.sep, '/');
+  // Google Search Console 驗證檔不是網頁，不應要求 title / canonical / description。
+  if (/^google[0-9a-f]+\.html$/u.test(relative)) continue;
   const route = relative === 'index.html' ? '' : relative.replace(/index\.html$/u, '');
   const expectedUrl = new URL(`${base}${route}`, origin).href;
   const canonical = attribute(extractTag(html, 'link', 'rel', 'canonical'), 'href');
