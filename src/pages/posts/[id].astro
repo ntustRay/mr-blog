@@ -49,6 +49,8 @@ const ogImage = post.data.coverImage ?? `og/${post.id}.webp`;
 const base = import.meta.env.BASE_URL.endsWith('/')
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
+const siteURL = new URL(base, Astro.site ?? Astro.url.origin);
+const authorURL = new URL(siteConfig.author.profilePath, siteURL);
 const articleURL = new URL(
   `${base}posts/${post.id}/`,
   Astro.site ?? Astro.url.origin,
@@ -71,6 +73,7 @@ const breadcrumbsStructuredData = {
 const structuredData = {
   '@context': 'https://schema.org',
   '@type': 'BlogPosting',
+  '@id': `${articleURL.href}#article`,
   headline: post.data.title,
   description: post.data.description,
   datePublished: post.data.pubDate.toISOString(),
@@ -82,9 +85,18 @@ const structuredData = {
   inLanguage: siteConfig.locale,
   author: {
     '@type': 'Person',
+    '@id': `${authorURL.href}#person`,
     name: siteConfig.author.name,
-    url: siteConfig.author.url,
+    url: authorURL.href,
   },
+  publisher: { '@id': `${authorURL.href}#person` },
+  isPartOf: { '@id': `${siteURL.href}#website` },
+  keywords: post.data.tags,
+  citation: post.data.references.map((reference) => ({
+    '@type': 'CreativeWork',
+    name: reference.title,
+    url: reference.url,
+  })),
 };
 ---
 
@@ -111,6 +123,9 @@ const structuredData = {
 
       <header class="article-header">
         <div class="post-meta">
+          <a href={`${base}${siteConfig.author.profilePath}`} rel="author">
+            {siteConfig.author.name}
+          </a>
           <CategoryLink category={post.data.category} />
           <span>
             Published <time datetime={post.data.pubDate.toISOString()}>

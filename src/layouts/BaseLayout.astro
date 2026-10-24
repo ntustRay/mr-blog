@@ -43,6 +43,8 @@ const canonicalURL = Astro.site
 const base = import.meta.env.BASE_URL.endsWith('/')
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
+const siteURL = new URL(base, Astro.site ?? Astro.url.origin);
+const authorURL = new URL(siteConfig.author.profilePath, siteURL);
 const relativePath =
   base === '/'
     ? Astro.url.pathname
@@ -100,10 +102,21 @@ const navigation = [
 const websiteStructuredData = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
+  '@id': `${siteURL.href}#website`,
   name: siteConfig.name,
   description: siteConfig.description,
-  url: new URL(base, Astro.site ?? Astro.url.origin).href,
+  url: siteURL.href,
   inLanguage: siteConfig.locale,
+  publisher: { '@id': `${authorURL.href}#person` },
+};
+const authorStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  '@id': `${authorURL.href}#person`,
+  name: siteConfig.author.name,
+  jobTitle: siteConfig.author.role,
+  url: authorURL.href,
+  sameAs: [siteConfig.author.url],
 };
 const additionalStructuredData = Array.isArray(structuredData)
   ? structuredData
@@ -112,6 +125,7 @@ const additionalStructuredData = Array.isArray(structuredData)
     : [];
 const serializedStructuredData = JSON.stringify([
   websiteStructuredData,
+  authorStructuredData,
   ...additionalStructuredData,
 ]).replaceAll('<', '\\u003c');
 ---
@@ -154,7 +168,7 @@ const serializedStructuredData = JSON.stringify([
 
     <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={siteConfig.name} />
-    <meta property="og:locale" content={siteConfig.locale} />
+    <meta property="og:locale" content={siteConfig.openGraphLocale} />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalURL} />

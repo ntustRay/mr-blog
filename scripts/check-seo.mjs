@@ -5,6 +5,10 @@ const dist = path.resolve('dist');
 const origin = 'https://ntustray.github.io';
 const configuredBase = process.env.SITE_BASE ?? '/mr-blog';
 const base = configuredBase === '/' ? '/' : `/${configuredBase.replace(/^\/+|\/+$/gu, '')}/`;
+const websiteUrl = new URL(base, origin).href;
+const authorUrl = new URL(`${base}about/`, origin).href;
+const websiteId = `${websiteUrl}#website`;
+const authorId = `${authorUrl}#person`;
 const errors = [];
 const htmlFiles = [];
 
@@ -53,19 +57,59 @@ for (const file of htmlFiles) {
   if (canonical !== expectedUrl) errors.push(`${relative}: canonical expected ${expectedUrl}, got ${canonical}`);
   if (!title) errors.push(`${relative}: missing title`);
   if (!description) errors.push(`${relative}: missing meta description`);
+  if ([...html.matchAll(/<h1\b/giu)].length !== 1) errors.push(`${relative}: expected one H1`);
+  if (attribute(extractTag(html, 'meta', 'property', 'og:url'), 'content') !== expectedUrl) {
+    errors.push(`${relative}: Open Graph URL does not match canonical`);
+  }
+  const ogLocale = attribute(extractTag(html, 'meta', 'property', 'og:locale'), 'content');
+  if (!/^[a-z]{2}_[A-Z]{2}$/u.test(ogLocale ?? '')) errors.push(`${relative}: invalid Open Graph locale`);
   if (relative === 'search/index.html' && !noindex) errors.push('Search page must be noindex.');
   if (noindex && sitemapUrls.has(expectedUrl)) errors.push(`${relative}: noindex page in sitemap`);
-  if (!route.startsWith('posts/')) continue;
-
-  articles++;
-  if (!sitemapUrls.has(expectedUrl)) errors.push(`${relative}: article missing from sitemap`);
   const jsonLd = html.match(/<script\b[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/iu)?.[1];
   try {
     const parsed = JSON.parse(jsonLd ?? '');
     const nodes = Array.isArray(parsed) ? parsed : [parsed];
+    const website = nodes.find((node) => node['@type'] === 'WebSite');
+    const person = nodes.find((node) => node['@type'] === 'Person');
+    if (website?.['@id'] !== websiteId || website?.url !== websiteUrl) {
+      errors.push(`${relative}: missing or mismatched WebSite identity`);
+    }
+    if (person?.['@id'] !== authorId || person?.url !== authorUrl || !person?.name) {
+      errors.push(`${relative}: missing or mismatched author identity`);
+    }
+    if (website?.publisher?.['@id'] !== authorId) errors.push(`${relative}: WebSite publisher is not the author`);
+    if (relative === 'about/index.html') {
+      const profile = nodes.find((node) => node['@type'] === 'ProfilePage');
+      if (profile?.url !== expectedUrl || profile?.mainEntity?.['@id'] !== authorId) {
+        errors.push(`${relative}: profile does not identify the article author`);
+      }
+    }
+    if (!route.startsWith('posts/')) continue;
+
+    articles++;
+    if (!sitemapUrls.has(expectedUrl)) errors.push(`${relative}: article missing from sitemap`);
     const blog = nodes.find((node) => node['@type'] === 'BlogPosting');
     const breadcrumbs = nodes.find((node) => node['@type'] === 'BreadcrumbList');
-    if (!blog || blog.url !== expectedUrl) errors.push(`${relative}: missing or mismatched BlogPosting`);
+    if (blog?.url !== expectedUrl || blog?.['@id'] !== `${expectedUrl}#article`) {
+      errors.push(`${relative}: missing or mismatched BlogPosting`);
+    }
+    if (blog?.mainEntityOfPage !== expectedUrl || blog?.isPartOf?.['@id'] !== websiteId) {
+      errors.push(`${relative}: article is not connected to its canonical page and WebSite`);
+    }
+    if (blog?.author?.['@id'] !== authorId || blog?.author?.url !== authorUrl || blog?.author?.name !== person?.name) {
+      errors.push(`${relative}: article author does not match the profile`);
+    }
+    const visibleAuthor = extractTag(html, 'a', 'rel', 'author');
+    if (attribute(visibleAuthor, 'href') !== `${base}about/`) errors.push(`${relative}: missing visible author profile link`);
+    const visibleLinks = new Set(
+      [...html.matchAll(/<a\b[^>]*\bhref="([^"]+)"/giu)]
+        .map(([, href]) => href.replaceAll('&amp;', '&')),
+    );
+    for (const citation of blog?.citation ?? []) {
+      if (citation['@type'] !== 'CreativeWork' || !citation.name || !visibleLinks.has(citation.url)) {
+        errors.push(`${relative}: structured citation is not a visible named reference`);
+      }
+    }
     if (!blog?.datePublished || !blog?.dateModified) errors.push(`${relative}: missing article dates`);
     if (!breadcrumbs || breadcrumbs.itemListElement?.length < 2) errors.push(`${relative}: missing BreadcrumbList`);
   } catch {

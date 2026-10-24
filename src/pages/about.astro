@@ -1,11 +1,32 @@
 ---
 import { siteConfig } from '../config/site';
 import BaseLayout from '../layouts/BaseLayout.astro';
+
+const base = import.meta.env.BASE_URL.endsWith('/')
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const profileURL = new URL(
+  `${base}${siteConfig.author.profilePath}`,
+  Astro.site ?? Astro.url.origin,
+);
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfilePage',
+  '@id': `${profileURL.href}#profile`,
+  url: profileURL.href,
+  name: `關於 ${siteConfig.author.name} 與 ${siteConfig.name}`,
+  inLanguage: siteConfig.locale,
+  isPartOf: {
+    '@id': `${new URL(base, Astro.site ?? Astro.url.origin).href}#website`,
+  },
+  mainEntity: { '@id': `${profileURL.href}#person` },
+};
 ---
 
 <BaseLayout
   title="關於"
   description="關於 MingRay 與 MR Blog：全端工程、TypeScript、React、Next.js、資料處理與實作經驗。"
+  structuredData={structuredData}
 >
   <article class="content-page">
     <header class="page-header">
