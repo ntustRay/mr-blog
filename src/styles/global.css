@@ -752,6 +752,49 @@ pagefind-results {
   border-left: 1px solid var(--line);
 }
 
+.prose .table-scroll {
+  max-width: 100%;
+  margin-block: 1.5em;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  scrollbar-color: var(--accent-line) var(--surface);
+}
+
+.prose .table-scroll table {
+  display: table;
+  max-width: none;
+  margin: 0;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+}
+
+.prose .table-scroll :is(th, td) {
+  min-width: clamp(10rem, calc(100vw - 10rem), 15rem);
+}
+
+.prose .table-scroll :is(th, td):first-child {
+  position: sticky;
+  inset-inline-start: 0;
+  z-index: 1;
+  width: 8rem;
+  min-width: 8rem;
+  border-right: 1px solid var(--line);
+  background: var(--surface-solid);
+  font-weight: 700;
+}
+
+.prose .table-scroll th:first-child {
+  background: var(--surface-muted);
+}
+
+.prose .table-scroll :is(th, td):nth-child(2) {
+  border-left: 0;
+}
+
 .prose code {
   padding: 0.12em 0.35em;
   border-radius: var(--radius);
