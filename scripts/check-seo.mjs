@@ -4,7 +4,7 @@ import path from 'node:path';
 const dist = path.resolve('dist');
 const origin = 'https://ntustray.github.io';
 const configuredBase = process.env.SITE_BASE ?? '/mr-blog';
-const base = configuredBase === '/' ? '/' : `/${configuredBase.replace(/^\\/+|\\/+$/gu, '')}/`;
+const base = configuredBase === '/' ? '/' : `/${configuredBase.replace(/^\/+|\/+$/gu, '')}/`;
 const errors = [];
 const htmlFiles = [];
 
@@ -27,12 +27,12 @@ function attribute(tag, name) {
 }
 
 await walk(dist);
-const siteMapFiles = (await readdir(dist)).filter((file) => /^sitemap-\\d+\\.xml$/u.test(file));
+const siteMapFiles = (await readdir(dist)).filter((file) => /^sitemap-\d+\.xml$/u.test(file));
 if (siteMapFiles.length === 0) errors.push('No sitemap-N.xml files generated.');
 const sitemapUrls = new Set();
 for (const file of siteMapFiles) {
   const xml = await readFile(path.join(dist, file), 'utf8');
-  for (const [, loc] of xml.matchAll(/<loc>([^<]+)<\\/loc>/gu)) {
+  for (const [, loc] of xml.matchAll(/<loc>([^<]+)<\/loc>/gu)) {
     sitemapUrls.add(loc.replaceAll('&amp;', '&'));
   }
 }
@@ -41,13 +41,13 @@ let articles = 0;
 for (const file of htmlFiles) {
   const html = await readFile(file, 'utf8');
   const relative = path.relative(dist, file).replaceAll(path.sep, '/');
-  const route = relative === 'index.html' ? '' : relative.replace(/index\\.html$/u, '');
+  const route = relative === 'index.html' ? '' : relative.replace(/index\.html$/u, '');
   const expectedUrl = new URL(`${base}${route}`, origin).href;
   const canonical = attribute(extractTag(html, 'link', 'rel', 'canonical'), 'href');
-  const title = html.match(/<title>([\\s\\S]*?)<\\/title>/iu)?.[1]?.trim();
+  const title = html.match(/<title>([\s\S]*?)<\/title>/iu)?.[1]?.trim();
   const description = attribute(extractTag(html, 'meta', 'name', 'description'), 'content');
   const robots = attribute(extractTag(html, 'meta', 'name', 'robots'), 'content') ?? '';
-  const noindex = /\\bnoindex\\b/iu.test(robots);
+  const noindex = /\bnoindex\b/iu.test(robots);
   if (canonical !== expectedUrl) errors.push(`${relative}: canonical expected ${expectedUrl}, got ${canonical}`);
   if (!title) errors.push(`${relative}: missing title`);
   if (!description) errors.push(`${relative}: missing meta description`);
@@ -57,7 +57,7 @@ for (const file of htmlFiles) {
 
   articles++;
   if (!sitemapUrls.has(expectedUrl)) errors.push(`${relative}: article missing from sitemap`);
-  const jsonLd = html.match(/<script\\b[^>]*type="application\\/ld\\+json"[^>]*>([\\s\\S]*?)<\\/script>/iu)?.[1];
+  const jsonLd = html.match(/<script\b[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/iu)?.[1];
   try {
     const parsed = JSON.parse(jsonLd ?? '');
     const nodes = Array.isArray(parsed) ? parsed : [parsed];
@@ -72,7 +72,7 @@ for (const file of htmlFiles) {
 }
 
 if (errors.length) {
-  console.error(`SEO checks failed (\\${errors.length}):\\n${errors.map((error) => `- ${error}`).join('\\n')}`);
+  console.error(`SEO checks failed (${errors.length}):\n${errors.map((error) => `- ${error}`).join('\n')}`);
   process.exitCode = 1;
 } else {
   console.log(`SEO checks passed for ${htmlFiles.length} HTML pages, ${articles} articles and ${sitemapUrls.size} sitemap URLs.`);
