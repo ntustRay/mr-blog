@@ -25,7 +25,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build and check internal links
+      - name: Build production paths and validate SEO
+        run: npm run build && npm run check:seo
+
+      - name: Build root-path fixture for Lighthouse CI
         run: SITE_BASE=/ npm run build
 
       - name: Run Lighthouse CI

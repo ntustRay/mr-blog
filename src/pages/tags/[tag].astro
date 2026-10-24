@@ -51,6 +51,14 @@ interface Props {
 }
 
 const { tag, posts } = Astro.props;
+const tagSummaries: Record<string, string> = {
+  'AI Agents': 'AI Agent 的工具使用、Harness、Context Management 與安全性相關文章。',
+  TypeScript: 'TypeScript 的型別設計、工具鏈與應用實作文章。',
+  DuckDB: 'DuckDB、資料處理和整合應用的相關文章。',
+  Canvas: 'Canvas Rendering、繪圖與效能議題的相關文章。',
+  Bun: 'Bun 的套件管理、工具鏈與導入成本的相關文章。',
+};
+const summary = tagSummaries[tag] ?? `整理與 ${tag} 相關的技術文章與筆記。`;
 const base = import.meta.env.BASE_URL.endsWith('/')
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
@@ -58,11 +66,12 @@ const base = import.meta.env.BASE_URL.endsWith('/')
 
 <BaseLayout
   title={`#${tag}`}
-  description={`${tag} 相關文章，共 ${posts.length} 篇。`}
+  description={summary}
 >
   <section class="page-header">
     <p class="eyebrow">TAG</p>
     <h1>#{tag}</h1>
+    <p>{summary}</p>
     <p>{posts.length} 篇文章</p>
   </section>
 

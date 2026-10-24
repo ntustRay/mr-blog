@@ -6,6 +6,9 @@ updatedDate: 2026-10-17
 category: AI
 tags: [AI Agents, Coding Agents, Harness]
 draft: false
+relatedPostIds:
+  - coding-agent-harness-176-configurations
+  - claude-mods-harness-runtime
 references:
   - title: "GitHub：Migrating the GitHub Copilot runtime to Rust, using Copilot"
     url: "https://github.blog/ai-and-ml/generative-ai/migrating-the-github-copilot-runtime-to-rust-using-copilot/"

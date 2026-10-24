@@ -28,7 +28,9 @@ export default defineConfig({
   site: 'https://ntustray.github.io',
   base: process.env.SITE_BASE ?? '/mr-blog',
   trailingSlash: 'always',
-  integrations: [sitemap()],
+  integrations: [
+    sitemap({ filter: (page) => !new URL(page).pathname.endsWith('/search/') }),
+  ],
   markdown: {
     shikiConfig: {
       transformers: [codeBlockMetaTransformer],

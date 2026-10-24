@@ -5,11 +5,20 @@ export function getRelatedPosts(
   posts: CollectionEntry<'blog'>[],
   limit = 3,
 ): CollectionEntry<'blog'>[] {
+  const postById = new Map(posts.map((post) => [post.id, post]));
+  const pinned = currentPost.data.relatedPostIds.map((id) => {
+    const post = postById.get(id);
+    if (!post || id === currentPost.id) {
+      throw new Error(`Invalid relatedPostIds entry "${id}" in ${currentPost.id}`);
+    }
+    return post;
+  });
+
   const currentTags = new Set(
     currentPost.data.tags.map((tag) => tag.toLocaleLowerCase('en-US')),
   );
 
-  return posts
+  const calculated = posts
     .filter((post) => post.id !== currentPost.id)
     .map((post) => {
       const sharedTags = post.data.tags.reduce(
@@ -31,6 +40,7 @@ export function getRelatedPosts(
         b.post.data.pubDate.valueOf() - a.post.data.pubDate.valueOf() ||
         a.post.id.localeCompare(b.post.id),
     )
-    .slice(0, limit)
     .map(({ post }) => post);
+
+  return [...new Map([...pinned, ...calculated].map((post) => [post.id, post])).values()].slice(0, limit);
 }
