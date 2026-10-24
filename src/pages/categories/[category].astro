@@ -50,6 +50,14 @@ interface Props {
 }
 
 const { category, posts } = Astro.props;
+const categorySummaries: Record<string, string> = {
+  AI: 'AI Agent、模型能力、開發工具與系統設計的技術觀察和工程判斷。',
+  Engineering: '演算法、軟體設計、開發流程與效能問題的實作與研究紀錄。',
+  'Web Development': 'Web 前後端開發、網站工具與部署維護的筆記。',
+  Blogging: '個人技術 Blog 的架構、內容管理與維護取捨。',
+  Life: '生活相關的經驗與筆記，保留原始情境和資訊時效。',
+};
+const summary = categorySummaries[category] ?? `${category} 主題的文章與研究紀錄。`;
 const base = import.meta.env.BASE_URL.endsWith('/')
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
@@ -57,11 +65,12 @@ const base = import.meta.env.BASE_URL.endsWith('/')
 
 <BaseLayout
   title={category}
-  description={`${category} 分類的文章，共 ${posts.length} 篇。`}
+  description={summary}
 >
   <section class="page-header">
     <p class="eyebrow">CATEGORY</p>
     <h1>{category}</h1>
+    <p>{summary}</p>
     <p>{posts.length} 篇文章</p>
   </section>
 
