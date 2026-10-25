@@ -1,0 +1,125 @@
+{
+  "capturedAt": "2026-10-25T11:05:30.631Z",
+  "target": "Recovered standalone public tutorial code/01-local; not the private Framecheck application",
+  "node": "v24.19.0",
+  "browser": "154.0.8037.57",
+  "viewport": {
+    "width": 1280,
+    "height": 1000,
+    "deviceScaleFactor": 1
+  },
+  "encoding": "Unmodified full-page browser PNG screenshots encoded to lossless WebP using Sharp; no visual editing or compositing",
+  "fixtures": [
+    "Committed public/samples/before.png and after.png (480 × 280)",
+    "Generated 320 × 200 white PNG for dimension rejection only",
+    "Generated text/plain file for MIME rejection only"
+  ],
+  "limitations": [
+    "These captures verify the standalone local example UI only",
+    "No cloud account, OAuth, storage, deployed application or original Framecheck E2E was exercised",
+    "No timing or performance result is claimed"
+  ],
+  "pageErrors": [],
+  "captures": [
+    {
+      "file": "01-empty.webp",
+      "state": "Initial local tutorial page with no images selected",
+      "actions": [
+        "Open the production tutorial server"
+      ],
+      "assertions": [
+        "HTTP 200",
+        "Heading visible",
+        "Comparison button disabled"
+      ],
+      "width": 1280,
+      "height": 1000,
+      "bytes": 15534,
+      "sha256": "fcdf67bb26c21128f26a9bec9c3ef541308fbfdb725e057c68494937d9a8f7ca",
+      "visibleText": "VISUAL REGRESSION / 教學範例\n\n比較兩張圖片\n\n選圖 → 比對 → 查看差異。圖片只在瀏覽器處理。\n\n載入範例\n像素容差\n開始比對\nBefore\nAfter\n\n兩張圖片須同尺寸；每張 ≤ 5 MB；每邊 ≤ 4096 px；透明區域以白底比對。"
+    },
+    {
+      "file": "02-samples-loaded.webp",
+      "state": "Bundled Before and After samples loaded; comparison has not run",
+      "actions": [
+        "Click 載入範例"
+      ],
+      "assertions": [
+        "Both preview canvases are 480 × 280",
+        "Comparison button enabled",
+        "No result metrics yet"
+      ],
+      "width": 1280,
+      "height": 1000,
+      "bytes": 15676,
+      "sha256": "7713139b34802985f236957a8b57324d3438950650b60e23dcd7c4b8a93ce16b",
+      "visibleText": "VISUAL REGRESSION / 教學範例\n\n比較兩張圖片\n\n選圖 → 比對 → 查看差異。圖片只在瀏覽器處理。\n\n載入範例\n像素容差\n開始比對\nBefore\nAfter\n\n兩張圖片須同尺寸；每張 ≤ 5 MB；每邊 ≤ 4096 px；透明區域以白底比對。"
+    },
+    {
+      "file": "03-comparison-result.webp",
+      "state": "Pixelmatch result for the bundled sample pair at threshold 0.1",
+      "actions": [
+        "Click 開始比對 with bundled samples and default threshold 0.1"
+      ],
+      "assertions": [
+        "變更 17,760 / 134,400 pixels · 13.21%",
+        "Diff canvas visible"
+      ],
+      "width": 1280,
+      "height": 1113,
+      "bytes": 18802,
+      "sha256": "2737c1fc0952bc65cdf0a3a0dbbebbe650ee3f68c167f4307796aa43bb5377d7",
+      "visibleText": "VISUAL REGRESSION / 教學範例\n\n比較兩張圖片\n\n選圖 → 比對 → 查看差異。圖片只在瀏覽器處理。\n\n載入範例\n像素容差\n開始比對\nBefore\nAfter\n\n兩張圖片須同尺寸；每張 ≤ 5 MB；每邊 ≤ 4096 px；透明區域以白底比對。\n\n變更 17,760 / 134,400 pixels · 13.21%"
+    },
+    {
+      "file": "04-identical-images.webp",
+      "state": "Identical Before sample selected for both sides",
+      "actions": [
+        "Set After file input to the same bundled before.png already displayed on Before",
+        "Click 開始比對"
+      ],
+      "assertions": [
+        "變更 0 / 134,400 pixels · 0.00%"
+      ],
+      "width": 1280,
+      "height": 1113,
+      "bytes": 18072,
+      "sha256": "750ea671f8b2b128605a8d0e70ee8aa9c0afebf5a4a1bccea7eaa7cd686f1bd3",
+      "visibleText": "VISUAL REGRESSION / 教學範例\n\n比較兩張圖片\n\n選圖 → 比對 → 查看差異。圖片只在瀏覽器處理。\n\n載入範例\n像素容差\n開始比對\nBefore\nAfter\n\n兩張圖片須同尺寸；每張 ≤ 5 MB；每邊 ≤ 4096 px；透明區域以白底比對。\n\n變更 0 / 134,400 pixels · 0.00%"
+    },
+    {
+      "file": "05-dimension-error.webp",
+      "state": "Actual validation error for unequal image dimensions",
+      "actions": [
+        "Select a generated 320 × 200 white PNG for After",
+        "Click 開始比對 against 480 × 280 Before"
+      ],
+      "assertions": [
+        "Alert: 兩張圖片尺寸須相同",
+        "No comparison result retained"
+      ],
+      "width": 1280,
+      "height": 1000,
+      "bytes": 17860,
+      "sha256": "d2a62599447ee58289ab34c17d821059f91a334f10f20d3ea2ff450936956375",
+      "visibleText": "VISUAL REGRESSION / 教學範例\n\n比較兩張圖片\n\n選圖 → 比對 → 查看差異。圖片只在瀏覽器處理。\n\n載入範例\n像素容差\n開始比對\nBefore\nAfter\n\n兩張圖片須同尺寸；每張 ≤ 5 MB；每邊 ≤ 4096 px；透明區域以白底比對。\n\n兩張圖片尺寸須相同"
+    },
+    {
+      "file": "06-file-type-error.webp",
+      "state": "Actual validation error for a non-image file selected through the file input",
+      "actions": [
+        "Set After file input to an actual text/plain fixture named not-an-image.txt"
+      ],
+      "assertions": [
+        "Alert: 請選 PNG、JPEG 或 WebP",
+        "Comparison button disabled"
+      ],
+      "width": 1280,
+      "height": 1000,
+      "bytes": 17616,
+      "sha256": "232ac217220449661b406b01b78e2f073f3d8a71c9d680a3f6fb787fac398436",
+      "visibleText": "VISUAL REGRESSION / 教學範例\n\n比較兩張圖片\n\n選圖 → 比對 → 查看差異。圖片只在瀏覽器處理。\n\n載入範例\n像素容差\n開始比對\nBefore\nAfter\n\n兩張圖片須同尺寸；每張 ≤ 5 MB；每邊 ≤ 4096 px；透明區域以白底比對。\n\n請選 PNG、JPEG 或 WebP"
+    }
+  ],
+  "encodingVerification": "All six lossless WebP images decode to RGBA buffers identical to their original browser PNG screenshots"
+}
