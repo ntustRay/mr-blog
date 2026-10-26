@@ -712,11 +712,10 @@ pagefind-results {
 }
 
 .prose table {
-  display: block;
+  display: table;
   width: 100%;
   max-width: 100%;
   margin-block: 1.5em;
-  overflow-x: auto;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   border-collapse: separate;
@@ -724,7 +723,25 @@ pagefind-results {
   background: var(--surface);
   font-size: 0.92rem;
   line-height: 1.55;
+}
+
+.prose .table-overflow {
+  max-width: 100%;
+  margin-block: 1.5em;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
   scrollbar-width: thin;
+}
+
+.prose .table-overflow > table {
+  min-width: 32rem;
+  max-width: none;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
 }
 
 .prose th,
