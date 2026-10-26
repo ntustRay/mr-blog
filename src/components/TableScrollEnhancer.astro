@@ -1,0 +1,13 @@
+<script>
+  for (const table of document.querySelectorAll<HTMLTableElement>('.prose table')) {
+    if (table.closest('.table-scroll, .table-overflow')) {
+      continue;
+    }
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'table-overflow';
+    wrapper.tabIndex = 0;
+    table.before(wrapper);
+    wrapper.append(table);
+  }
+</script>

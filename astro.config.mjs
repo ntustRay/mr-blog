@@ -24,35 +24,6 @@ const codeBlockMetaTransformer = {
   },
 };
 
-// Wrap Markdown tables at build time so scrolling does not change table layout.
-function wrapMarkdownTables() {
-  return (tree) => {
-    function wrapChildren(node) {
-      if (!Array.isArray(node.children)) return;
-
-      const parentClasses = node.properties?.className;
-      const alreadyScrollable =
-        Array.isArray(parentClasses) &&
-        parentClasses.some((name) => name === 'table-scroll' || name === 'table-overflow');
-
-      node.children = node.children.map((child) => {
-        if (child.type === 'element' && child.tagName === 'table' && !alreadyScrollable) {
-          return {
-            type: 'element',
-            tagName: 'div',
-            properties: { className: ['table-overflow'], tabIndex: 0 },
-            children: [child],
-          };
-        }
-        wrapChildren(child);
-        return child;
-      });
-    }
-
-    wrapChildren(tree);
-  };
-}
-
 export default defineConfig({
   site: 'https://ntustray.github.io',
   base: process.env.SITE_BASE ?? '/mr-blog',
@@ -61,7 +32,6 @@ export default defineConfig({
     sitemap({ filter: (page) => !new URL(page).pathname.endsWith('/search/') }),
   ],
   markdown: {
-    rehypePlugins: [wrapMarkdownTables],
     shikiConfig: {
       transformers: [codeBlockMetaTransformer],
     },

@@ -2,6 +2,7 @@
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import CategoryLink from '../../components/CategoryLink.astro';
 import CodeCopyEnhancer from '../../components/CodeCopyEnhancer.astro';
+import TableScrollEnhancer from '../../components/TableScrollEnhancer.astro';
 import HeadingAnchorEnhancer from '../../components/HeadingAnchorEnhancer.astro';
 import CopyLink from '../../components/CopyLink.astro';
 import PostNavigation from '../../components/PostNavigation.astro';
@@ -155,6 +156,7 @@ const structuredData = {
       </div>
 
       <CodeCopyEnhancer />
+      <TableScrollEnhancer />
       <HeadingAnchorEnhancer />
       <TocActiveEnhancer />
       <References references={post.data.references} />
