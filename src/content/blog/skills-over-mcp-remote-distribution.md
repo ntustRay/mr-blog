@@ -73,7 +73,13 @@ if (!skills.supported) {
 }
 
 const { skills: entries } = await skills.list();
-const { skill } = await skills.get(entries[0].uri);
+const first = entries.at(0);
+
+if (!first) {
+  throw new Error('No skills are available');
+}
+
+const { skill } = await skills.get(first.uri);
 const manifest = await skills.read(skill);
 
 if (!manifest.verified) {
