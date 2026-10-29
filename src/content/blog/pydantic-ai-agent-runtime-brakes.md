@@ -9,13 +9,20 @@ tags:
   - Python
 draft: false
 references:
-  - https://github.com/pydantic/pydantic-ai/releases/tag/v2.63.0
-  - https://github.com/pydantic/pydantic-ai/blob/v2.63.0/docs/harness/detect-loops.md
-  - https://github.com/pydantic/pydantic-ai/pull/11471
-  - https://github.com/pydantic/pydantic-ai/blob/v2.63.0/docs/harness/spend.md
-  - https://github.com/pydantic/pydantic-ai/pull/11527
-  - https://github.com/pydantic/pydantic-ai/blob/v2.63.0/docs/evals/how-to/retry-strategies.md
-  - https://github.com/pydantic/pydantic-ai/pull/10291
+  - title: Pydantic AI v2.63.0 release
+    url: https://github.com/pydantic/pydantic-ai/releases/tag/v2.63.0
+  - title: Detect Loops documentation
+    url: https://github.com/pydantic/pydantic-ai/blob/v2.63.0/docs/harness/detect-loops.md
+  - title: DetectLoops pull request #11471
+    url: https://github.com/pydantic/pydantic-ai/pull/11471
+  - title: Spend documentation
+    url: https://github.com/pydantic/pydantic-ai/blob/v2.63.0/docs/harness/spend.md
+  - title: PostgresSpendStore pull request #11527
+    url: https://github.com/pydantic/pydantic-ai/pull/11527
+  - title: Pydantic Evals retry and timeout documentation
+    url: https://github.com/pydantic/pydantic-ai/blob/v2.63.0/docs/evals/how-to/retry-strategies.md
+  - title: Eval task timeout pull request #10291
+    url: https://github.com/pydantic/pydantic-ai/pull/10291
 relatedPostIds:
   - coding-agent-harness-176-configurations
   - agent-monitoring-coverage-compaction
