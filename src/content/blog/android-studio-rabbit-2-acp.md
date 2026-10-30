@@ -112,12 +112,3 @@ Android 團隊不需要一次比較 40 個 Agent。先選一個可重現、會�
 
 這次 release 最重要的訊號是：Coding Agent 開始像 language server 一樣，透過 protocol 進入 IDE 生態。LSP 讓編輯器和語言工具解耦，但沒有保證每個 language server 都安全或品質相同；ACP 現在也應該用同樣的工程標準看待。
 
-## References
-
-- [Android Studio Rabbit 2：Agents integration](https://developer.android.com/blog/posts/ai-agents-android-studio-integration)
-- [Android Studio Rabbit 2 release notes](https://developer.android.com/studio/releases)
-- [Android Dev Summit 2026 developer tools and performance](https://developer.android.com/blog/posts/android-dev-summit-26-developer-tools-performance)
-- [ACP introduction](https://agentclientprotocol.com/get-started/introduction)
-- [ACP v1 overview](https://agentclientprotocol.com/protocol/v1/overview)
-- [ACP v1 security considerations](https://agentclientprotocol.com/protocol/v1/security)
-- [Android Studio Rabbit 2 closed issues](https://developer.android.com/studio/releases/fixed-bugs/studio/2026.2.2)
