@@ -164,3 +164,7 @@ https://ntustray.github.io/mr-blog/
 ## 工程師選股網自學系列
 
 [從第 1 篇開始](https://ntustray.github.io/mr-blog/posts/engineer-stock-01-local/)：共 10 篇，涵蓋本機、股票 JSON、Actions、Next.js 資料流、篩選圖表、Auth、RLS、Vercel、核心架構與面試用技術選型，以及 Workflow 與官方 API 來源。每篇含流程／結果圖、操作與驗證；附件只含教學片段及驗證範圍。
+
+## 線上試妝自學系列
+
+[從第 1 篇開始](https://ntustray.github.io/mr-blog/posts/shade-room-01-architecture/)：共 6 篇，依序拆解影像輸入、MediaPipe 與 Worker、WebGL 唇部遮罩、互動與匯出，以及像素驗證與 CI。包含實際畫面、定位與質地診斷圖、流程圖及驗證限制。
