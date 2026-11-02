@@ -3,6 +3,7 @@ import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 import { isCategory } from './config/taxonomy';
 import { getSeriesDefinition } from './config/series';
+import { normalizeTag } from './utils/tags';
 
 const blog = defineCollection({
   loader: glob({
@@ -15,7 +16,7 @@ const blog = defineCollection({
     seoTitle: z.string().trim().min(1).max(70).optional(),
     pubDate: z.coerce.date(),
     updatedDate: z.coerce.date().optional(),
-    tags: z.array(z.string()).default([]),
+    tags: z.array(z.string()).default([]).transform((tags) => [...new Set(tags.map(normalizeTag))]),
     category: z.string().trim().min(1).refine(isCategory, 'Unknown category'),
     series: z.string().refine((value) => Boolean(getSeriesDefinition(value))).optional(),
     seriesOrder: z.number().int().positive().optional(),
