@@ -1,0 +1,41 @@
+{
+  "date": "2026-11-02",
+  "timezone": "Asia/Taipei",
+  "sources": {
+    "web": "23b2d914017adb6f6a7029f53314839e6db235be",
+    "data": "c1633aeffe68d4ad95e88ea403d1bfbc1585f70e"
+  },
+  "runtime": {
+    "node": "v24.22.1",
+    "bun": "1.4.4",
+    "next": "16.3.4"
+  },
+  "executed": {
+    "data_unit_tests": 42,
+    "web_unit_tests": 21,
+    "postgresql_rls": "passed in isolated PGlite",
+    "fixture_snapshot_files": 18,
+    "fixture_verify": "valid",
+    "web_format": "passed",
+    "web_typecheck": "passed",
+    "web_build": "passed"
+  },
+  "production_read_only": {
+    "membership_tables_with_rls": 3,
+    "membership_policies": 12,
+    "delete_own_account_installed": false,
+    "latest_vercel_production_state": "READY"
+  },
+  "not_claimed": [
+    "Production SMTP delivery and successful signup/login",
+    "Production account deletion",
+    "Production RLS end-to-end login test",
+    "Performance benchmarks",
+    "A new stock-data Workflow dispatch or Vercel application deployment"
+  ],
+  "image_notes": [
+    "WebP screenshots show observed public pages; no entered credentials or member data.",
+    "SVG flowcharts and result figures are illustrations with captions, not browser/terminal screenshots.",
+    "Local browser capture was unavailable; fixture HTTP responses and SQL test evidence are included."
+  ]
+}

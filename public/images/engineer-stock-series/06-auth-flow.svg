@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 675" role="img" aria-labelledby="title desc">
+<title id="title">收信、驗證與 session 是不同階段</title>
+<desc id="desc">流程示意，非本次登入完成紀錄；正式 SMTP 與真實收信仍需驗收。</desc>
+<defs><marker id="a" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 9 4.5 0 9Z" fill="#a6b6b0"/></marker></defs>
+<rect width="1120" height="675" fill="#101718"/>
+<g font-family="Noto Sans CJK TC, Noto Sans TC, Arial, sans-serif">
+<text x="40" y="48" fill="#f4cd55" font-size="18" letter-spacing="2">ENGINEER STOCK / 06</text>
+<text x="40" y="101" fill="#f0f3ef" font-size="32" font-weight="700">收信、驗證與 session 是不同階段</text>
+<path d="M340 243H405" fill="none" stroke="#a6b6b0" stroke-width="2" marker-end="url(#a)"/>
+<path d="M710 243H775" fill="none" stroke="#a6b6b0" stroke-width="2" marker-end="url(#a)"/>
+<path d="M930 320V420" fill="none" stroke="#a6b6b0" stroke-width="2" marker-end="url(#a)"/>
+<text x="946" y="372.5" text-anchor="middle" fill="#c6d0cb" font-size="15">開啟連結</text>
+<path d="M780 503H715" fill="none" stroke="#a6b6b0" stroke-width="2" marker-end="url(#a)"/>
+<text x="747.5" y="490" text-anchor="middle" fill="#c6d0cb" font-size="15">有效</text>
+<path d="M930 580V607H190V585" fill="none" stroke="#a6b6b0" stroke-width="2" marker-end="url(#a)"/>
+<text x="560.0" y="598" text-anchor="middle" fill="#c6d0cb" font-size="15">無效</text>
+<rect x="40" y="165" width="300" height="155" fill="#1b2525" stroke="#657a70" stroke-width="1.5"/>
+<text x="59" y="193" fill="#657a70" font-size="14">FORM</text>
+<text x="59" y="232" fill="#f0f3ef" font-size="23" font-weight="700">註冊表單</text>
+<text x="59" y="267" fill="#c6d0cb" font-size="17">Server Action → signUp</text>
+<rect x="410" y="165" width="300" height="155" fill="#1b2525" stroke="#f4cd55" stroke-width="1.5"/>
+<text x="429" y="193" fill="#f4cd55" font-size="14">AUTH</text>
+<text x="429" y="232" fill="#f0f3ef" font-size="23" font-weight="700">Supabase Auth</text>
+<text x="429" y="267" fill="#c6d0cb" font-size="17">Email 驗證與 redirect 設定</text>
+<rect x="780" y="165" width="300" height="155" fill="#1b2525" stroke="#657a70" stroke-width="1.5"/>
+<text x="799" y="193" fill="#657a70" font-size="14">EMAIL</text>
+<text x="799" y="232" fill="#f0f3ef" font-size="23" font-weight="700">SMTP 與收件匣</text>
+<text x="799" y="267" fill="#c6d0cb" font-size="17">實際收到驗證連結才算送達</text>
+<rect x="40" y="425" width="300" height="155" fill="#1b2525" stroke="#dc9a80" stroke-width="1.5"/>
+<text x="59" y="453" fill="#dc9a80" font-size="14">RETRY</text>
+<text x="59" y="492" fill="#f0f3ef" font-size="23" font-weight="700">回登入／重新申請</text>
+<text x="59" y="527" fill="#c6d0cb" font-size="17">錯誤、過期或缺少 verifier</text>
+<rect x="410" y="425" width="300" height="155" fill="#1b2525" stroke="#91c5a5" stroke-width="1.5"/>
+<text x="429" y="453" fill="#91c5a5" font-size="14">SESSION</text>
+<text x="429" y="492" fill="#f0f3ef" font-size="23" font-weight="700">Cookie session</text>
+<text x="429" y="527" fill="#c6d0cb" font-size="17">有效 code 換成 session</text>
+<rect x="780" y="425" width="300" height="155" fill="#1b2525" stroke="#657a70" stroke-width="1.5"/>
+<text x="799" y="453" fill="#657a70" font-size="14">CALLBACK</text>
+<text x="799" y="492" fill="#f0f3ef" font-size="23" font-weight="700">/auth/callback</text>
+<text x="799" y="527" fill="#c6d0cb" font-size="17">exchangeCodeForSession</text>
+<text x="40" y="626" fill="#a6b6b0" font-size="17">流程示意，非本次登入完成紀錄；正式 SMTP 與真實收信仍需驗收。</text>
+</g></svg>

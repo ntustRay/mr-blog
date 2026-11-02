@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 706" role="img" aria-label="隔離 PostgreSQL：本次 SQL 測試通過">
+<rect width="1120" height="706" fill="#101718"/>
+<g font-family="Noto Sans CJK TC, Noto Sans TC, Arial, sans-serif">
+<text x="40" y="46" fill="#f4cd55" font-size="17">LOCAL EXECUTION / RESULT CARD</text>
+<text x="40" y="100" fill="#f0f3ef" font-size="30" font-weight="700">隔離 PostgreSQL：本次 SQL 測試通過</text>
+<path d="M40 198H1080" stroke="#3e5149"/>
+<text x="54" y="170" fill="#c6d0cb" font-size="21">自己的資料讀寫</text>
+<text x="690" y="170" fill="#a8d9b7" font-size="22">PASS</text>
+<path d="M40 274H1080" stroke="#3e5149"/>
+<text x="54" y="246" fill="#c6d0cb" font-size="21">跨會員讀寫與刪除</text>
+<text x="690" y="246" fill="#a8d9b7" font-size="22">PASS</text>
+<path d="M40 350H1080" stroke="#3e5149"/>
+<text x="54" y="322" fill="#c6d0cb" font-size="21">將 user_id 轉給另一會員</text>
+<text x="690" y="322" fill="#a8d9b7" font-size="22">拒絕</text>
+<path d="M40 426H1080" stroke="#3e5149"/>
+<text x="54" y="398" fill="#c6d0cb" font-size="21">同會員重複追蹤</text>
+<text x="690" y="398" fill="#a8d9b7" font-size="22">拒絕</text>
+<path d="M40 502H1080" stroke="#3e5149"/>
+<text x="54" y="474" fill="#c6d0cb" font-size="21">anon 存取會員資料</text>
+<text x="690" y="474" fill="#a8d9b7" font-size="22">拒絕</text>
+<path d="M40 578H1080" stroke="#3e5149"/>
+<text x="54" y="550" fill="#c6d0cb" font-size="21">測試資料清除</text>
+<text x="690" y="550" fill="#a8d9b7" font-size="22">ROLLBACK / PASS</text>
+<text x="40" y="678" fill="#a6b6b0" font-size="17">Node.js v24.22.1 · PGlite 隔離資料庫；不代表正式 Auth 整合驗收。</text>
+</g></svg>

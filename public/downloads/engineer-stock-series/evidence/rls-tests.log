@@ -1,0 +1,11 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> engineer-stock-web@0.1.0 test:rls
+> node scripts/test-rls.mjs
+
+[
+  {
+    result: 'passed: own read/write, cross-member read/write/delete, ownership transfer, duplicate watchlist, anonymous access; all fixtures rolled back'
+  }
+]
+PASS: account deletion is limited to the authenticated member; FK cascades preserve other members.

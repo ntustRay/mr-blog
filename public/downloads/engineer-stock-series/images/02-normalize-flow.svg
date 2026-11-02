@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 675" role="img" aria-labelledby="title desc">
+<title id="title">先處理來源，再產生快照</title>
+<desc id="desc">本篇用保存的來源樣本與 fixture；正式 build 才會讀取官方來源。</desc>
+<defs><marker id="a" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 9 4.5 0 9Z" fill="#a6b6b0"/></marker></defs>
+<rect width="1120" height="675" fill="#101718"/>
+<g font-family="Noto Sans CJK TC, Noto Sans TC, Arial, sans-serif">
+<text x="40" y="48" fill="#f4cd55" font-size="18" letter-spacing="2">ENGINEER STOCK / 02</text>
+<text x="40" y="101" fill="#f0f3ef" font-size="32" font-weight="700">先處理來源，再產生快照</text>
+<path d="M340 243H405" fill="none" stroke="#a6b6b0" stroke-width="2" marker-end="url(#a)"/>
+<path d="M710 243H775" fill="none" stroke="#a6b6b0" stroke-width="2" marker-end="url(#a)"/>
+<path d="M560 320V371H190V420" fill="none" stroke="#a6b6b0" stroke-width="2" marker-end="url(#a)"/>
+<text x="375.0" y="361" text-anchor="middle" fill="#c6d0cb" font-size="15">不合法</text>
+<path d="M930 320V382H190V420" fill="none" stroke="#a6b6b0" stroke-width="2" marker-end="url(#a)"/>
+<text x="560.0" y="372" text-anchor="middle" fill="#c6d0cb" font-size="15">不一致</text>
+<path d="M930 320V382H560V420" fill="none" stroke="#a6b6b0" stroke-width="2" marker-end="url(#a)"/>
+<text x="745.0" y="372" text-anchor="middle" fill="#c6d0cb" font-size="15">通過</text>
+<path d="M710 503H775" fill="none" stroke="#a6b6b0" stroke-width="2" marker-end="url(#a)"/>
+<rect x="40" y="165" width="300" height="155" fill="#1b2525" stroke="#657a70" stroke-width="1.5"/>
+<text x="59" y="193" fill="#657a70" font-size="14">INPUT</text>
+<text x="59" y="232" fill="#f0f3ef" font-size="23" font-weight="700">來源 JSON</text>
+<text x="59" y="267" fill="#c6d0cb" font-size="17">官方欄位、日期與數字多為字串</text>
+<rect x="410" y="165" width="300" height="155" fill="#1b2525" stroke="#f4cd55" stroke-width="1.5"/>
+<text x="429" y="193" fill="#f4cd55" font-size="14">PARSE</text>
+<text x="429" y="232" fill="#f0f3ef" font-size="23" font-weight="700">normalizeQuotes</text>
+<text x="429" y="267" fill="#c6d0cb" font-size="17">Zod 檢查欄位，再正規化</text>
+<rect x="780" y="165" width="300" height="155" fill="#1b2525" stroke="#657a70" stroke-width="1.5"/>
+<text x="799" y="193" fill="#657a70" font-size="14">CHECK</text>
+<text x="799" y="232" fill="#f0f3ef" font-size="23" font-weight="700">Schema 與一致性</text>
+<text x="799" y="267" fill="#c6d0cb" font-size="17">日期、代號、重複與單位</text>
+<rect x="40" y="425" width="300" height="155" fill="#1b2525" stroke="#dc9a80" stroke-width="1.5"/>
+<text x="59" y="453" fill="#dc9a80" font-size="14">STOP</text>
+<text x="59" y="492" fill="#f0f3ef" font-size="23" font-weight="700">拒絕不合法資料</text>
+<text x="59" y="527" fill="#c6d0cb" font-size="17">缺欄位、混日期、重複代號</text>
+<rect x="410" y="425" width="300" height="155" fill="#1b2525" stroke="#91c5a5" stroke-width="1.5"/>
+<text x="429" y="453" fill="#91c5a5" font-size="14">OUTPUT</text>
+<text x="429" y="492" fill="#f0f3ef" font-size="23" font-weight="700">快照與 manifest</text>
+<text x="429" y="527" fill="#c6d0cb" font-size="17">Schema、SHA-256、snapshotId</text>
+<rect x="780" y="425" width="300" height="155" fill="#1b2525" stroke="#91c5a5" stroke-width="1.5"/>
+<text x="799" y="453" fill="#91c5a5" font-size="14">VERIFY</text>
+<text x="799" y="492" fill="#f0f3ef" font-size="23" font-weight="700">verifySnapshot</text>
+<text x="799" y="527" fill="#c6d0cb" font-size="17">驗證檔案及跨檔一致性</text>
+<text x="40" y="626" fill="#a6b6b0" font-size="17">本篇用保存的來源樣本與 fixture；正式 build 才會讀取官方來源。</text>
+</g></svg>

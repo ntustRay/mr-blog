@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 675" role="img" aria-labelledby="title desc">
+<title id="title">條件留在 URL，資料與繪圖分工</title>
+<desc id="desc">比較財報前需檢查期間、幣別、準則與合併／個別編制是否一致。</desc>
+<defs><marker id="a" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 9 4.5 0 9Z" fill="#a6b6b0"/></marker></defs>
+<rect width="1120" height="675" fill="#101718"/>
+<g font-family="Noto Sans CJK TC, Noto Sans TC, Arial, sans-serif">
+<text x="40" y="48" fill="#f4cd55" font-size="18" letter-spacing="2">ENGINEER STOCK / 05</text>
+<text x="40" y="101" fill="#f0f3ef" font-size="32" font-weight="700">條件留在 URL，資料與繪圖分工</text>
+<path d="M340 243H405" fill="none" stroke="#a6b6b0" stroke-width="2" marker-end="url(#a)"/>
+<path d="M710 243H775" fill="none" stroke="#a6b6b0" stroke-width="2" marker-end="url(#a)"/>
+<path d="M930 320V382H190V420" fill="none" stroke="#a6b6b0" stroke-width="2" marker-end="url(#a)"/>
+<text x="560.0" y="372" text-anchor="middle" fill="#c6d0cb" font-size="15">判斷</text>
+<path d="M930 320V382H560V420" fill="none" stroke="#a6b6b0" stroke-width="2" marker-end="url(#a)"/>
+<text x="745.0" y="372" text-anchor="middle" fill="#c6d0cb" font-size="15">符合</text>
+<path d="M710 503H775" fill="none" stroke="#a6b6b0" stroke-width="2" marker-end="url(#a)"/>
+<rect x="40" y="165" width="300" height="155" fill="#1b2525" stroke="#f4cd55" stroke-width="1.5"/>
+<text x="59" y="193" fill="#f4cd55" font-size="14">URL</text>
+<text x="59" y="232" fill="#f0f3ef" font-size="23" font-weight="700">Query parameters</text>
+<text x="59" y="267" fill="#c6d0cb" font-size="17">q、per_max、sort、page</text>
+<rect x="410" y="165" width="300" height="155" fill="#1b2525" stroke="#657a70" stroke-width="1.5"/>
+<text x="429" y="193" fill="#657a70" font-size="14">PARSE</text>
+<text x="429" y="232" fill="#f0f3ef" font-size="23" font-weight="700">parseFilters</text>
+<text x="429" y="267" fill="#c6d0cb" font-size="17">把字串參數轉成條件</text>
+<rect x="780" y="165" width="300" height="155" fill="#1b2525" stroke="#657a70" stroke-width="1.5"/>
+<text x="799" y="193" fill="#657a70" font-size="14">FILTER</text>
+<text x="799" y="232" fill="#f0f3ef" font-size="23" font-weight="700">screen</text>
+<text x="799" y="267" fill="#c6d0cb" font-size="17">篩選 → 排序 → 分頁</text>
+<rect x="40" y="425" width="300" height="155" fill="#1b2525" stroke="#657a70" stroke-width="1.5"/>
+<text x="59" y="453" fill="#657a70" font-size="14">MISSING</text>
+<text x="59" y="492" fill="#f0f3ef" font-size="23" font-weight="700">缺值處理</text>
+<text x="59" y="527" fill="#c6d0cb" font-size="17">有數值條件時，null 不通過</text>
+<rect x="410" y="425" width="300" height="155" fill="#1b2525" stroke="#91c5a5" stroke-width="1.5"/>
+<text x="429" y="453" fill="#91c5a5" font-size="14">ROWS</text>
+<text x="429" y="492" fill="#f0f3ef" font-size="23" font-weight="700">結果與個股資料</text>
+<text x="429" y="527" fill="#c6d0cb" font-size="17">Server 準備表格與圖表資料</text>
+<rect x="780" y="425" width="300" height="155" fill="#1b2525" stroke="#657a70" stroke-width="1.5"/>
+<text x="799" y="453" fill="#657a70" font-size="14">CLIENT</text>
+<text x="799" y="492" fill="#f0f3ef" font-size="23" font-weight="700">ECharts／比較結果</text>
+<text x="799" y="527" fill="#c6d0cb" font-size="17">圖表互動、數值表與缺值</text>
+<text x="40" y="626" fill="#a6b6b0" font-size="17">比較財報前需檢查期間、幣別、準則與合併／個別編制是否一致。</text>
+</g></svg>

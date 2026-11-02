@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 660" role="img" aria-labelledby="title desc">
+<title id="title">本機測試模式的預期結果示意</title><desc id="desc">全部資料兩檔，搜尋9001只有測試電子，搜尋notfound沒有結果。數值取自本次本機回應，這不是瀏覽器截圖。</desc>
+<rect width="1120" height="660" fill="#101718"/>
+<g font-family="Arial, Noto Sans CJK TC, sans-serif">
+<text x="40" y="47" fill="#f4cd55" font-size="17" letter-spacing="2">FIXTURE / EXPECTED RESULTS</text><text x="40" y="94" fill="#f0f3ef" font-size="31" font-weight="700">本機看到這三種結果，就對了</text>
+<text x="40" y="130" fill="#b6c5bd" font-size="18">依實際 SSR 與 API 回應製作的示意圖；非本機截圖。</text>
+<rect x="40" y="170" width="1040" height="165" fill="#1a2425" stroke="#52645d"/>
+<text x="62" y="204" fill="#f4cd55" font-size="18">01  開啟 /stocks</text><text x="960" y="204" fill="#e8ede8" font-size="19">2 筆結果</text>
+<path d="M60 221H1060M60 275H1060" stroke="#3f514b"/>
+<text x="62" y="257" fill="#f0f3ef" font-size="22">9001　測試電子</text><text x="540" y="257" fill="#c6d0cb" font-size="20">上市 TWSE</text><text x="900" y="257" fill="#c6d0cb" font-size="20">129.00</text>
+<text x="62" y="312" fill="#f0f3ef" font-size="22">9002　測試科技</text><text x="540" y="312" fill="#c6d0cb" font-size="20">上櫃 TPEX</text><text x="900" y="312" fill="#c6d0cb" font-size="20">51.00</text>
+<rect x="40" y="367" width="1040" height="108" fill="#1a2425" stroke="#52645d"/>
+<text x="62" y="403" fill="#f4cd55" font-size="18">02  搜尋 9001 → /stocks?q=9001</text><text x="960" y="403" fill="#e8ede8" font-size="19">1 筆結果</text><text x="62" y="446" fill="#f0f3ef" font-size="22">9001　測試電子</text>
+<rect x="40" y="507" width="1040" height="110" fill="#1a2425" stroke="#52645d"/>
+<text x="62" y="543" fill="#f4cd55" font-size="18">03  搜尋 notfound → /stocks?q=notfound</text><text x="960" y="543" fill="#e8ede8" font-size="19">0 筆結果</text><text x="62" y="585" fill="#f0f3ef" font-size="22">找不到符合條件的股票</text>
+</g></svg>

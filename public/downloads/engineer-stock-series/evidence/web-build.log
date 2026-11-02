@@ -1,0 +1,54 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> engineer-stock-web@0.1.0 build
+> next build
+
+▲ Next.js 16.3.4 (Turbopack)
+- Environments: .env.local
+✓ Running next.config.ts took 59ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 7.4s
+  Running TypeScript ...
+  Finished TypeScript in 4.0s ...
+  Collecting page data using 8 workers ...
+  Generating static pages using 8 workers (0/9) ...
+  Generating static pages using 8 workers (2/9) 
+  Generating static pages using 8 workers (4/9) 
+  Generating static pages using 8 workers (6/9) 
+✓ Generating static pages using 8 workers (9/9) in 197ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ƒ /
+├ ○ /_not-found
+├ ƒ /about/data
+├ ○ /about/privacy
+├ ƒ /account
+├ ƒ /api/internal/revalidate
+├ ƒ /api/v1/manifest
+├ ƒ /api/v1/screener
+├ ƒ /api/v1/stocks
+├ ƒ /api/v1/stocks/[market]/[symbol]
+├ ƒ /api/v1/stocks/[market]/[symbol]/financials
+├ ƒ /api/v1/stocks/[market]/[symbol]/ownership
+├ ƒ /api/v1/watchlist
+├ ƒ /auth/callback
+├ ƒ /auth/login
+├ ƒ /auth/register
+├ ƒ /auth/reset-password
+├ ƒ /auth/update-password
+├ ƒ /compare
+├ ○ /robots.txt
+├ ƒ /screener
+├ ƒ /sitemap.xml
+├ ƒ /stocks
+├ ƒ /stocks/[market]/[symbol]
+└ ƒ /watchlist
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

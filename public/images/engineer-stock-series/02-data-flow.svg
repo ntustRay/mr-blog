@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 650" role="img" aria-labelledby="title desc">
+<title id="title">工程師選股網資料流</title><desc id="desc">正式股票快照與本機測試資料由 Next.js 讀取。Next.js 回傳頁面到瀏覽器，會員功能連接 Supabase。</desc>
+<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 9 4.5 0 9Z" fill="#a6b6b0"/></marker><marker id="yellow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 9 4.5 0 9Z" fill="#f4cd55"/></marker></defs>
+<rect width="1120" height="650" fill="#101718"/>
+<g font-family="Arial, Noto Sans CJK TC, sans-serif">
+<text x="40" y="50" fill="#f4cd55" font-size="18" letter-spacing="2">ENGINEER STOCK / 01</text>
+<text x="40" y="99" fill="#f0f3ef" font-size="32" font-weight="700">先分清楚：資料、網站、會員</text>
+<rect x="40" y="160" width="290" height="140" fill="#1a2425" stroke="#4c5b58"/>
+<text x="60" y="195" fill="#c6d0cb" font-size="17">正式資料 · GitHub</text><text x="60" y="232" fill="#f0f3ef" font-size="23" font-weight="700">engineer-stock-data</text><text x="60" y="270" fill="#c6d0cb" font-size="18">Actions → data branch JSON</text>
+<rect x="40" y="395" width="290" height="145" fill="#302c1c" stroke="#f4cd55" stroke-width="2"/>
+<text x="60" y="432" fill="#f4cd55" font-size="17">本篇練習 · 本機</text><text x="60" y="471" fill="#f0f3ef" font-size="24" font-weight="700">fixture.ts</text><text x="60" y="510" fill="#e8dfb8" font-size="18">兩檔虛構公司</text>
+<rect x="430" y="265" width="265" height="165" fill="#1a2425" stroke="#8b9d95"/>
+<text x="450" y="303" fill="#c6d0cb" font-size="17">網站 · Vercel / 本機</text><text x="450" y="345" fill="#f0f3ef" font-size="28" font-weight="700">Next.js Server</text><text x="450" y="386" fill="#c6d0cb" font-size="18">engineer-stock-web</text><text x="450" y="412" fill="#a6b6b0" font-size="16">頁面、API、資料驗證</text>
+<rect x="805" y="160" width="275" height="140" fill="#1a2425" stroke="#4c5b58"/>
+<text x="825" y="198" fill="#c6d0cb" font-size="17">瀏覽器</text><text x="825" y="239" fill="#f0f3ef" font-size="26" font-weight="700">頁面與操作</text><text x="825" y="276" fill="#c6d0cb" font-size="18">搜尋、清單、圖表</text>
+<rect x="805" y="425" width="275" height="145" fill="#1a2425" stroke="#4c5b58"/>
+<text x="825" y="463" fill="#c6d0cb" font-size="17">會員服務</text><text x="825" y="502" fill="#f0f3ef" font-size="26" font-weight="700">Supabase</text><text x="825" y="540" fill="#c6d0cb" font-size="18">Auth、追蹤清單、偏好</text>
+<g fill="none" stroke="#a6b6b0" stroke-width="2" marker-end="url(#arrow)"><path d="M330 230H376V300H427"/><path d="M695 305H748V230H802"/><path d="M695 395H747V490H802"/></g>
+<path d="M330 468H378V390H426" fill="none" stroke="#f4cd55" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#yellow)"/>
+<text x="343" y="575" fill="#f4cd55" font-size="19">STOCK_DATA_MODE=fixture</text><text x="40" y="618" fill="#a6b6b0" font-size="17">黃色虛線是本篇路徑；會員設定在第 6 篇處理。</text>
+</g></svg>

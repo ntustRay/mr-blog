@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 675" role="img" aria-labelledby="title desc">
+<title id="title">頁面與 API 共用同一條讀取路徑</title>
+<desc id="desc">舊 SHA 檔案 404 時整批重讀一次；不把兩個版本的個股與索引混用。</desc>
+<defs><marker id="a" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 9 4.5 0 9Z" fill="#a6b6b0"/></marker></defs>
+<rect width="1120" height="675" fill="#101718"/>
+<g font-family="Noto Sans CJK TC, Noto Sans TC, Arial, sans-serif">
+<text x="40" y="48" fill="#f4cd55" font-size="18" letter-spacing="2">ENGINEER STOCK / 04</text>
+<text x="40" y="101" fill="#f0f3ef" font-size="32" font-weight="700">頁面與 API 共用同一條讀取路徑</text>
+<path d="M340 243H405" fill="none" stroke="#a6b6b0" stroke-width="2" marker-end="url(#a)"/>
+<path d="M710 243H775" fill="none" stroke="#a6b6b0" stroke-width="2" marker-end="url(#a)"/>
+<path d="M930 320V420" fill="none" stroke="#a6b6b0" stroke-width="2" marker-end="url(#a)"/>
+<text x="946" y="372.5" text-anchor="middle" fill="#c6d0cb" font-size="15">命中</text>
+<path d="M930 320V382H560V420" fill="none" stroke="#a6b6b0" stroke-width="2" marker-end="url(#a)"/>
+<text x="745.0" y="372" text-anchor="middle" fill="#c6d0cb" font-size="15">需要讀取</text>
+<path d="M710 503H775" fill="none" stroke="#a6b6b0" stroke-width="2" marker-end="url(#a)"/>
+<text x="742.5" y="490" text-anchor="middle" fill="#c6d0cb" font-size="15">通過</text>
+<path d="M410 503H345" fill="none" stroke="#a6b6b0" stroke-width="2" marker-end="url(#a)"/>
+<text x="377.5" y="490" text-anchor="middle" fill="#c6d0cb" font-size="15">無可用結果</text>
+<rect x="40" y="165" width="300" height="155" fill="#1b2525" stroke="#657a70" stroke-width="1.5"/>
+<text x="59" y="193" fill="#657a70" font-size="14">REQUEST</text>
+<text x="59" y="232" fill="#f0f3ef" font-size="23" font-weight="700">瀏覽器</text>
+<text x="59" y="267" fill="#c6d0cb" font-size="17">開頁面，或請求公開 API</text>
+<rect x="410" y="165" width="300" height="155" fill="#1b2525" stroke="#f4cd55" stroke-width="1.5"/>
+<text x="429" y="193" fill="#f4cd55" font-size="14">SERVER</text>
+<text x="429" y="232" fill="#f0f3ef" font-size="23" font-weight="700">Server／Route Handler</text>
+<text x="429" y="267" fill="#c6d0cb" font-size="17">直接呼叫 getSnapshot</text>
+<rect x="780" y="165" width="300" height="155" fill="#1b2525" stroke="#657a70" stroke-width="1.5"/>
+<text x="799" y="193" fill="#657a70" font-size="14">CACHE</text>
+<text x="799" y="232" fill="#f0f3ef" font-size="23" font-weight="700">已驗證的快照</text>
+<text x="799" y="267" fill="#c6d0cb" font-size="17">快取鍵含設定，期限可重驗</text>
+<rect x="40" y="425" width="300" height="155" fill="#1b2525" stroke="#dc9a80" stroke-width="1.5"/>
+<text x="59" y="453" fill="#dc9a80" font-size="14">FAILURE</text>
+<text x="59" y="492" fill="#f0f3ef" font-size="23" font-weight="700">資料狀態／錯誤</text>
+<text x="59" y="527" fill="#c6d0cb" font-size="17">回應 unavailable 或資料狀態</text>
+<rect x="410" y="425" width="300" height="155" fill="#1b2525" stroke="#657a70" stroke-width="1.5"/>
+<text x="429" y="453" fill="#657a70" font-size="14">GITHUB</text>
+<text x="429" y="492" fill="#f0f3ef" font-size="23" font-weight="700">固定 SHA 讀 JSON</text>
+<text x="429" y="527" fill="#c6d0cb" font-size="17">檢查 hash、Schema、批次</text>
+<rect x="780" y="425" width="300" height="155" fill="#1b2525" stroke="#91c5a5" stroke-width="1.5"/>
+<text x="799" y="453" fill="#91c5a5" font-size="14">RESPONSE</text>
+<text x="799" y="492" fill="#f0f3ef" font-size="23" font-weight="700">頁面或 JSON</text>
+<text x="799" y="527" fill="#c6d0cb" font-size="17">呈現來源、日期與 stale</text>
+<text x="40" y="626" fill="#a6b6b0" font-size="17">舊 SHA 檔案 404 時整批重讀一次；不把兩個版本的個股與索引混用。</text>
+</g></svg>

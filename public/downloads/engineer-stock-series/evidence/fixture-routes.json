@@ -1,0 +1,55 @@
+{
+  "sourceCommit": "23b2d914017adb6f6a7029f53314839e6db235be",
+  "mode": "fixture",
+  "checks": [
+    {
+      "route": "/screener?per_max=15",
+      "status": 200,
+      "expected": "1 筆結果",
+      "passed": true,
+      "cacheControl": "no-cache, must-revalidate"
+    },
+    {
+      "route": "/stocks?sort=close&direction=asc",
+      "status": 200,
+      "expected": "測試科技",
+      "passed": true,
+      "cacheControl": "no-cache, must-revalidate"
+    },
+    {
+      "route": "/compare?stock=TWSE%3A9001&stock=TPEX%3A9002",
+      "status": 200,
+      "expected": "沒有可安全比較的同期間財報",
+      "passed": true,
+      "cacheControl": "no-cache, must-revalidate"
+    },
+    {
+      "route": "/stocks/TWSE/9001",
+      "status": 200,
+      "expected": "測試電子",
+      "passed": true,
+      "cacheControl": "no-cache, must-revalidate"
+    },
+    {
+      "route": "/auth/login",
+      "status": 200,
+      "expected": "會員服務尚未設定",
+      "passed": true,
+      "cacheControl": "no-cache, must-revalidate"
+    },
+    {
+      "route": "/api/v1/watchlist",
+      "status": 401,
+      "expected": "請先登入",
+      "passed": true,
+      "cacheControl": "private, no-store"
+    },
+    {
+      "route": "/api/v1/stocks?market=invalid",
+      "status": 400,
+      "expected": "查詢參數無效",
+      "passed": true,
+      "cacheControl": "no-store"
+    }
+  ]
+}

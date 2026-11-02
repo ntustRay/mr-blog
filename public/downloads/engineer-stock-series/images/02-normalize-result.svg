@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 554" role="img" aria-label="來源樣本轉換：本次執行結果">
+<rect width="1120" height="554" fill="#101718"/>
+<g font-family="Noto Sans CJK TC, Noto Sans TC, Arial, sans-serif">
+<text x="40" y="46" fill="#f4cd55" font-size="17">LOCAL EXECUTION / RESULT CARD</text>
+<text x="40" y="100" fill="#f0f3ef" font-size="30" font-weight="700">來源樣本轉換：本次執行結果</text>
+<path d="M40 198H1080" stroke="#3e5149"/>
+<text x="54" y="170" fill="#c6d0cb" font-size="21">symbol</text>
+<text x="690" y="170" fill="#a8d9b7" font-size="22">1101</text>
+<path d="M40 274H1080" stroke="#3e5149"/>
+<text x="54" y="246" fill="#c6d0cb" font-size="21">date</text>
+<text x="690" y="246" fill="#a8d9b7" font-size="22">2026-10-30</text>
+<path d="M40 350H1080" stroke="#3e5149"/>
+<text x="54" y="322" fill="#c6d0cb" font-size="21">close</text>
+<text x="690" y="322" fill="#a8d9b7" font-size="22">28.35</text>
+<path d="M40 426H1080" stroke="#3e5149"/>
+<text x="54" y="398" fill="#c6d0cb" font-size="21">volumeShares</text>
+<text x="690" y="398" fill="#a8d9b7" font-size="22">41966086</text>
+<text x="40" y="526" fill="#a6b6b0" font-size="17">資料來自 Repo 保存樣本；結果圖依實際輸出製作，非終端截圖。</text>
+</g></svg>
