@@ -163,4 +163,4 @@ https://ntustray.github.io/mr-blog/
 
 ## 工程師選股網自學系列
 
-[從第 1 篇開始](https://ntustray.github.io/mr-blog/posts/engineer-stock-01-local/)：共 8 篇，涵蓋本機、股票 JSON、Actions、Next.js 資料流、篩選圖表、Auth、RLS 與 Vercel。每篇含流程／結果圖、操作與驗證；附件只含教學片段及驗證範圍。
+[從第 1 篇開始](https://ntustray.github.io/mr-blog/posts/engineer-stock-01-local/)：共 9 篇，涵蓋本機、股票 JSON、Actions、Next.js 資料流、篩選圖表、Auth、RLS、Vercel，以及核心架構與面試用技術選型。每篇含流程／結果圖、操作與驗證；附件只含教學片段及驗證範圍。

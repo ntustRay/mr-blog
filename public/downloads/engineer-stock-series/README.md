@@ -1,10 +1,12 @@
-# 工程師選股網：8 篇自學系列
+# 工程師選股網：9 篇自學系列
 
 先從 articles/engineer-stock-01-local.md 開始，各篇已互相連結。images/ 的 SVG 是流程或結果示意，WebP 是正式站／GitHub 實拍。
 
 ## 練習程式
 
 把 snippets/lesson-normalize.ts 複製到 engineer-stock-data 的根目錄，安裝 Bun 1.4.4 並依 lockfile 安裝後，執行 bun lesson-normalize.ts。它使用 Repo 保存的來源樣本，不會發布行情。
+
+第 9 篇另外提供 snippets/lesson-contract.ts。放到 engineer-stock-web 根目錄並 npm ci 後，依文章指令執行 strict TypeScript 檢查與 Bun 執行，觀察 number 通過、字串被 Zod 拒絕。它不呼叫 API、不寫資料庫。
 
 ## 驗證依據
 

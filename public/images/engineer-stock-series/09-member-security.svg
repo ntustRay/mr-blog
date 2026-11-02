@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1070" role="img" aria-labelledby="title desc">
+<title id="title">會員寫入：誰來驗證哪一件事</title>
+<desc id="desc">會員追蹤範例：瀏覽器僅提交 market 與 symbol，Next Server 取得經驗證使用者、驗證輸入並自行填入 user_id。Data API 以使用者權限操作 PostgreSQL。資料庫的 GRANT、RLS 與 constraints 分別檢查可用操作、資料列所有權與資料完整性。</desc>
+<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 9 4.5 0 9Z" fill="#81998d"/></marker></defs>
+<rect width="1200" height="1070" fill="#101718"/>
+<g font-family="Noto Sans CJK TC, Noto Sans TC, Arial, sans-serif">
+<text x="40" y="45" fill="#f4cd55" font-size="18" text-anchor="start" font-weight="400">ENGINEER STOCK / 09</text>
+<text x="40" y="97" fill="#f0f3ef" font-size="32" text-anchor="start" font-weight="700">會員寫入：誰來驗證哪一件事</text>
+<text x="40" y="139" fill="#c6d0cb" font-size="20" text-anchor="start" font-weight="400">以新增追蹤為例；每個 Server 入口都必須自己做檢查。</text>
+<rect x="40" y="190" width="285" height="145" fill="#1b2525" stroke="#81998d" stroke-width="1.5"/>
+<text x="60" y="219" fill="#81998d" font-size="15" text-anchor="start" font-weight="400">BROWSER</text>
+<text x="60" y="255" fill="#f0f3ef" font-size="24" text-anchor="start" font-weight="700">送出股票</text>
+<text x="60" y="289" fill="#c6d0cb" font-size="18" text-anchor="start" font-weight="400">market / symbol</text>
+<text x="60" y="317" fill="#c6d0cb" font-size="18" text-anchor="start" font-weight="400">Cookie 帶 session</text>
+<rect x="400" y="190" width="360" height="145" fill="#1b2525" stroke="#f4cd55" stroke-width="1.5"/>
+<text x="420" y="219" fill="#f4cd55" font-size="15" text-anchor="start" font-weight="400">NEXT SERVER</text>
+<text x="420" y="255" fill="#f0f3ef" font-size="24" text-anchor="start" font-weight="700">驗證身分與輸入</text>
+<text x="420" y="289" fill="#c6d0cb" font-size="18" text-anchor="start" font-weight="400">getUser + schema 驗證</text>
+<text x="420" y="317" fill="#c6d0cb" font-size="18" text-anchor="start" font-weight="400">由 user.id 填入 user_id</text>
+<rect x="835" y="190" width="325" height="145" fill="#1b2525" stroke="#91c5a5" stroke-width="1.5"/>
+<text x="855" y="219" fill="#91c5a5" font-size="15" text-anchor="start" font-weight="400">SUPABASE AUTH</text>
+<text x="855" y="255" fill="#f0f3ef" font-size="24" text-anchor="start" font-weight="700">確認這是誰</text>
+<text x="855" y="289" fill="#c6d0cb" font-size="18" text-anchor="start" font-weight="400">驗證 session 對應的 user</text>
+<text x="855" y="317" fill="#c6d0cb" font-size="18" text-anchor="start" font-weight="400">未登入 → 拒絕</text>
+<path d="M325 260H394" fill="none" stroke="#81998d" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M760 245H829" fill="none" stroke="#81998d" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M835 302H766" fill="none" stroke="#81998d" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="40" y="425" fill="#f4cd55" font-size="23" text-anchor="start" font-weight="700">身分驗證</text>
+<text x="40" y="461" fill="#c6d0cb" font-size="19" text-anchor="start" font-weight="400">回答「你是誰」</text>
+<rect x="400" y="420" width="760" height="145" fill="#1b2525" stroke="#81998d" stroke-width="1.5"/>
+<text x="420" y="449" fill="#81998d" font-size="15" text-anchor="start" font-weight="400">DATA API</text>
+<text x="420" y="485" fill="#f0f3ef" font-size="24" text-anchor="start" font-weight="700">以使用者權限操作資料</text>
+<text x="420" y="519" fill="#c6d0cb" font-size="18" text-anchor="start" font-weight="400">Server SDK .from() 送至 Supabase；不使用 service role 繞過 RLS</text>
+<text x="420" y="547" fill="#c6d0cb" font-size="18" text-anchor="start" font-weight="400">body 不接受任意 user_id；新增時還要確認股票存在</text>
+<path d="M580 335V414" fill="none" stroke="#81998d" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="40" y="665" fill="#f4cd55" font-size="23" text-anchor="start" font-weight="700">資料列授權</text>
+<text x="40" y="701" fill="#c6d0cb" font-size="19" text-anchor="start" font-weight="400">回答「能操作哪一列」</text>
+<rect x="400" y="645" width="760" height="175" fill="#1b2525" stroke="#f4cd55" stroke-width="1.5"/>
+<text x="420" y="674" fill="#f4cd55" font-size="15" text-anchor="start" font-weight="400">POSTGRESQL</text>
+<text x="420" y="710" fill="#f0f3ef" font-size="24" text-anchor="start" font-weight="700">GRANT + RLS + constraints</text>
+<text x="420" y="744" fill="#c6d0cb" font-size="18" text-anchor="start" font-weight="400">GRANT：可執行哪些操作；RLS：auth.uid() = user_id</text>
+<text x="420" y="772" fill="#c6d0cb" font-size="18" text-anchor="start" font-weight="400">USING 看既有列；WITH CHECK 看寫入後的列</text>
+<text x="420" y="800" fill="#c6d0cb" font-size="18" text-anchor="start" font-weight="400">unique(user_id, market, symbol) 阻止同會員重複追蹤</text>
+<path d="M780 565V639" fill="none" stroke="#81998d" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="400" y="900" width="345" height="100" fill="#1b2525" stroke="#91c5a5" stroke-width="1.5"/>
+<text x="420" y="929" fill="#91c5a5" font-size="15" text-anchor="start" font-weight="400">OWNER MATCH / 自己的資料</text>
+<text x="420" y="965" fill="#f0f3ef" font-size="24" text-anchor="start" font-weight="700">依政策允許存取</text>
+<rect x="805" y="900" width="355" height="100" fill="#1b2525" stroke="#e3a18b" stroke-width="1.5"/>
+<text x="825" y="929" fill="#e3a18b" font-size="15" text-anchor="start" font-weight="400">OWNER MISMATCH / 其他會員</text>
+<text x="825" y="965" fill="#f0f3ef" font-size="24" text-anchor="start" font-weight="700">資料列讀寫受到限制</text>
+<path d="M680 820V863H570V894" fill="none" stroke="#81998d" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M880 820V863H980V894" fill="none" stroke="#81998d" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="40" y="1040" fill="#c6d0cb" font-size="18" text-anchor="start" font-weight="400">示意圖｜不同操作的 RLS 行為分別測試；UI 隱藏、登入成功與 RLS 正確不能互相代替。</text>
+</g></svg>

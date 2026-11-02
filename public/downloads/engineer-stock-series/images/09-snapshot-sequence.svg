@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1120" role="img" aria-labelledby="title desc">
+<title id="title">整批一致：舊 SHA 失效時怎麼重讀</title>
+<desc id="desc">示範 reader 先固定 SHA A，讀 manifest 與索引後，個股檔在 A 發生 404。reader 丟棄部分結果，重新解析為 B，並整批重讀一次。hash 或 schema 錯誤不走此重試策略。</desc>
+<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 9 4.5 0 9Z" fill="#81998d"/></marker></defs>
+<rect width="1200" height="1120" fill="#101718"/>
+<g font-family="Noto Sans CJK TC, Noto Sans TC, Arial, sans-serif">
+<text x="40" y="45" fill="#f4cd55" font-size="18" text-anchor="start" font-weight="400">ENGINEER STOCK / 09</text>
+<text x="40" y="97" fill="#f0f3ef" font-size="32" text-anchor="start" font-weight="700">整批一致：舊 SHA 失效時怎麼重讀</text>
+<text x="40" y="139" fill="#c6d0cb" font-size="20" text-anchor="start" font-weight="400">同一批結果使用同一 SHA；遇到指定的檔案 404，整批最多重讀一次。</text>
+<rect x="40" y="180" width="280" height="75" fill="#1b2525" stroke="#81998d" stroke-width="1.5"/>
+<text x="180" y="208" fill="#f4cd55" font-size="13" text-anchor="middle" font-weight="400">READ CONSISTENTLY</text>
+<text x="180" y="238" fill="#f0f3ef" font-size="23" text-anchor="middle" font-weight="700">Web reader</text>
+<path d="M180 255V1015" fill="none" stroke="#81998d" stroke-width="1.5" stroke-dasharray="5 7"/>
+<rect x="460" y="180" width="280" height="75" fill="#1b2525" stroke="#81998d" stroke-width="1.5"/>
+<text x="600" y="208" fill="#f4cd55" font-size="13" text-anchor="middle" font-weight="400">RESOLVE SHA</text>
+<text x="600" y="238" fill="#f0f3ef" font-size="23" text-anchor="middle" font-weight="700">branch resolver</text>
+<path d="M600 255V1015" fill="none" stroke="#81998d" stroke-width="1.5" stroke-dasharray="5 7"/>
+<rect x="880" y="180" width="280" height="75" fill="#1b2525" stroke="#81998d" stroke-width="1.5"/>
+<text x="1020" y="208" fill="#f4cd55" font-size="13" text-anchor="middle" font-weight="400">FIXED COMMIT</text>
+<text x="1020" y="238" fill="#f0f3ef" font-size="23" text-anchor="middle" font-weight="700">GitHub 檔案</text>
+<path d="M1020 255V1015" fill="none" stroke="#81998d" stroke-width="1.5" stroke-dasharray="5 7"/>
+<path d="M180 300H600" fill="none" stroke="#81998d" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="390.0" y="288" fill="#c6d0cb" font-size="18" text-anchor="middle" font-weight="400">解析 data branch</text>
+<path d="M600 355H180" fill="none" stroke="#81998d" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="390.0" y="343" fill="#c6d0cb" font-size="18" text-anchor="middle" font-weight="400">回傳 SHA A</text>
+<path d="M180 420H1020" fill="none" stroke="#81998d" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="600.0" y="408" fill="#c6d0cb" font-size="18" text-anchor="middle" font-weight="400">在 A 讀 manifest + screener index</text>
+<path d="M1020 475H180" fill="none" stroke="#81998d" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="600.0" y="463" fill="#c6d0cb" font-size="18" text-anchor="middle" font-weight="400">取得 A 的部分結果</text>
+<path d="M180 535H1020" fill="none" stroke="#81998d" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="600.0" y="523" fill="#c6d0cb" font-size="18" text-anchor="middle" font-weight="400">在 A 讀個股與所需序列</text>
+<path d="M1020 585H180" fill="none" stroke="#81998d" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="600.0" y="573" fill="#e3a18b" font-size="18" text-anchor="middle" font-weight="400">特定檔案 404</text>
+<rect x="80" y="615" width="1040" height="65" fill="#1b2525" stroke="#e3a18b" stroke-width="1.5"/>
+<text x="600" y="656" fill="#e3a18b" font-size="21" text-anchor="middle" font-weight="700">丟棄 A 的整批部分結果；不把 A 索引與 B 個股拼在一起</text>
+<path d="M180 735H600" fill="none" stroke="#81998d" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="390.0" y="723" fill="#c6d0cb" font-size="18" text-anchor="middle" font-weight="400">重新解析一次 branch</text>
+<path d="M600 790H180" fill="none" stroke="#81998d" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="390.0" y="778" fill="#c6d0cb" font-size="18" text-anchor="middle" font-weight="400">回傳 SHA B</text>
+<path d="M180 855H1020" fill="none" stroke="#81998d" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="600.0" y="843" fill="#c6d0cb" font-size="18" text-anchor="middle" font-weight="400">在 B 整批重讀 manifest、索引、個股與序列</text>
+<path d="M1020 915H180" fill="none" stroke="#81998d" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="600.0" y="903" fill="#91c5a5" font-size="18" text-anchor="middle" font-weight="400">取得同批 B 的結果</text>
+<rect x="80" y="950" width="1040" height="65" fill="#1b2525" stroke="#91c5a5" stroke-width="1.5"/>
+<text x="600" y="991" fill="#91c5a5" font-size="21" text-anchor="middle" font-weight="700">驗證 hash、Schema 與批次；通過才回傳，第二次失敗就結束</text>
+<text x="40" y="1060" fill="#c6d0cb" font-size="18" text-anchor="start" font-weight="400">示意圖｜hash mismatch 不走這個重試；GitHub 不保證舊 objects 永久可取得。</text>
+</g></svg>

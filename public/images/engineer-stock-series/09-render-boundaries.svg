@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1030" role="img" aria-labelledby="title desc">
+<title id="title">Next.js：執行邊界與顯示輸出</title>
+<desc id="desc">初次載入：瀏覽器請求頁面，Server 讀資料並執行 Server Components，產生 RSC 結果與 HTML；瀏覽器先顯示 HTML，再對 Client 元件 hydration。ECharts wrapper 設為 ssr:false，另於 Client 初始化。</desc>
+<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 9 4.5 0 9Z" fill="#81998d"/></marker></defs>
+<rect width="1200" height="1030" fill="#101718"/>
+<g font-family="Noto Sans CJK TC, Noto Sans TC, Arial, sans-serif">
+<text x="40" y="45" fill="#f4cd55" font-size="18" text-anchor="start" font-weight="400">ENGINEER STOCK / 09</text>
+<text x="40" y="97" fill="#f0f3ef" font-size="32" text-anchor="start" font-weight="700">Next.js：執行邊界與顯示輸出</text>
+<text x="40" y="139" fill="#c6d0cb" font-size="20" text-anchor="start" font-weight="400">初次載入示意；client navigation 可改以 RSC payload 更新適用的路由片段。</text>
+<rect x="40" y="185" width="510" height="720" fill="#1b2525" stroke="#81998d" stroke-width="1.5"/>
+<rect x="650" y="185" width="510" height="720" fill="#1b2525" stroke="#81998d" stroke-width="1.5"/>
+<text x="65" y="227" fill="#f4cd55" font-size="20" text-anchor="start" font-weight="400">SERVER / RSC 與頁面產生</text>
+<text x="675" y="227" fill="#91c5a5" font-size="20" text-anchor="start" font-weight="400">BROWSER / 顯示與互動</text>
+<rect x="65" y="265" width="460" height="145" fill="#1b2525" stroke="#f4cd55" stroke-width="1.5"/>
+<text x="85" y="294" fill="#f4cd55" font-size="15" text-anchor="start" font-weight="400">1 / READ + RENDER</text>
+<text x="85" y="330" fill="#f0f3ef" font-size="24" text-anchor="start" font-weight="700">Server Components</text>
+<text x="85" y="364" fill="#c6d0cb" font-size="18" text-anchor="start" font-weight="400">讀 params → 固定快照 → 查詢</text>
+<text x="85" y="392" fill="#c6d0cb" font-size="18" text-anchor="start" font-weight="400">Server 資料模組不進 browser bundle</text>
+<rect x="675" y="265" width="460" height="115" fill="#1b2525" stroke="#81998d" stroke-width="1.5"/>
+<text x="695" y="294" fill="#81998d" font-size="15" text-anchor="start" font-weight="400">REQUEST</text>
+<text x="695" y="330" fill="#f0f3ef" font-size="24" text-anchor="start" font-weight="700">開啟 /stocks</text>
+<text x="695" y="364" fill="#c6d0cb" font-size="18" text-anchor="start" font-weight="400">瀏覽器送 URL 與相關請求資訊</text>
+<path d="M675 322H531" fill="none" stroke="#81998d" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M295 410V459" fill="none" stroke="#81998d" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="65" y="465" width="460" height="175" fill="#1b2525" stroke="#81998d" stroke-width="1.5"/>
+<text x="85" y="494" fill="#81998d" font-size="15" text-anchor="start" font-weight="400">2 / OUTPUT</text>
+<text x="85" y="530" fill="#f0f3ef" font-size="24" text-anchor="start" font-weight="700">RSC 結果與 HTML</text>
+<text x="85" y="564" fill="#c6d0cb" font-size="18" text-anchor="start" font-weight="400">元件結果、Client 參照與 props</text>
+<text x="85" y="592" fill="#c6d0cb" font-size="18" text-anchor="start" font-weight="400">初次載入的顯示內容</text>
+<text x="85" y="620" fill="#c6d0cb" font-size="18" text-anchor="start" font-weight="400">不等於專案自己的 JSON API</text>
+<rect x="675" y="465" width="460" height="115" fill="#1b2525" stroke="#81998d" stroke-width="1.5"/>
+<text x="695" y="494" fill="#81998d" font-size="15" text-anchor="start" font-weight="400">3 / DISPLAY</text>
+<text x="695" y="530" fill="#f0f3ef" font-size="24" text-anchor="start" font-weight="700">先顯示 HTML</text>
+<text x="695" y="564" fill="#c6d0cb" font-size="18" text-anchor="start" font-weight="400">初始可見內容不必等完所有互動</text>
+<path d="M525 520H669" fill="none" stroke="#81998d" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="600" y="447" fill="#c6d0cb" font-size="16" text-anchor="middle" font-weight="400">傳送輸出</text>
+<path d="M905 580V634" fill="none" stroke="#81998d" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="675" y="640" width="460" height="115" fill="#1b2525" stroke="#91c5a5" stroke-width="1.5"/>
+<text x="695" y="669" fill="#91c5a5" font-size="15" text-anchor="start" font-weight="400">4 / HYDRATE</text>
+<text x="695" y="705" fill="#f0f3ef" font-size="24" text-anchor="start" font-weight="700">接上 Client 互動</text>
+<text x="695" y="739" fill="#c6d0cb" font-size="18" text-anchor="start" font-weight="400">載入 Client JS，接上狀態與事件</text>
+<path d="M905 755V789" fill="none" stroke="#81998d" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="675" y="795" width="460" height="100" fill="#1b2525" stroke="#91c5a5" stroke-width="1.5"/>
+<text x="695" y="824" fill="#91c5a5" font-size="15" text-anchor="start" font-weight="400">CHART / ssr: false</text>
+<text x="695" y="860" fill="#f0f3ef" font-size="24" text-anchor="start" font-weight="700">Client 初始化 ECharts</text>
+<text x="65" y="721" fill="#f4cd55" font-size="24" text-anchor="start" font-weight="700">RSC ≠ SSR ≠ SSG</text>
+<text x="65" y="761" fill="#c6d0cb" font-size="18" text-anchor="start" font-weight="400">Server Component 可在 build 或請求時執行。</text>
+<text x="65" y="795" fill="#c6d0cb" font-size="18" text-anchor="start" font-weight="400">一般 Client 元件初次也可能 SSR。</text>
+<text x="65" y="829" fill="#c6d0cb" font-size="18" text-anchor="start" font-weight="400">只有圖表套件另外明示停用 SSR。</text>
+<text x="40" y="956" fill="#c6d0cb" font-size="18" text-anchor="start" font-weight="400">秘密不能傳入 Client props。server-only 保護匯入邊界，不會替傳出的資料保密。</text>
+<text x="40" y="989" fill="#c6d0cb" font-size="18" text-anchor="start" font-weight="400">圖表外層的頁面、SVG fallback 與數值表，仍可由 Server 準備初始內容。</text>
+</g></svg>

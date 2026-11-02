@@ -18,7 +18,8 @@
     "fixture_verify": "valid",
     "web_format": "passed",
     "web_typecheck": "passed",
-    "web_build": "passed"
+    "web_build": "passed",
+    "article_09_contract_example": "strict TypeScript check and Bun runtime passed"
   },
   "production_read_only": {
     "membership_tables_with_rls": 3,
