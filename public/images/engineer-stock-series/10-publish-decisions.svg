@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 820" role="img" aria-labelledby="title desc">
+<title id="title">定時啟動後，可能發布、略過或失敗</title>
+<desc id="desc">流程示意｜次要來源失敗可保留舊值／缺值；新快照驗證失敗不發布。；success 不直接等於資料更新；要看 skip、commitSha 與行情日期。</desc>
+<defs><marker id="a" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 9 4.5 0 9Z" fill="#a6b6b0"/></marker></defs>
+<rect width="1120" height="820" fill="#101718"/>
+<g font-family="Noto Sans CJK TC, Noto Sans TC, Arial, sans-serif">
+<text x="40" y="48" fill="#f4cd55" font-size="18" letter-spacing="2">ENGINEER STOCK / 10</text>
+<text x="40" y="106" fill="#f0f3ef" font-size="32" font-weight="700">定時啟動後，可能發布、略過或失敗</text>
+<path d="M340 278H403" fill="none" stroke="#a6b6b0" stroke-width="2" marker-end="url(#a)"/>
+<text x="371.5" y="264" text-anchor="middle" fill="#c6d0cb" font-size="14"></text>
+<path d="M710 278H773" fill="none" stroke="#a6b6b0" stroke-width="2" marker-end="url(#a)"/>
+<text x="741.5" y="264" text-anchor="middle" fill="#c6d0cb" font-size="14">通過</text>
+<path d="M560 375V410H190V498" fill="none" stroke="#a6b6b0" stroke-width="2" marker-end="url(#a)"/>
+<text x="375.0" y="400" text-anchor="middle" fill="#c6d0cb" font-size="14">檢查失敗</text>
+<path d="M930 375V448H190V498" fill="none" stroke="#a6b6b0" stroke-width="2" marker-end="url(#a)"/>
+<text x="560.0" y="438" text-anchor="middle" fill="#c6d0cb" font-size="14">必要來源／日期／格式失敗</text>
+<path d="M930 375V474H560V498" fill="none" stroke="#a6b6b0" stroke-width="2" marker-end="url(#a)"/>
+<text x="745.0" y="464" text-anchor="middle" fill="#c6d0cb" font-size="14">內容相同</text>
+<path d="M930 375V498" fill="none" stroke="#a6b6b0" stroke-width="2" marker-end="url(#a)"/>
+<text x="947" y="440.0" text-anchor="middle" fill="#c6d0cb" font-size="14">內容不同</text>
+<rect x="40" y="190" width="300" height="185" fill="#1b2525" stroke="#657a70" stroke-width="1.5"/>
+<text x="58" y="219" fill="#657a70" font-size="14">TRIGGER</text>
+<text x="58" y="259" fill="#f0f3ef" font-size="23" font-weight="700">schedule / push / 手動</text>
+<text x="58" y="295" fill="#c6d0cb" font-size="17">平日台灣 19:10、22:10</text>
+<text x="58" y="323" fill="#c6d0cb" font-size="17">排程可能延遲</text>
+<rect x="410" y="190" width="300" height="185" fill="#1b2525" stroke="#f4cd55" stroke-width="1.5"/>
+<text x="428" y="219" fill="#f4cd55" font-size="14">VALIDATE</text>
+<text x="428" y="259" fill="#f0f3ef" font-size="23" font-weight="700">先檢查程式</text>
+<text x="428" y="295" fill="#c6d0cb" font-size="17">Biome、TypeScript、tests</text>
+<text x="428" y="323" fill="#c6d0cb" font-size="17">needs: validate 才往下</text>
+<rect x="780" y="190" width="300" height="185" fill="#1b2525" stroke="#657a70" stroke-width="1.5"/>
+<text x="798" y="219" fill="#657a70" font-size="14">COLLECT</text>
+<text x="798" y="259" fill="#f0f3ef" font-size="23" font-weight="700">取得並整合 API</text>
+<text x="798" y="295" fill="#c6d0cb" font-size="17">必要來源、交易日與 schema</text>
+<text x="798" y="323" fill="#c6d0cb" font-size="17">整合次要來源與前版</text>
+<rect x="40" y="505" width="300" height="185" fill="#1b2525" stroke="#e3a18b" stroke-width="1.5"/>
+<text x="58" y="534" fill="#e3a18b" font-size="14">STOP</text>
+<text x="58" y="574" fill="#f0f3ef" font-size="23" font-weight="700">保留前一版 SHA</text>
+<text x="58" y="610" fill="#c6d0cb" font-size="17">檢查或必要來源失敗</text>
+<text x="58" y="638" fill="#c6d0cb" font-size="17">拒絕把錯誤資料當新版</text>
+<rect x="410" y="505" width="300" height="185" fill="#1b2525" stroke="#657a70" stroke-width="1.5"/>
+<text x="428" y="534" fill="#657a70" font-size="14">SKIP</text>
+<text x="428" y="574" fill="#f0f3ef" font-size="23" font-weight="700">內容相同則略過</text>
+<text x="428" y="610" fill="#c6d0cb" font-size="17">reason: unchanged</text>
+<text x="428" y="638" fill="#c6d0cb" font-size="17">成功結束，但不重發</text>
+<rect x="780" y="505" width="300" height="185" fill="#1b2525" stroke="#91c5a5" stroke-width="1.5"/>
+<text x="798" y="534" fill="#91c5a5" font-size="14">VERIFY + PUBLISH</text>
+<text x="798" y="574" fill="#f0f3ef" font-size="23" font-weight="700">驗證後發布 data SHA</text>
+<text x="798" y="610" fill="#c6d0cb" font-size="17">新快照驗證 → root commit</text>
+<text x="798" y="638" fill="#c6d0cb" font-size="17">force-with-lease 檢查</text>
+<text x="40" y="743" fill="#c6d0cb" font-size="18">流程示意｜次要來源失敗可保留舊值／缺值；新快照驗證失敗不發布。</text>
+<text x="40" y="772" fill="#c6d0cb" font-size="18">success 不直接等於資料更新；要看 skip、commitSha 與行情日期。</text>
+</g></svg>

@@ -18,7 +18,7 @@ references:
   url: https://supabase.com/docs/guides/database/postgres/row-level-security
 ---
 
-系列：[1 本機啟動](../engineer-stock-01-local/) · [2 股票 JSON](../engineer-stock-02-json/) · [3 Actions](../engineer-stock-03-actions/) · [4 Next.js 資料流](../engineer-stock-04-nextjs-data/) · [5 篩選與圖表](../engineer-stock-05-screener-charts/) · [6 註冊登入](../engineer-stock-06-auth/) · [7 追蹤與 RLS](../engineer-stock-07-rls/) · [8 Vercel 部署](../engineer-stock-08-vercel/) · [9 核心架構與選型](../engineer-stock-09-architecture/)
+系列：[1 本機啟動](../engineer-stock-01-local/) · [2 股票 JSON](../engineer-stock-02-json/) · [3 Actions](../engineer-stock-03-actions/) · [4 Next.js 資料流](../engineer-stock-04-nextjs-data/) · [5 篩選與圖表](../engineer-stock-05-screener-charts/) · [6 註冊登入](../engineer-stock-06-auth/) · [7 追蹤與 RLS](../engineer-stock-07-rls/) · [8 Vercel 部署](../engineer-stock-08-vercel/) · [9 核心架構與選型](../engineer-stock-09-architecture/) · [10 Workflow 與 API 來源](../engineer-stock-10-workflow-api-sources/)
 
 完成這篇：找到誰決定資料擁有者，並用實際 SQL 驗證 A 不能讀寫 B 的追蹤資料。
 

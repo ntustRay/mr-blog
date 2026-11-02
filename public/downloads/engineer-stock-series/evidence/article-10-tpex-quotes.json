@@ -1,0 +1,29 @@
+{
+  "name": "tpex-quotes",
+  "url": "https://www.tpex.org.tw/openapi/v1/tpex_mainboard_daily_close_quotes",
+  "observedAt": "2026-11-02T21:05:46.011145+08:00",
+  "status": 200,
+  "contentType": "application/json",
+  "bytes": 5246317,
+  "rows": 13454,
+  "sample": {
+    "Date": "1151102",
+    "SecuritiesCompanyCode": "00411A",
+    "CompanyName": "主動統一前沿科技",
+    "Close": "9.60",
+    "Change": "-0.13 ",
+    "Open": "9.57",
+    "High": "9.62",
+    "Low": "9.49",
+    "Average": "9.57",
+    "TradingShares": "10521159",
+    "TransactionAmount": "100666443",
+    "TransactionNumber": "1771",
+    "LatestBidPrice": "9.60",
+    "LatesAskPrice": "9.61",
+    "Capitals": "455076000",
+    "NextReferencePrice": "9.60",
+    "NextLimitUp": "9999.95",
+    "NextLimitDown": "0.01"
+  }
+}

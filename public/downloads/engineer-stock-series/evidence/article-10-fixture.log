@@ -1,0 +1,2 @@
+$ bun src/cli.ts fixture
+{"snapshotId":"2026-10-27T12:00:00.000Z","files":18,"outputDir":"staging/snapshot","fixture":true}

@@ -1,0 +1,22 @@
+{
+  "name": "twse-quotes",
+  "url": "https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL",
+  "observedAt": "2026-11-02T21:05:46.010376+08:00",
+  "status": 200,
+  "contentType": "application/json",
+  "bytes": 322154,
+  "rows": 1389,
+  "sample": {
+    "Date": "1151030",
+    "Code": "00400A",
+    "Name": "主動國泰動能高息",
+    "TradeVolume": "66823675",
+    "TradeValue": "918376509",
+    "OpeningPrice": "13.81",
+    "HighestPrice": "13.93",
+    "LowestPrice": "13.60",
+    "ClosingPrice": "13.80",
+    "Change": "-0.5600",
+    "Transaction": "21233"
+  }
+}

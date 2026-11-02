@@ -1,0 +1,33 @@
+{
+  "name": "twse-spec",
+  "url": "https://openapi.twse.com.tw/v1/swagger.json",
+  "observedAt": "2026-11-02T21:05:57.582045+08:00",
+  "status": 200,
+  "contentType": "application/json",
+  "bytes": 309960,
+  "apiVersion": "2.0",
+  "basePath": "/v1",
+  "servers": null,
+  "paths": {
+    "/exchangeReport/BWIBBU_ALL": {
+      "summary": "上市個股日本益比、殖利率及股價淨值比（依代碼查詢）",
+      "parameters": []
+    },
+    "/exchangeReport/STOCK_DAY_ALL": {
+      "summary": "上市個股日成交資訊",
+      "parameters": []
+    },
+    "/opendata/t187ap03_L": {
+      "summary": "上市公司基本資料",
+      "parameters": []
+    },
+    "/opendata/t187ap05_L": {
+      "summary": "上市公司每月營業收入彙總表",
+      "parameters": []
+    },
+    "/opendata/t187ap06_L_ci": {
+      "summary": "上市公司綜合損益表(一般業)",
+      "parameters": []
+    }
+  }
+}

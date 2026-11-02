@@ -1,0 +1,2 @@
+$ bun src/cli.ts verify
+{"stage":"verify","files":18,"status":"valid"}

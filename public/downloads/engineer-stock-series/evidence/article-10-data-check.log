@@ -1,0 +1,182 @@
+$ biome check src tests
+src/approval.ts:29:7 lint/complexity/useOptionalChain  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Change to an optional chain.
+  
+    27 │     const source = registryById.get(entry.id);
+    28 │     if (
+  > 29 │       !source ||
+       │       ^^^^^^^^^^
+  > 30 │       !source.redistribution_approved ||
+       │       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    31 │       !source.license_name ||
+    32 │       !source.license_url ||
+  
+  i An optional chain is shorter, and it avoids repeating the same expression in each check.
+  
+  i Unsafe fix: Change to an optional chain.
+  
+     27  27 │       const source = registryById.get(entry.id);
+     28  28 │       if (
+     29     │ - ······!source·||
+     30     │ - ······!source.redistribution_approved·||
+         29 │ + ······!source?.redistribution_approved·||
+     31  30 │         !source.license_name ||
+     32  31 │         !source.license_url ||
+  
+
+src/approval.ts:67:7 lint/complexity/useOptionalChain  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Change to an optional chain.
+  
+    65 │     const source = used.find((item) => item.id === exception.source);
+    66 │     if (
+  > 67 │       !source ||
+       │       ^^^^^^^^^^
+  > 68 │       source.category !== 'market_exceptions' ||
+       │       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    69 │       (source.market !== market && source.market !== 'BOTH')
+    70 │     )
+  
+  i An optional chain is shorter, and it avoids repeating the same expression in each check.
+  
+  i Unsafe fix: Change to an optional chain.
+  
+     65  65 │       const source = used.find((item) => item.id === exception.source);
+     66  66 │       if (
+     67     │ - ······!source·||
+     68     │ - ······source.category·!==·'market_exceptions'·||
+         67 │ + ······source?.category·!==·'market_exceptions'·||
+     69  68 │         (source.market !== market && source.market !== 'BOTH')
+     70  69 │       )
+  
+
+src/collect.ts:47:7 lint/complexity/useOptionalChain  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Change to an optional chain.
+  
+    45 │     const source = byId.get(calendar.source);
+    46 │     if (
+  > 47 │       !source ||
+       │       ^^^^^^^^^^
+  > 48 │       source.category !== 'trading_calendar' ||
+       │       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    49 │       (source.market !== calendar.market && source.market !== 'BOTH')
+    50 │     )
+  
+  i An optional chain is shorter, and it avoids repeating the same expression in each check.
+  
+  i Unsafe fix: Change to an optional chain.
+  
+     45  45 │       const source = byId.get(calendar.source);
+     46  46 │       if (
+     47     │ - ······!source·||
+     48     │ - ······source.category·!==·'trading_calendar'·||
+         47 │ + ······source?.category·!==·'trading_calendar'·||
+     49  48 │         (source.market !== calendar.market && source.market !== 'BOTH')
+     50  49 │       )
+  
+
+src/collect.ts:57:7 lint/complexity/useOptionalChain  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Change to an optional chain.
+  
+    55 │     const source = byId.get(item.source);
+    56 │     if (
+  > 57 │       !source ||
+       │       ^^^^^^^^^^
+  > 58 │       source.category !== 'securities' ||
+       │       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    59 │       (source.market !== item.security.market && source.market !== 'BOTH')
+    60 │     )
+  
+  i An optional chain is shorter, and it avoids repeating the same expression in each check.
+  
+  i Unsafe fix: Change to an optional chain.
+  
+     55  55 │       const source = byId.get(item.source);
+     56  56 │       if (
+     57     │ - ······!source·||
+     58     │ - ······source.category·!==·'securities'·||
+         57 │ + ······source?.category·!==·'securities'·||
+     59  58 │         (source.market !== item.security.market && source.market !== 'BOTH')
+     60  59 │       )
+  
+
+src/collect.ts:66:9 lint/complexity/useOptionalChain  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Change to an optional chain.
+  
+    64 │   for (const item of args.exceptions) {
+    65 │     const source = byId.get(item.source);
+  > 66 │     if (!source || source.category !== 'market_exceptions')
+       │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    67 │       throw new Error(`Invalid exception source: ${item.source}`);
+    68 │     usedIds.add(source.id);
+  
+  i An optional chain is shorter, and it avoids repeating the same expression in each check.
+  
+  i Unsafe fix: Change to an optional chain.
+  
+     64  64 │     for (const item of args.exceptions) {
+     65  65 │       const source = byId.get(item.source);
+     66     │ - ····if·(!source·||·source.category·!==·'market_exceptions')
+         66 │ + ····if·(source?.category·!==·'market_exceptions')
+     67  67 │         throw new Error(`Invalid exception source: ${item.source}`);
+     68  68 │       usedIds.add(source.id);
+  
+
+src/collect.ts:73:7 lint/complexity/useOptionalChain  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Change to an optional chain.
+  
+    71 │     const source = byId.get(id);
+    72 │     if (
+  > 73 │       !source ||
+       │       ^^^^^^^^^^
+  > 74 │       !source.redistribution_approved ||
+       │       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    75 │       !source.license_name ||
+    76 │       !source.license_url ||
+  
+  i An optional chain is shorter, and it avoids repeating the same expression in each check.
+  
+  i Unsafe fix: Change to an optional chain.
+  
+     71  71 │       const source = byId.get(id);
+     72  72 │       if (
+     73     │ - ······!source·||
+     74     │ - ······!source.redistribution_approved·||
+         73 │ + ······!source?.redistribution_approved·||
+     75  74 │         !source.license_name ||
+     76  75 │         !source.license_url ||
+  
+
+src/snapshot.ts:21:7 lint/complexity/useOptionalChain  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Change to an optional chain.
+  
+    19 │     );
+    20 │     if (
+  > 21 │       !source ||
+       │       ^^^^^^^^^^
+  > 22 │       !source.redistribution_approved ||
+       │       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    23 │       !source.license_name ||
+    24 │       !source.license_url ||
+  
+  i An optional chain is shorter, and it avoids repeating the same expression in each check.
+  
+  i Unsafe fix: Change to an optional chain.
+  
+     19  19 │       );
+     20  20 │       if (
+     21     │ - ······!source·||
+     22     │ - ······!source.redistribution_approved·||
+         21 │ + ······!source?.redistribution_approved·||
+     23  22 │         !source.license_name ||
+     24  23 │         !source.license_url ||
+  
+
+Checked 60 files in 30ms. No fixes applied.
+Found 7 warnings.

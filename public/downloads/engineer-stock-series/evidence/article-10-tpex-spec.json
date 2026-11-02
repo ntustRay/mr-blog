@@ -1,0 +1,41 @@
+{
+  "name": "tpex-spec",
+  "url": "https://www.tpex.org.tw/openapi/swagger.json",
+  "observedAt": "2026-11-02T21:05:58.058047+08:00",
+  "status": 200,
+  "contentType": "application/json",
+  "bytes": 476923,
+  "apiVersion": "3.0.0",
+  "basePath": null,
+  "servers": [
+    {
+      "url": "https://www.tpex.org.tw/openapi/v1"
+    }
+  ],
+  "paths": {
+    "/tpex_mainboard_daily_close_quotes": {
+      "summary": "上櫃股票行情",
+      "parameters": []
+    },
+    "/tpex_mainboard_margin_balance": {
+      "summary": "上櫃股票融資融券餘額",
+      "parameters": []
+    },
+    "/tpex_3insti_daily_trading": {
+      "summary": "上櫃股票三大法人買賣明細資訊",
+      "parameters": []
+    },
+    "/mopsfin_t187ap03_O": {
+      "summary": "上櫃股票基本資料",
+      "parameters": []
+    },
+    "/mopsfin_t187ap05_O": {
+      "summary": "上櫃公司每月營業收入彙總表",
+      "parameters": []
+    },
+    "/mopsfin_t187ap06_O_ciA": {
+      "summary": "上櫃公司財報資訊( 一般業)",
+      "parameters": []
+    }
+  }
+}

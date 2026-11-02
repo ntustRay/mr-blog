@@ -11,6 +11,7 @@ tags:
 - PostgreSQL
 draft: false
 relatedPostIds:
+- engineer-stock-10-workflow-api-sources
 - engineer-stock-08-vercel
 - engineer-stock-04-nextjs-data
 - engineer-stock-07-rls
@@ -61,7 +62,7 @@ references:
   url: https://echarts.apache.org/handbook/en/best-practices/canvas-vs-svg/
 ---
 
-系列：[1 本機啟動](./engineer-stock-01-local.md) · [2 股票 JSON](./engineer-stock-02-json.md) · [3 Actions](./engineer-stock-03-actions.md) · [4 Next.js 資料流](./engineer-stock-04-nextjs-data.md) · [5 篩選與圖表](./engineer-stock-05-screener-charts.md) · [6 註冊登入](./engineer-stock-06-auth.md) · [7 追蹤與 RLS](./engineer-stock-07-rls.md) · [8 Vercel 部署](./engineer-stock-08-vercel.md) · [9 核心架構與選型](./engineer-stock-09-architecture.md)
+系列：[1 本機啟動](./engineer-stock-01-local.md) · [2 股票 JSON](./engineer-stock-02-json.md) · [3 Actions](./engineer-stock-03-actions.md) · [4 Next.js 資料流](./engineer-stock-04-nextjs-data.md) · [5 篩選與圖表](./engineer-stock-05-screener-charts.md) · [6 註冊登入](./engineer-stock-06-auth.md) · [7 追蹤與 RLS](./engineer-stock-07-rls.md) · [8 Vercel 部署](./engineer-stock-08-vercel.md) · [9 核心架構與選型](./engineer-stock-09-architecture.md) · [10 Workflow 與 API 來源](./engineer-stock-10-workflow-api-sources.md)
 
 這個專案最需要講清楚的，是兩種性質不同的資料：**公開、批次更新的股票快照，以及需要登入、依會員隔離的私人資料**。前者放 GitHub，後者放 Supabase；Next.js 接起查詢、畫面與會員操作。
 

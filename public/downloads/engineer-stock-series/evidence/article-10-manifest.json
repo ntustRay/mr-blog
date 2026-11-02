@@ -1,0 +1,57 @@
+{
+  "name": "manifest",
+  "url": "https://raw.githubusercontent.com/ntustRay/engineer-stock-data/ac352597ddb64be31db63af46fd4bbfeb489016e/manifest.json",
+  "observedAt": "2026-11-02T21:05:51.639676+08:00",
+  "status": 200,
+  "contentType": "text/plain; charset=utf-8",
+  "bytes": 1465151,
+  "data": {
+    "schemaVersion": "1.1.0",
+    "snapshotId": "2026-10-31T11:51:35.660Z",
+    "generatedAt": "2026-10-31T11:51:35.660Z",
+    "latestTradingDate": "2026-10-30",
+    "counts": {
+      "securities": 1986,
+      "tradingDates": 1
+    },
+    "datasets": {
+      "annual_financials": {
+        "asOfDate": null,
+        "status": "unavailable"
+      },
+      "daily_institutional": {
+        "asOfDate": "2026-10-30",
+        "status": "current"
+      },
+      "daily_margin": {
+        "asOfDate": "2026-10-30",
+        "status": "current"
+      },
+      "daily_prices": {
+        "asOfDate": "2026-10-30",
+        "status": "current"
+      },
+      "daily_valuation": {
+        "asOfDate": "2026-10-30",
+        "status": "current"
+      },
+      "dividends": {
+        "asOfDate": "2026-10-30",
+        "status": "current"
+      },
+      "monthly_revenues": {
+        "asOfDate": "2026-09-30",
+        "status": "current"
+      },
+      "quarterly_financials": {
+        "asOfDate": "2026-06-30",
+        "status": "current"
+      },
+      "tdcc_distribution": {
+        "asOfDate": "2026-10-22",
+        "status": "current"
+      }
+    }
+  },
+  "fileCount": 11921
+}

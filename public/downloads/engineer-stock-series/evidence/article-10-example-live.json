@@ -1,0 +1,13 @@
+{
+  "mode": "live",
+  "source": "twse.daily_price",
+  "sourceUrl": "https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL",
+  "rows": 1389,
+  "asOfDate": "2026-10-30",
+  "sample": {
+    "symbol": "1101",
+    "date": "2026-10-30",
+    "close": 28.35,
+    "volumeShares": 41966086
+  }
+}

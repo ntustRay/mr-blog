@@ -1,0 +1,113 @@
+bun test v1.4.4 (38afee6c8)
+
+tests/merge.test.ts:
+(pass) snapshot merge > preserves semantic equality after published exceptions are loaded in their canonical order [11.16ms]
+(pass) snapshot merge > upserts corrections and retains separate low-frequency histories [3.11ms]
+(pass) snapshot merge > fails on missing securities, future data, duplicate keys, or a date regression [0.82ms]
+
+tests/normalize.test.ts:
+(pass) normalization > handles numbers and preserves missing values [0.13ms]
+(pass) normalization > converts units and ROC dates [0.19ms]
+(pass) normalization > derives quarterly values only with a previous period [0.03ms]
+(pass) normalization > retains calendar days and complete months [0.11ms]
+
+tests/fetch.test.ts:
+(pass) approved source fetching > refuses unapproved or non-allowlisted URLs [0.66ms]
+(pass) approved source fetching > retries transient failures and validates response [0.69ms]
+(pass) approved source fetching > rejects changed schemas and oversized responses [0.60ms]
+
+tests/financial.test.ts:
+(pass) financial normalization > derives single-quarter monetary amounts from matching cumulative reports [0.75ms]
+(pass) financial normalization > never fabricates a quarter or announcement time when its predecessor is unavailable [0.23ms]
+(pass) financial normalization > keeps balance-sheet values as of the reporting date and requires cumulative Q4 for annual reports [0.46ms]
+
+tests/snapshot.test.ts:
+(pass) snapshot > is deterministic and verifies file hashes [2.56ms]
+(pass) snapshot > rejects incomplete market coverage [0.24ms]
+(pass) snapshot > rejects duplicate security and invalid OHLC [0.37ms]
+(pass) snapshot > never publishes unapproved sources [0.07ms]
+(pass) snapshot > detects tampered data and unexpected files [6.21ms]
+(pass) snapshot > reconstructs the previous validated snapshot without losing low-frequency data [2.49ms]
+(pass) snapshot > retains only 30 calendar days [0.89ms]
+
+tests/notify.test.ts:
+(pass) cache notification > signs the exact timestamp and body and reports the response status [0.35ms]
+(pass) cache notification > rejects insecure URLs and weak secrets [0.08ms]
+
+tests/publish.test.ts:
+To /tmp/stock-publish-test-jktkPh/remote.git
+ * [new branch]      dc64235f9c7ca200ffab2d1416561657d551d7fb -> data
+To /tmp/stock-publish-test-jktkPh/remote.git
+ + dc64235...b58889e b58889e2723bc04f12073a1d421ba0a4b61bf040 -> data (forced update)
+(pass) orphan publishing > replaces data with a parentless commit and rejects unsafe paths [79.25ms]
+
+tests/providers.test.ts:
+(pass) market quote normalization > normalizes both markets without converting shares into lots [0.99ms]
+(pass) market quote normalization > rejects changed schemas, duplicate securities, and inconsistent dates [0.35ms]
+(pass) market quote normalization > preserves unknowns and rejects invalid prices [0.10ms]
+(pass) market quote normalization > uses a separately classified common-stock universe and validates coverage [2.27ms]
+(pass) market quote normalization > collects only approved sources with injected HTTP and fails closed on schema errors [3.29ms]
+
+tests/approval.test.ts:
+(pass) publication gate > accepts only a verified snapshot with approved sources and rejects fixtures [3.91ms]
+(pass) publication gate > refuses a populated metric without its approved source and provenance [8.02ms]
+
+tests/production.test.ts:
+(pass) official ingestion with fixed response fixtures > keeps absent dividend decision dates unknown instead of blocking every other company [1.37ms]
+{"stage":"fetch","source":"twse.calendar","rows":27,"ms":2}
+{"stage":"fetch","source":"twse.securities","rows":2,"ms":1}
+{"stage":"fetch","source":"tpex.securities","rows":2,"ms":1}
+{"stage":"fetch","source":"twse.daily_price","rows":2,"ms":0}
+{"stage":"fetch","source":"tpex.daily_price","rows":2,"ms":0}
+{"stage":"fetch","source":"twse.valuation","rows":2,"ms":2}
+{"stage":"fetch","source":"twse.revenue","rows":2,"ms":1}
+{"stage":"fetch","source":"twse.financial","rows":2,"ms":1}
+{"stage":"fetch","source":"tpex.valuation","rows":2,"ms":1}
+{"stage":"fetch","source":"tpex.revenue","rows":2,"ms":1}
+{"stage":"fetch","source":"tpex.financial","rows":2,"ms":1}
+{"stage":"fetch","source":"twse.dividends","rows":7,"ms":0}
+{"stage":"fetch","source":"tpex.institutional","rows":2,"ms":0}
+{"stage":"fetch","source":"tpex.margin","rows":2,"ms":1}
+{"stage":"fetch","source":"tdcc.distribution","rows":68,"ms":1}
+(pass) official ingestion with fixed response fixtures > assembles both markets, valuations, monthly revenue, cumulative financials, chips and BOM-prefixed ownership [34.24ms]
+{"stage":"fetch","source":"twse.calendar","rows":27,"ms":0}
+{"stage":"fetch","source":"twse.securities","rows":2,"ms":1}
+{"stage":"fetch","source":"tpex.securities","rows":2,"ms":0}
+{"stage":"fetch","source":"tpex.daily_price","rows":2,"ms":0}
+{"stage":"fetch","source":"twse.calendar","rows":27,"ms":0}
+(pass) official ingestion with fixed response fixtures > fails a missing required quote schema and skips explicit non-trading dates [1.80ms]
+{"stage":"fetch","source":"twse.calendar","rows":27,"ms":0}
+{"stage":"fetch","source":"twse.securities","rows":2,"ms":3}
+{"stage":"fetch","source":"tpex.securities","rows":2,"ms":3}
+{"stage":"fetch","source":"twse.daily_price","rows":2,"ms":3}
+{"stage":"fetch","source":"tpex.daily_price","rows":2,"ms":3}
+{"stage":"fetch","source":"twse.valuation","rows":2,"ms":0}
+{"stage":"fetch","source":"twse.revenue","rows":2,"ms":0}
+{"stage":"fetch","source":"twse.financial","rows":2,"ms":0}
+{"stage":"fetch","source":"tpex.valuation","rows":2,"ms":0}
+{"stage":"optional-source","status":"stale","reason":"Valuation and price dates differ"}
+{"stage":"fetch","source":"tpex.revenue","rows":2,"ms":0}
+{"stage":"fetch","source":"tpex.financial","rows":2,"ms":0}
+{"stage":"fetch","source":"twse.dividends","rows":7,"ms":0}
+{"stage":"fetch","source":"tpex.institutional","rows":2,"ms":0}
+{"stage":"optional-source","status":"stale","reason":"Institutional and price dates differ"}
+{"stage":"fetch","source":"tpex.margin","rows":2,"ms":0}
+{"stage":"fetch","source":"tdcc.distribution","rows":68,"ms":0}
+(pass) official ingestion with fixed response fixtures > does not attach valuation or institutional data from another trading date [8.02ms]
+(pass) official ingestion with fixed response fixtures > excludes exchange-classified TDRs and does not subtract cumulative EPS [0.27ms]
+(pass) official ingestion with fixed response fixtures > converts margin trading units to shares rather than applying quote-volume units [0.06ms]
+
+tests/low-frequency.test.ts:
+(pass) low-frequency normalization > converts revenue using the explicitly supplied unit and does not invent an announcement time [0.15ms]
+(pass) low-frequency normalization > groups ownership by date and symbol and rejects duplicated levels [0.21ms]
+(pass) low-frequency normalization > applies a monthly correction while preserving unrelated histories [0.84ms]
+
+tests/calendar.test.ts:
+(pass) verified trading calendar > handles weekdays, closures and exceptional weekend sessions [0.08ms]
+(pass) verified trading calendar > fails outside its verified range or when markets disagree [0.13ms]
+(pass) verified trading calendar > uses Taipei date instead of the runner timezone [0.11ms]
+
+ 42 pass
+ 0 fail
+ 165 expect() calls
+Ran 42 tests across 12 files. [264.00ms]

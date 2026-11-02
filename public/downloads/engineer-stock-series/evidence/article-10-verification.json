@@ -1,0 +1,23 @@
+{
+  "checkedAt": "2026-11-02",
+  "timezone": "Asia/Taipei",
+  "dataCommit": "c1633aeffe68d4ad95e88ea403d1bfbc1585f70e",
+  "snapshotCommit": "ac352597ddb64be31db63af46fd4bbfeb489016e",
+  "executed": {
+    "unitTests": 42,
+    "fixtureFiles": 18,
+    "fixtureVerify": "valid",
+    "biomeExitCode": 0,
+    "existingBiomeWarnings": 7,
+    "typecheck": "passed",
+    "exampleStrictTypecheck": "passed",
+    "exampleFixture": "passed",
+    "exampleLive": "passed"
+  },
+  "notExecuted": [
+    "A new production data Workflow dispatch",
+    "A production data branch update"
+  ],
+  "scheduleEvidence": "Configured weekdays at 19:10 and 22:10 Asia/Taipei; retrieved schedule runs contained weekly Verify published data, not a Nov 2 successful scheduled Publish data run",
+  "observedSource": "Live TWSE response on 2026-11-02 returned asOfDate 2026-10-30; HTTP success is not freshness"
+}

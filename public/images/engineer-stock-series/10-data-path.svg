@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 820" role="img" aria-labelledby="title desc">
+<title id="title">官方來源、GitHub 快照、網站 API 分開看</title>
+<desc id="desc">流程示意｜官方 API 回原始資料；Next.js 自己的 API 回正規化資料與 meta。；資料更新不必讓每一位使用者重新抓一次全市場。</desc>
+<defs><marker id="a" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 9 4.5 0 9Z" fill="#a6b6b0"/></marker></defs>
+<rect width="1120" height="820" fill="#101718"/>
+<g font-family="Noto Sans CJK TC, Noto Sans TC, Arial, sans-serif">
+<text x="40" y="48" fill="#f4cd55" font-size="18" letter-spacing="2">ENGINEER STOCK / 10</text>
+<text x="40" y="106" fill="#f0f3ef" font-size="32" font-weight="700">官方來源、GitHub 快照、網站 API 分開看</text>
+<path d="M340 278H403" fill="none" stroke="#a6b6b0" stroke-width="2" marker-end="url(#a)"/>
+<text x="371.5" y="264" text-anchor="middle" fill="#c6d0cb" font-size="14">來源</text>
+<path d="M710 278H773" fill="none" stroke="#a6b6b0" stroke-width="2" marker-end="url(#a)"/>
+<text x="741.5" y="264" text-anchor="middle" fill="#c6d0cb" font-size="14">通過</text>
+<path d="M930 375V498" fill="none" stroke="#a6b6b0" stroke-width="2" marker-end="url(#a)"/>
+<text x="947" y="440.0" text-anchor="middle" fill="#c6d0cb" font-size="14">固定版本</text>
+<path d="M780 593H717" fill="none" stroke="#a6b6b0" stroke-width="2" marker-end="url(#a)"/>
+<text x="748.5" y="579" text-anchor="middle" fill="#c6d0cb" font-size="14">驗證結果</text>
+<path d="M410 593H347" fill="none" stroke="#a6b6b0" stroke-width="2" marker-end="url(#a)"/>
+<text x="378.5" y="579" text-anchor="middle" fill="#c6d0cb" font-size="14">回應</text>
+<rect x="40" y="190" width="300" height="185" fill="#1b2525" stroke="#657a70" stroke-width="1.5"/>
+<text x="58" y="219" fill="#657a70" font-size="14">OFFICIAL / 原始資料</text>
+<text x="58" y="259" fill="#f0f3ef" font-size="23" font-weight="700">TWSE / TPEx / TDCC</text>
+<text x="58" y="295" fill="#c6d0cb" font-size="17">GET 官方 JSON</text>
+<text x="58" y="323" fill="#c6d0cb" font-size="17">各自的日期、欄位與單位</text>
+<rect x="410" y="190" width="300" height="185" fill="#1b2525" stroke="#f4cd55" stroke-width="1.5"/>
+<text x="428" y="219" fill="#f4cd55" font-size="14">engineer-stock-data</text>
+<text x="428" y="259" fill="#f0f3ef" font-size="23" font-weight="700">Actions 執行資料程式</text>
+<text x="428" y="295" fill="#c6d0cb" font-size="17">registry → fetch → provider</text>
+<text x="428" y="323" fill="#c6d0cb" font-size="17">檢查結構、日期與資料範圍</text>
+<rect x="780" y="190" width="300" height="185" fill="#1b2525" stroke="#91c5a5" stroke-width="1.5"/>
+<text x="798" y="219" fill="#91c5a5" font-size="14">VERIFY + PUBLISH</text>
+<text x="798" y="259" fill="#f0f3ef" font-size="23" font-weight="700">GitHub / data branch</text>
+<text x="798" y="295" fill="#c6d0cb" font-size="17">manifest、索引與個股 JSON</text>
+<text x="798" y="323" fill="#c6d0cb" font-size="17">整批驗證後切換 SHA</text>
+<rect x="40" y="505" width="300" height="185" fill="#1b2525" stroke="#657a70" stroke-width="1.5"/>
+<text x="58" y="534" fill="#657a70" font-size="14">BROWSER</text>
+<text x="58" y="574" fill="#f0f3ef" font-size="23" font-weight="700">使用者畫面</text>
+<text x="58" y="610" fill="#c6d0cb" font-size="17">清單、個股、圖表</text>
+<text x="58" y="638" fill="#c6d0cb" font-size="17">顯示日期與資料狀態</text>
+<rect x="410" y="505" width="300" height="185" fill="#1b2525" stroke="#f4cd55" stroke-width="1.5"/>
+<text x="428" y="534" fill="#f4cd55" font-size="14">engineer-stock-web</text>
+<text x="428" y="574" fill="#f0f3ef" font-size="23" font-weight="700">Next.js Server</text>
+<text x="428" y="610" fill="#c6d0cb" font-size="17">直接讀資料模組，準備頁面</text>
+<text x="428" y="638" fill="#c6d0cb" font-size="17">另提供 /api/v1/stocks</text>
+<rect x="780" y="505" width="300" height="185" fill="#1b2525" stroke="#657a70" stroke-width="1.5"/>
+<text x="798" y="534" fill="#657a70" font-size="14">PINNED READ</text>
+<text x="798" y="574" fill="#f0f3ef" font-size="23" font-weight="700">固定 commit SHA 讀取</text>
+<text x="798" y="610" fill="#c6d0cb" font-size="17">驗證 hash 與 schema</text>
+<text x="798" y="638" fill="#c6d0cb" font-size="17">公開資料可共用快取</text>
+<text x="40" y="743" fill="#c6d0cb" font-size="18">流程示意｜官方 API 回原始資料；Next.js 自己的 API 回正規化資料與 meta。</text>
+<text x="40" y="772" fill="#c6d0cb" font-size="18">資料更新不必讓每一位使用者重新抓一次全市場。</text>
+</g></svg>
