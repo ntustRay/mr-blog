@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 500" role="img" aria-labelledby="title description">
+  <title id="title">搶票預留、付款與釋票流程</title>
+  <desc id="description">排隊發號後進入資料庫交易, 扣庫存並建立預留。預留訂單只可轉成已付款或已逾時; 釋票後才確認扣款時進入退款處理。</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#f2cc60"/></marker></defs>
+  <rect width="1200" height="500" fill="#17191d"/>
+  <g font-family="system-ui, 'Noto Sans TC', 'Noto Sans CJK TC', sans-serif" fill="#f4f4f0">
+    <text x="42" y="50" fill="#f2cc60" font-size="19" font-weight="700">預留與付款</text>
+    <text x="42" y="80" font-size="16" fill="#bec3ca">資料庫決定庫存和訂單狀態; 外部付款在 transaction 之外執行</text>
+    <rect x="42" y="122" width="280" height="94" fill="#292c32" stroke="#60646d"/>
+    <text x="62" y="160" font-size="22" font-weight="700">排隊與限流</text><text x="62" y="190" font-size="16" fill="#c9ccd1">依發號順序放行</text>
+    <rect x="430" y="122" width="340" height="94" fill="#292c32" stroke="#60646d"/>
+    <text x="450" y="160" font-size="22" font-weight="700">資料庫 transaction</text><text x="450" y="190" font-size="16" fill="#c9ccd1">條件扣庫存 + 建立訂單</text>
+    <rect x="878" y="122" width="280" height="94" fill="#302d24" stroke="#f2cc60"/>
+    <text x="898" y="160" font-size="22" font-weight="700">HELD</text><text x="898" y="190" font-size="16" fill="#e8e2d2">已預留, 等待付款</text>
+    <g stroke="#f2cc60" stroke-width="2.5" fill="none" marker-end="url(#arrow)"><path d="M 332 169 H 419"/><path d="M 781 169 H 867"/></g>
+    <rect x="42" y="316" width="280" height="94" fill="#292c32" stroke="#60646d"/>
+    <text x="62" y="354" font-size="22" font-weight="700">PAID</text><text x="62" y="384" font-size="16" fill="#c9ccd1">付款確認, 安排出票</text>
+    <rect x="430" y="316" width="340" height="94" fill="#292c32" stroke="#60646d"/>
+    <text x="450" y="354" font-size="22" font-weight="700">EXPIRED</text><text x="450" y="384" font-size="16" fill="#c9ccd1">逾時, 釋回庫存</text>
+    <rect x="878" y="316" width="280" height="94" fill="#292c32" stroke="#60646d"/>
+    <text x="898" y="354" font-size="22" font-weight="700">退款處理</text><text x="898" y="384" font-size="16" fill="#c9ccd1">釋票後才確認扣款</text>
+    <path d="M 1018 226 V 263 H 182" stroke="#f2cc60" stroke-width="2.5" fill="none"/>
+    <g stroke="#f2cc60" stroke-width="2.5" fill="none" marker-end="url(#arrow)"><path d="M 182 263 V 305"/><path d="M 600 263 V 305"/><path d="M 781 363 H 867"/></g>
+    <text x="220" y="254" font-size="14" fill="#f2cc60">付款與逾時競爭同一筆訂單, 只有一個狀態轉換成功</text>
+    <text x="42" y="462" font-size="16" fill="#c9ccd1">付款確認延遲、重複通知和退款重試, 都需要額外處理。</text>
+  </g>
+</svg>

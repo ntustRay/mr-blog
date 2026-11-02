@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 500" role="img" aria-labelledby="title description">
+  <title id="title">多人文件同步流程</title>
+  <desc id="description">使用者 A 和 B 與同步服務雙向交換變更; 客戶端保留本機資料, 服務保存文件變更, 寫入成功後確認儲存。</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#f2cc60"/></marker></defs>
+  <rect width="1200" height="500" fill="#17191d"/>
+  <g font-family="system-ui, 'Noto Sans TC', 'Noto Sans CJK TC', sans-serif" fill="#f4f4f0">
+    <text x="42" y="54" fill="#f2cc60" font-size="19" font-weight="700">文件同步</text>
+    <text x="42" y="85" font-size="16" fill="#bec3ca">WebSocket 傳遞變更; CRDT 合併內容</text>
+    <rect x="42" y="126" width="254" height="104" fill="#292c32" stroke="#60646d"/>
+    <text x="62" y="162" font-size="23" font-weight="700">使用者 A</text>
+    <text x="62" y="196" font-size="16" fill="#c9ccd1">編輯器 + CRDT 文件</text>
+    <rect x="422" y="126" width="356" height="104" fill="#302d24" stroke="#f2cc60"/>
+    <text x="444" y="162" font-size="23" font-weight="700">同步服務</text>
+    <text x="444" y="196" font-size="16" fill="#e8e2d2">驗證權限、傳遞變更、確認儲存</text>
+    <rect x="904" y="126" width="254" height="104" fill="#292c32" stroke="#60646d"/>
+    <text x="924" y="162" font-size="23" font-weight="700">使用者 B</text>
+    <text x="924" y="196" font-size="16" fill="#c9ccd1">編輯器 + CRDT 文件</text>
+    <g stroke="#f2cc60" stroke-width="2.5" fill="none" marker-start="url(#arrow)" marker-end="url(#arrow)">
+      <path d="M 307 178 H 411"/><path d="M 789 178 H 893"/>
+    </g>
+    <text x="310" y="155" fill="#f2cc60" font-size="14">WebSocket</text>
+    <text x="792" y="155" fill="#f2cc60" font-size="14">WebSocket</text>
+    <rect x="42" y="320" width="254" height="84" fill="#22252a" stroke="#60646d"/>
+    <text x="62" y="353" font-size="18" font-weight="700">本機 IndexedDB</text>
+    <text x="62" y="380" font-size="15" fill="#c9ccd1">離線變更與重新同步</text>
+    <rect x="422" y="320" width="356" height="84" fill="#22252a" stroke="#60646d"/>
+    <text x="444" y="353" font-size="18" font-weight="700">持久儲存</text>
+    <text x="444" y="380" font-size="15" fill="#c9ccd1">文件快照 + 變更紀錄</text>
+    <rect x="904" y="320" width="254" height="84" fill="#22252a" stroke="#60646d"/>
+    <text x="924" y="353" font-size="18" font-weight="700">本機 IndexedDB</text>
+    <text x="924" y="380" font-size="15" fill="#c9ccd1">離線變更與重新同步</text>
+    <g stroke="#9ea3aa" stroke-width="2" fill="none" marker-start="url(#arrow)" marker-end="url(#arrow)"><path d="M 169 241 V 309"/><path d="M 600 241 V 309"/><path d="M 1031 241 V 309"/></g>
+    <text x="42" y="458" font-size="16" fill="#c9ccd1">儲存成功: 服務確認變更已寫入後, 才回覆客戶端。</text>
+  </g>
+</svg>
