@@ -9,7 +9,7 @@ relatedPostIds: [shade-room-03-face-worker, shade-room-04-webgl-lipstick, shade-
 draft: false
 references:
   - title: Zustand persist middleware
-    url: https://zustand.docs.pmnd.rs/middlewares/persist
+    url: https://zustand.docs.pmnd.rs/reference/middlewares/persist.html
   - title: MDN HTMLCanvasElement.toBlob
     url: https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
   - title: MDN URL.revokeObjectURL
@@ -43,7 +43,7 @@ references:
 
 ## 2. localStorage 只保存需要重用的設定
 
-Zustand 的 [persist middleware](https://zustand.docs.pmnd.rs/middlewares/persist) 可用 `partialize` 選擇寫入欄位：
+Zustand 的 [persist middleware](https://zustand.docs.pmnd.rs/reference/middlewares/persist.html) 可用 `partialize` 選擇寫入欄位：
 
 ```ts title="src/state/store.ts（persist 選項）"
 {
