@@ -2,7 +2,7 @@
 title: "[News] Librarian Agents：讓 Agent 先整理文件，再回答問題"
 description: "Librarian Agents 用強化學習訓練文件整理者，在問題到來前建立可重用的工作區。從公開評分紀錄看它的效果，以及原文回查、目錄階層與文件更新的限制。"
 pubDate: 2026-10-20
-category: AI
+category: "AI & Agents"
 tags: [AI Agents, Harness]
 draft: false
 references:

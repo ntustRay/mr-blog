@@ -2,7 +2,7 @@
 title: "[News] GPT-6.1 Terra：Computer Use 變便宜後，還要量哪些成本？"
 description: "GPT-6.1 Terra 將 API 單價降至每百萬 input token 1 美元、output token 5 美元。從 computer-use、coding、安全評測與每任務成本，整理適合先試的工作與驗證邊界。"
 pubDate: 2026-10-27
-category: AI
+category: "AI & Agents"
 tags: [AI Agents, Coding Agents, Harness]
 draft: false
 references:

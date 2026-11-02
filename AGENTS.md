@@ -20,6 +20,17 @@
 - Keep one main question per article. Remove tangents or propose a separate article.
 - An unresolved exploration is valid when it identifies what is known, what remains uncertain, and a concrete next validation step.
 
+## Taxonomy and Series
+
+- All published posts use one of the 10 canonical Categories defined in `src/config/taxonomy.ts`. The homepage highlights six core Categories; the other four are real, navigable Categories.
+- Pick exactly one Category based on the main engineering problem. Do not assign Category by incidental framework mentions; use Tags for technology details.
+- Category names like `Engineering`, `Web Development`, `AI`, `Blogging`, and `Life` are retired for new posts. Their old URLs remain compatibility pages.
+- Normalize tag aliases using `src/utils/tags.ts`; preserve language and tool distinctions. Use 2–4 meaningful Tags for new posts (five maximum); one valid Tag is acceptable for an older post.
+- Keep exactly one title prefix: `[News]`, `[Guide]`, `[Insight]`, or `[Review]`. `interview` remains a tag rather than a fifth Content Type.
+- Sequential tutorials may set `series` and `seriesOrder`; the series ID must exist in `src/config/series.ts`. Use unique, contiguous positive order values within each series.
+- Never rename an existing post file or change its publication date as a side effect of taxonomy changes. Preserve old Category/Tag URLs or provide an accessible compatibility link.
+- After editing content or taxonomy definitions, run `npm run check:taxonomy` and `npm run build`.
+
 ## Article Types
 
 - For new articles, and existing articles whose titles the user explicitly asks to change, begin the frontmatter `title` with exactly one of `[News]`, `[Insight]`, `[Review]`, or `[Guide]`, followed by a space.

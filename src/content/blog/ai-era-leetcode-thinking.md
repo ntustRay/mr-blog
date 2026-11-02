@@ -4,7 +4,7 @@ description: "從刷題與白板題看工程基本功：先對齊 Spec、Input�
 seoTitle: "AI 時代還需要刷 LeetCode 嗎？從 Spec 到解題思維"
 pubDate: 2026-10-17
 updatedDate: 2026-10-18
-category: Engineering
+category: "Programming & Algorithms"
 tags: [AI, Algorithms, LeetCode, HackerRank]
 draft: false
 references:

@@ -2,7 +2,9 @@
 title: '[Guide] 工程師選股網 04：Next.js 怎麼把 JSON 顯示成網頁'
 description: 從 Server Component 追到 GitHub SHA、快照驗證與快取，並用 API 回應核對資料模式。
 pubDate: 2026-11-02
-category: Web Development
+category: "Full-stack"
+series: engineer-stock
+seriesOrder: 4
 tags:
 - Next.js
 - TypeScript

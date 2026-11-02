@@ -3,7 +3,7 @@ title: "[News] NVIDIA OpenShell：把 Agent 權限控制放到 Runtime"
 description: "NVIDIA 在 2026-09-28 公布 Open Agent Safety Platform。整理 OpenShell 的權限執行邊界、credential 管理與採用前要驗證的限制。"
 pubDate: 2026-09-29
 updatedDate: 2026-10-17
-category: AI
+category: "AI & Agents"
 tags:
   - AI Agents
   - Security

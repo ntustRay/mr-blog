@@ -2,7 +2,9 @@
 title: '[Guide] 線上試妝 04：用 WebGL 做口紅遮罩、混色與質地'
 description: 拆解 Canvas 2D 嘴唇遮罩與 WebGL2 Shader，從 evenodd、Texture、Uniform 到亮度保留、濃度、霧面與光澤，說明近似方法及限制。
 pubDate: 2026-11-02
-category: Web Development
+category: "Frontend"
+series: shade-lab
+seriesOrder: 4
 tags: [WebGL, Canvas, MediaPipe, TypeScript]
 coverImage: /images/shade-room-series/04-materials.webp
 relatedPostIds: [shade-room-03-face-worker, shade-room-05-interaction-export, shade-room-06-testing-deploy]

@@ -2,7 +2,9 @@
 title: '[Guide] 工程師選股網 02：把股票 API 變成 JSON'
 description: 讀取官方回應樣本，處理日期、字串數字與缺值，再產生並驗證本機快照。
 pubDate: 2026-11-02
-category: Web Development
+category: "Data & Visualization"
+series: engineer-stock
+seriesOrder: 2
 tags:
 - TypeScript
 - Bun

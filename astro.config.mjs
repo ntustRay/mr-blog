@@ -29,7 +29,24 @@ export default defineConfig({
   base: process.env.SITE_BASE ?? '/mr-blog',
   trailingSlash: 'always',
   integrations: [
-    sitemap({ filter: (page) => !new URL(page).pathname.endsWith('/search/') }),
+    sitemap({
+      filter: (page) => {
+        const pathname = new URL(page).pathname;
+        const excluded = [
+          '/search/',
+          '/categories/ai/',
+          '/categories/engineering/',
+          '/categories/web-development/',
+          '/categories/blogging/',
+          '/categories/life/',
+          '/tags/ai-agent/',
+          '/tags/react-hook/',
+          '/tags/js/',
+          '/tags/ts/',
+        ];
+        return !excluded.some((path) => pathname.endsWith(path));
+      },
+    }),
   ],
   markdown: {
     shikiConfig: {

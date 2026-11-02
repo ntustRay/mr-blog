@@ -2,7 +2,9 @@
 title: '[Guide] 工程師選股網 08：部署到 Vercel，從錯誤找到原因'
 description: 核對既有 Vercel 專案、Production 環境變數與部署版本，再用 API、資料日期與登入流程逐層驗收。
 pubDate: 2026-11-02
-category: Web Development
+category: "Dev Tools & Quality"
+series: engineer-stock
+seriesOrder: 8
 tags:
 - Vercel
 - Next.js

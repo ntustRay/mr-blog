@@ -2,7 +2,9 @@
 title: '[Guide] 工程師選股網 09：核心架構、技術選型與 Next.js 設計'
 description: 從需求拆解選股網的核心架構與技術選型，詳解 Next.js App Router、RSC、SSR、快取、JSON 快照一致性與 Supabase 權限，附架構圖、讀碼順序及面試追問。
 pubDate: 2026-11-02
-category: Web Development
+category: "System Design"
+series: engineer-stock
+seriesOrder: 9
 tags:
 - Next.js
 - React

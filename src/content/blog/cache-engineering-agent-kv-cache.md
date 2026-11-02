@@ -2,7 +2,7 @@
 title: "[News] Cache Engineering：Agent 不改寫對話，也能丟掉 KV Cache"
 description: "AKV 讓長任務 Agent 直接控制 KV cache，以 drop／repos 避免反覆摘要與 re-prefill。整理論文數字、整合條件，以及目前仍不適合直接上線的限制。"
 pubDate: 2026-10-23
-category: AI
+category: "AI & Agents"
 tags: [AI Agents, Harness]
 draft: false
 references:

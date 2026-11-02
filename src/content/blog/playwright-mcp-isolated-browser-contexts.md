@@ -2,7 +2,7 @@
 title: "[News] Playwright MCP 0.0.84：多帳號 Browser Agent 為什麼不能只開不同 Tab？"
 description: "Playwright MCP 0.0.84 加入命名 isolatedContext，讓同一個 browser process 內的多個帳號分開 cookies 與 storage。整理隔離範圍、URL token 遮罩與導入驗收。"
 pubDate: 2026-11-01
-category: AI
+category: "AI & Agents"
 tags:
   - AI Agents
   - MCP

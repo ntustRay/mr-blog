@@ -2,7 +2,9 @@
 title: '[Guide] 工程師選股網 06：設定 Supabase 註冊、登入與寄信'
 description: 核對環境變數、SMTP、Email 驗證與 PKCE callback，用收信及登入狀態驗收會員流程。
 pubDate: 2026-11-02
-category: Web Development
+category: "Full-stack"
+series: engineer-stock
+seriesOrder: 6
 tags:
 - Supabase
 - Next.js

@@ -3,7 +3,7 @@ title: "[Insight] Coding Agent 需要多少 Harness？176 組實驗的條件與�
 description: "解讀 176 組 Harness 設定的研究：Planning、Tools 與 Context 的收益隨模型和任務改變，並整理可用於自身工作流的驗證方式。"
 pubDate: 2026-10-03
 updatedDate: 2026-10-17
-category: AI
+category: "AI & Agents"
 tags:
   - AI Agents
   - Harness

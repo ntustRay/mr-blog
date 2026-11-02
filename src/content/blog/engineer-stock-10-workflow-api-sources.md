@@ -2,7 +2,9 @@
 title: '[Guide] 工程師選股網 10：用 GitHub Actions 定時抓 API，資料來源從哪裡來？'
 description: 從官方 OpenAPI 找到股票資料來源，對照 15 個 endpoint、來源登記、TypeScript 抓取範例與 GitHub Workflow 排程，驗證資料日期、快照與發布結果。
 pubDate: 2026-11-02
-category: Web Development
+category: "Dev Tools & Quality"
+series: engineer-stock
+seriesOrder: 10
 tags:
 - GitHub Actions
 - TypeScript

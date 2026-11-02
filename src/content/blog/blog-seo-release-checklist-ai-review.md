@@ -2,7 +2,7 @@
 title: "[Guide] Blog SEO Checklist：上線前後要檢查什麼？AI 常漏掉哪些？"
 description: "從網站架構、Sitemap、Canonical、文章內容到 Google Search Console 的可勾選 SEO 清單，另外整理 AI Agent 容易忽略的部署與索引驗證。"
 pubDate: 2026-10-24
-category: Blogging
+category: "Web Publishing & SEO"
 tags:
   - SEO
   - Checklist

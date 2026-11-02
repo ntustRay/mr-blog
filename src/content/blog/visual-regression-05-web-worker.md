@@ -2,7 +2,9 @@
 title: '[Guide] 把圖片比對移到 Web Worker'
 description: 先錄下 Main Thread，再將 pixelmatch 移到 Worker，核對結果與清理行為。
 pubDate: 2026-10-25
-category: Web Development
+category: "Frontend"
+series: visual-regression
+seriesOrder: 5
 tags:
 - Next.js
 - TypeScript

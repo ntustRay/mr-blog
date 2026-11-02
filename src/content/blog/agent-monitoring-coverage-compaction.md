@@ -2,7 +2,7 @@
 title: "[News] Agent 監控漏掉 Compaction：先量覆蓋率，再談抓不抓得到"
 description: "METR 與 Redwood 對 OpenAI 內部 Agent 監控進行三週稽核。從 compaction 漏監、延後交還控制權與序列化差異，整理正式環境該如何驗證監控覆蓋率。"
 pubDate: 2026-10-24
-category: AI
+category: "AI & Agents"
 tags: [AI Agents, Security, Harness]
 draft: false
 references:

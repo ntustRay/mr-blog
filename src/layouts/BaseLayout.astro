@@ -67,36 +67,12 @@ if (adsenseClient && !/^ca-pub-\d+$/u.test(adsenseClient)) {
 }
 
 const navigation = [
-  {
-    label: 'Posts',
-    href: base,
-    active: relativePath === '/' || relativePath.startsWith('/posts/'),
-  },
-  {
-    label: 'Categories',
-    href: `${base}categories/`,
-    active: relativePath.startsWith('/categories/'),
-  },
-  {
-    label: 'Tags',
-    href: `${base}tags/`,
-    active: relativePath.startsWith('/tags/'),
-  },
-  {
-    label: 'Archive',
-    href: `${base}archive/`,
-    active: relativePath.startsWith('/archive/'),
-  },
-  {
-    label: 'Search',
-    href: `${base}search/`,
-    active: relativePath.startsWith('/search/'),
-  },
-  {
-    label: 'About',
-    href: `${base}about/`,
-    active: relativePath.startsWith('/about/'),
-  },
+  { label: 'Posts', href: base, active: relativePath === '/' || relativePath.startsWith('/posts/') },
+  { label: 'Topics', href: `${base}categories/`, active: relativePath.startsWith('/categories/') || relativePath.startsWith('/tags/') },
+  { label: 'Series', href: `${base}series/`, active: relativePath.startsWith('/series/') },
+  { label: 'Archive', href: `${base}archive/`, active: relativePath.startsWith('/archive/') },
+  { label: 'Search', href: `${base}search/`, active: relativePath.startsWith('/search/') },
+  { label: 'About', href: `${base}about/`, active: relativePath.startsWith('/about/') },
 ] as const;
 
 const websiteStructuredData = {

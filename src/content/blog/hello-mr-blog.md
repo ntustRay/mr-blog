@@ -3,7 +3,7 @@ title: "[Insight] Hello, MR Blog：留下學習與工程判斷"
 description: "MR Blog 的起點：以簡單的靜態網站，留下個人學習、實作問題與可持續修訂的工程判斷。"
 pubDate: 2026-09-20
 updatedDate: 2026-10-17
-category: Blogging
+category: "Web Publishing & SEO"
 tags:
   - Astro
   - Blog

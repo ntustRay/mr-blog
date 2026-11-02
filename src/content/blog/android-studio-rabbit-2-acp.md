@@ -2,7 +2,7 @@
 title: "[News] Android Studio Rabbit 2 開放 40+ Coding Agents：ACP 解耦了什麼？"
 description: "Android Studio Rabbit 2 將 BYOA 推進 stable，讓 Codex、Claude Agent 等透過 ACP 取得 IDE 工具。整理 Client／Agent 責任、MCP 差異、權限邊界與導入驗收。"
 pubDate: 2026-10-30
-category: AI
+category: "AI & Agents"
 tags:
   - AI Agents
   - Coding Agents

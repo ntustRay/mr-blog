@@ -2,7 +2,9 @@
 title: '[Guide] 線上試妝 02：把照片與相機畫面送進引擎'
 description: 拆解 File、ImageBitmap、getUserMedia 與來源切換，處理照片方向、縮圖、過期結果、相機關閉及錯誤恢復。
 pubDate: 2026-11-02
-category: Web Development
+category: "Frontend"
+series: shade-lab
+seriesOrder: 2
 tags: [TypeScript, Canvas, Web API]
 coverImage: /images/shade-room-series/02-inputs.webp
 relatedPostIds: [shade-room-01-architecture, shade-room-03-face-worker, shade-room-05-interaction-export]

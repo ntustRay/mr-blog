@@ -2,7 +2,9 @@
 title: '[Guide] 接上 Supabase：一步步完成 GitHub 登入、私人圖片與歷史紀錄'
 description: 建立 Supabase 教學專案，設定 RLS、私人 Bucket、GitHub OAuth 與兩段 Callback，再部署驗收。
 pubDate: 2026-10-25
-category: Web Development
+category: "Full-stack"
+series: visual-regression
+seriesOrder: 3
 tags:
 - Next.js
 - Supabase

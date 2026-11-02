@@ -3,7 +3,7 @@ title: "[Insight] Bun + Biome：讓 Agent 每次重跑都快一點"
 description: "把依賴安裝與每輪檢查分開計算，說明 Bun、Biome 的時間收益如何累積，以及為什麼多跑幾輪不保證交付更好。"
 pubDate: 2026-09-29
 updatedDate: 2026-10-17
-category: Engineering
+category: "Dev Tools & Quality"
 tags:
   - AI Agents
   - Bun

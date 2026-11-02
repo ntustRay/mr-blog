@@ -1330,3 +1330,175 @@ pagefind-results {
     scroll-behavior: auto;
   }
 }
+
+
+/* Taxonomy v3: restrained, static-first navigation */
+.section-link,
+.browse-tags a {
+  color: var(--accent);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.section-link:hover,
+.browse-tags a:hover {
+  text-decoration: underline;
+}
+
+.topic-grid,
+.series-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.topic-card,
+.series-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  text-decoration: none;
+  transition: border-color 140ms ease, background-color 140ms ease;
+}
+
+.topic-card:hover,
+.series-card:hover,
+.series-post-list a:hover {
+  border-color: var(--accent-line);
+  background: var(--surface-solid);
+}
+
+.topic-card strong,
+.series-card strong {
+  font-size: 1rem;
+  color: var(--text-strong);
+}
+
+.topic-card span,
+.series-card p {
+  flex: 1;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.topic-card small,
+.series-card small {
+  color: var(--subtle);
+  font-size: 0.78rem;
+}
+
+.type-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--subtle);
+}
+
+.browse-tags {
+  margin: 12px 0 56px;
+}
+
+.series-post-list {
+  display: grid;
+  gap: 0;
+  margin: 0 0 72px;
+  padding: 0;
+  list-style: none;
+}
+
+.series-post-list li {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  gap: 16px;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.series-index {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+
+.series-post-list h2 {
+  margin: 8px 0;
+  font-size: 1.18rem;
+  line-height: 1.45;
+}
+
+.series-post-list h2 a {
+  text-decoration: none;
+}
+
+.series-post-list p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.series-navigation {
+  margin-top: 24px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.series-navigation__heading,
+.series-navigation__links {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.series-navigation__heading a,
+.series-navigation__links a {
+  color: var(--accent);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.series-navigation__heading span,
+.series-navigation__links span {
+  color: var(--subtle);
+  font-size: 0.8rem;
+}
+
+.series-progress {
+  height: 4px;
+  overflow: hidden;
+  margin: 12px 0;
+  background: var(--surface-muted);
+}
+
+.series-progress span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+
+@media (max-width: 560px) {
+  .topic-grid,
+  .series-grid {
+    grid-template-columns: 1fr;
+  }
+  .topic-card,
+  .series-card {
+    padding: 16px;
+  }
+  .series-post-list li {
+    grid-template-columns: 36px minmax(0, 1fr);
+    gap: 8px;
+  }
+}

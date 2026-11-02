@@ -3,7 +3,7 @@ title: "[Guide] PPT 字體怎麼選？內建與免費字體的中英文搭配"
 description: "整理微軟正黑體、微軟雅黑體、新細明體、Arial、Calibri 等 18 款選項，區分 Windows、macOS、Office 與另外安裝的字體，附中英文搭配與交付檢查。"
 pubDate: 2026-10-30
 updatedDate: 2026-10-30
-category: Engineering
+category: "Career & Life"
 tags: []
 draft: false
 relatedPostIds:

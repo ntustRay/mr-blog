@@ -3,7 +3,7 @@ title: "[Review] npm、pnpm、Yarn 與 Bun：重新評估依賴安裝與 CI 成�
 description: "依官方文件比較 npm、pnpm、Yarn 與 Bun，聚焦安裝效能的測量條件、dependency layout 與 CI 遷移成本，提供可驗證的選型方式。"
 pubDate: 2026-09-28
 updatedDate: 2026-10-17
-category: Engineering
+category: "Dev Tools & Quality"
 tags:
   - JavaScript
   - Node.js

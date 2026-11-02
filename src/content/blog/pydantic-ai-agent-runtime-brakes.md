@@ -2,7 +2,7 @@
 title: "[News] Pydantic AI 2.63：Agent 卡在迴圈時，怎麼在預算燒完前停下來？"
 description: "Pydantic AI 2.63 加入 DetectLoops、PostgresSpendStore 與 eval task timeout。整理重複行動、跨 worker 花費與卡死案例該如何分層停止。"
 pubDate: 2026-10-29
-category: AI
+category: "AI & Agents"
 tags:
   - AI Agents
   - Harness

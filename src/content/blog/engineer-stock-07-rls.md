@@ -2,7 +2,9 @@
 title: '[Guide] 工程師選股網 07：儲存追蹤清單，用 RLS 隔離會員資料'
 description: 追查 user_id 的來源，用本機 PostgreSQL 測試驗證自身操作、跨會員隔離、重複追蹤與匿名禁止。
 pubDate: 2026-11-02
-category: Web Development
+category: "Full-stack"
+series: engineer-stock
+seriesOrder: 7
 tags:
 - Supabase
 - PostgreSQL

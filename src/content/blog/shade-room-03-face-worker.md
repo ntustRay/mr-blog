@@ -2,7 +2,9 @@
 title: '[Guide] 線上試妝 03：MediaPipe 怎麼找嘴唇？把追蹤放進 Worker'
 description: 從 landmark 與像素座標開始，拆解 Face Landmarker 初始化、IMAGE／VIDEO 模式、ImageBitmap transfer、單一推論排程與過期結果排除。
 pubDate: 2026-11-02
-category: Web Development
+category: "Frontend"
+series: shade-lab
+seriesOrder: 3
 tags: [MediaPipe, Web Worker, TypeScript, Performance]
 coverImage: /images/shade-room-series/03-landmarks.webp
 relatedPostIds: [shade-room-02-image-camera, shade-room-04-webgl-lipstick, shade-room-06-testing-deploy]

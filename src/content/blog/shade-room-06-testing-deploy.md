@@ -2,7 +2,9 @@
 title: '[Guide] 線上試妝 06：怎麼證明妝效有作用？測試與部署'
 description: 用 Vitest、Playwright 與像素差驗證試妝結果，拆解模擬相機、PNG 匯出、GitHub Actions、模型資產準備及 Vite 部署路徑。
 pubDate: 2026-11-02
-category: Web Development
+category: "Dev Tools & Quality"
+series: shade-lab
+seriesOrder: 6
 tags: [Playwright, GitHub Actions, Vite, Testing]
 coverImage: /images/shade-room-series/06-mobile.webp
 relatedPostIds: [shade-room-03-face-worker, shade-room-04-webgl-lipstick, shade-room-05-interaction-export]

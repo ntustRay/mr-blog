@@ -2,7 +2,9 @@
 title: '[Guide] 線上試妝 01：從需求拆到技術架構'
 description: 用 Shade Room 拆解照片、臉部定位與口紅渲染的資料流，說明 Vite、React、MediaPipe、Worker 與 WebGL2 的分工、取捨及讀碼順序。
 pubDate: 2026-11-02
-category: Web Development
+category: "System Design"
+series: shade-lab
+seriesOrder: 1
 tags: [React, TypeScript, Vite, WebGL]
 coverImage: /images/shade-room-series/01-desktop.webp
 relatedPostIds: [shade-room-02-image-camera, shade-room-03-face-worker, shade-room-04-webgl-lipstick]

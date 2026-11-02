@@ -2,7 +2,7 @@
 title: "[Guide] 系統設計面試：萬人搶票，怎麼避免超賣與重複扣款？"
 description: "以 1 萬人搶 1,000 張票為例，拆解排隊、資料庫 transaction、idempotency 與付款逾時。"
 pubDate: 2026-11-02
-category: Engineering
+category: "System Design"
 tags: [interview, System Design, PostgreSQL, API]
 draft: false
 references:

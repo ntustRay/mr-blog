@@ -1,0 +1,50 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { seriesDefinitions } from '../../config/series';
+import { getSeriesPosts } from '../../utils/series';
+import { formatDate } from '../../utils/date';
+import CategoryLink from '../../components/CategoryLink.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return seriesDefinitions.map((series) => ({
+    params: { series: series.id },
+    props: {
+      series,
+      posts: getSeriesPosts(series.id, posts),
+    },
+  }));
+}
+interface Props {
+  series: (typeof seriesDefinitions)[number];
+  posts: CollectionEntry<'blog'>[];
+}
+const { series, posts } = Astro.props;
+const base = import.meta.env.BASE_URL.endsWith('/')
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+---
+
+<BaseLayout title={series.title} description={series.description}>
+  <section class="page-header">
+    <p class="eyebrow">SERIES · {posts.length} PARTS</p>
+    <h1>{series.title}</h1>
+    <p>{series.description}</p>
+  </section>
+  <ol class="series-post-list">
+    {posts.map((post, index) => (
+      <li>
+        <span class="series-index">{String(index + 1).padStart(2, '0')}</span>
+        <div>
+          <div class="post-meta">
+            <CategoryLink category={post.data.category} />
+            <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+          </div>
+          <h2><a href={`${base}posts/${post.id}/`}>{post.data.title}</a></h2>
+          <p>{post.data.description}</p>
+        </div>
+      </li>
+    ))}
+  </ol>
+</BaseLayout>

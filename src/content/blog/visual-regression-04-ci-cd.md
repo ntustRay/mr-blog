@@ -2,7 +2,9 @@
 title: '[Guide] 加入 GitHub Actions 檢查，再手動部署到 Vercel'
 description: 讓提交自動執行型別、格式、測試與建置，再核對 commit 手動部署。
 pubDate: 2026-10-25
-category: Web Development
+category: "Dev Tools & Quality"
+series: visual-regression
+seriesOrder: 4
 tags:
 - GitHub Actions
 - Vercel

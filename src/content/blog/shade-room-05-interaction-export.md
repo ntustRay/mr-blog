@@ -2,7 +2,9 @@
 title: '[Guide] 線上試妝 05：完成比較、縮放、收藏與下載'
 description: 拆解 Zustand 與引擎的狀態邊界、比較線座標轉換、CSS 縮放拖曳、妝容持久化與 Canvas PNG 匯出，避免預覽與下載混用尺寸。
 pubDate: 2026-11-02
-category: Web Development
+category: "Frontend"
+series: shade-lab
+seriesOrder: 5
 tags: [React, Zustand, Canvas, TypeScript]
 coverImage: /images/shade-room-series/05-compare.webp
 relatedPostIds: [shade-room-03-face-worker, shade-room-04-webgl-lipstick, shade-room-06-testing-deploy]

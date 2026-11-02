@@ -2,7 +2,7 @@
 title: "[News] Cloudflare Agents：讓 Browser Agent 看內部預覽，不必公開 dev server"
 description: "Cloudflare Agents SDK 0.31.0 加入 internal hostnames，讓 Browser Agent 經由 Worker 存取 dev server、workspace 與內部服務。整理實際安全邊界、升級影響與採用檢查。"
 pubDate: 2026-10-28
-category: AI
+category: "AI & Agents"
 tags: [AI Agents, Security, Harness, Cloudflare]
 draft: false
 references:

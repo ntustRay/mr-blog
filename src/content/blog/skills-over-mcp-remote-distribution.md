@@ -2,7 +2,7 @@
 title: "[News] Skills over MCP：遠端 Skill 怎麼發現、驗證與更新？"
 description: "MCP TypeScript SDK 2.4.0 正式加入 SEP-2640。整理 Skills over MCP 的傳輸方式、內容完整性、client 相容性與導入限制。"
 pubDate: 2026-10-26
-category: AI
+category: "AI & Agents"
 tags: [AI Agents, MCP, Skills]
 draft: false
 references:

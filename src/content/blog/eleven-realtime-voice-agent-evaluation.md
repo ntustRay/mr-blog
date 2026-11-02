@@ -2,7 +2,7 @@
 title: "[News] Eleven Realtime：語音 Agent 不能只量第一句有多快"
 description: "ElevenLabs 推出 Realtime v1 Mini 與 Max。從獨立評測、OpenAI Realtime 相容範圍與 Managed 模式限制，整理語音 Agent 上線前真正該驗證的項目。"
 pubDate: 2026-10-21
-category: AI
+category: "AI & Agents"
 tags: [AI Agents, Harness]
 draft: false
 references:

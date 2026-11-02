@@ -2,7 +2,9 @@
 title: '[Guide] 用 Next.js 做圖片比對：Bun＋Biome 起步'
 description: 建立教學專案，載入兩張範例圖，顯示差異圖與比例。
 pubDate: 2026-10-25
-category: Web Development
+category: "Full-stack"
+series: visual-regression
+seriesOrder: 1
 tags:
 - Next.js
 - TypeScript

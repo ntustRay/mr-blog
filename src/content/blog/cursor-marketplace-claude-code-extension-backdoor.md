@@ -2,7 +2,7 @@
 title: "[News] Cursor Marketplace 的 Claude Code Extension 遭植入後門：解除安裝還不夠"
 description: "Cursor 確認兩個 Claude Code Extension 版本遭植入惡意程式。整理受影響範圍、持久化風險、官方處置，以及 Coding Agent 供應鏈該補上的防線。"
 pubDate: 2026-10-31
-category: AI
+category: "AI & Agents"
 tags:
   - AI Agents
   - Coding Agents

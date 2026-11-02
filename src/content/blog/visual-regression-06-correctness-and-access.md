@@ -2,7 +2,9 @@
 title: '[Guide] 驗收圖片比對：正確性、權限，以及分享與清理待辦'
 description: 用固定圖片與兩個教學帳號檢查結果、資料隔離，再列出尚未實作的分享與清理驗收。
 pubDate: 2026-10-25
-category: Web Development
+category: "Dev Tools & Quality"
+series: visual-regression
+seriesOrder: 6
 tags:
 - TypeScript
 - Supabase

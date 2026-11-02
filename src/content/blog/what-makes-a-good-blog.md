@@ -3,7 +3,7 @@ title: "[Insight] MR Blog 的取捨：先留下工程判斷，再補網站功能
 description: "MR Blog 以個人學習、實作與工程判斷為核心；整理內容、分類與靜態網站功能的取捨，以及新增功能前的驗收問題。"
 pubDate: 2026-09-20
 updatedDate: 2026-10-17
-category: Blogging
+category: "Web Publishing & SEO"
 tags:
   - Blog
   - Astro

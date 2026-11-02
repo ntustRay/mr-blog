@@ -3,7 +3,7 @@ title: "[News] Model Routing 省下 64% 成本，先看清楚它怎麼衡量品�
 description: "LangChain 在 973 個 Open SWE threads 測試 Model Routing。省成本的結果很明確，但 merged PR rate 有它的測量邊界。"
 pubDate: 2026-10-14
 updatedDate: 2026-10-17
-category: AI
+category: "AI & Agents"
 tags: [AI Agents, Coding Agents, Harness]
 draft: false
 references:

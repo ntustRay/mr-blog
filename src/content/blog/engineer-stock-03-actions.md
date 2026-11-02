@@ -2,7 +2,9 @@
 title: '[Guide] 工程師選股網 03：讓 GitHub Actions 更新股票資料'
 description: 手動操作既有 Workflow，對照 validate、publish、data branch 與資料日期，理解失敗時為何保留前版。
 pubDate: 2026-11-02
-category: Web Development
+category: "Dev Tools & Quality"
+series: engineer-stock
+seriesOrder: 3
 tags:
 - GitHub Actions
 - Bun

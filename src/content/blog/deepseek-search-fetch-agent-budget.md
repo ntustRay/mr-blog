@@ -2,7 +2,7 @@
 title: "[News] DeepSeek 開放 Search／Fetch：多 Agent 得共用請求預算"
 description: "DeepSeek 在 10/17 開放搜尋與網頁擷取 API。整理按次計費、帳號級 QPS 與內容缺漏，說明研究型 Agent 接入前該驗證什麼。"
 pubDate: 2026-10-18
-category: AI
+category: "AI & Agents"
 tags: [AI Agents, Harness]
 draft: false
 references:

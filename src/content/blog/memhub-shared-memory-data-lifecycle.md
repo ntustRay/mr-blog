@@ -2,7 +2,7 @@
 title: "[News] MemHub v1.0.4：跨 Agent 記憶，要怎麼停止與刪除？"
 description: "MemHub 把不同 AI 工具的授權對話匯入共享記憶。從 v1.0.4 的文件與測試程式，分清本機儲存、模型傳輸、背景服務與 debug 紀錄的生命週期。"
 pubDate: 2026-10-19
-category: AI
+category: "AI & Agents"
 tags: [AI Agents, Coding Agents, Harness]
 draft: false
 references:

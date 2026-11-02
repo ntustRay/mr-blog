@@ -2,7 +2,7 @@
 title: "[Guide] AEO 怎麼做？把技術文章寫成能直接回答問題的內容"
 description: "用實作、回答改寫與發布驗收三張表，整理 AEO 的問題選擇、短答案、適用條件、來源、語意結構與成效觀察，並提供 Pagefind 的具體範例。"
 pubDate: 2026-10-24
-category: Web Development
+category: "Web Publishing & SEO"
 tags:
   - SEO
   - AEO

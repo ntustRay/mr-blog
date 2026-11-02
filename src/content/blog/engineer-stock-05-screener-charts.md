@@ -2,7 +2,9 @@
 title: '[Guide] 工程師選股網 05：接上篩選、個股與圖表'
 description: 用 URL 重現篩選結果，追到篩選函式、個股資料與 ECharts，並驗證缺值與比較條件。
 pubDate: 2026-11-02
-category: Web Development
+category: "Data & Visualization"
+series: engineer-stock
+seriesOrder: 5
 tags:
 - Next.js
 - React

@@ -3,7 +3,7 @@ title: "[Review] React 專案何時適合從 ESLint + Prettier 換成 Biome？"
 description: "依官方文件評估 React／TypeScript 專案導入 Biome 的條件，保留規則對照、最小設定與遷移驗收，說明何時應保留 ESLint。"
 pubDate: 2026-09-29
 updatedDate: 2026-10-17
-category: Engineering
+category: "Dev Tools & Quality"
 tags:
   - React
   - TypeScript

@@ -2,7 +2,7 @@
 title: "[Insight] 工程師做簡報：先決定聽眾要帶走什麼，再開始做 PPT"
 description: "從目標、對象與時間篩選內容，用 4A 檢查溝通缺口，再用 DATA → INSIGHT → GO 整理證據與建議。"
 pubDate: 2026-10-30
-category: Engineering
+category: "Career & Life"
 tags: []
 draft: false
 relatedPostIds:

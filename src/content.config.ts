@@ -1,6 +1,8 @@
 import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
+import { isCategory } from './config/taxonomy';
+import { getSeriesDefinition } from './config/series';
 
 const blog = defineCollection({
   loader: glob({
@@ -14,7 +16,9 @@ const blog = defineCollection({
     pubDate: z.coerce.date(),
     updatedDate: z.coerce.date().optional(),
     tags: z.array(z.string()).default([]),
-    category: z.string().trim().min(1),
+    category: z.string().trim().min(1).refine(isCategory, 'Unknown category'),
+    series: z.string().refine((value) => Boolean(getSeriesDefinition(value))).optional(),
+    seriesOrder: z.number().int().positive().optional(),
     coverImage: z
       .string()
       .regex(/\.webp(?:[?#].*)?$/iu, 'coverImage must use WebP')

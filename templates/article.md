@@ -3,9 +3,12 @@ title: "文章標題"
 description: "用一到兩句話說明問題、限制與讀者會得到什麼。"
 pubDate: 2026-09-22
 # updatedDate: 2026-09-22
-category: Web Development
+category: Full-stack
 tags:
   - TypeScript
+# Optional: complete series in src/config/series.ts
+# series: engineer-stock
+# seriesOrder: 1
 # coverImage: /images/example.webp
 # references:
 #   - title: "Official documentation"

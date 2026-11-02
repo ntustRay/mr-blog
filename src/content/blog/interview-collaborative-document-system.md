@@ -2,7 +2,7 @@
 title: "[Guide] 系統設計面試：多人共編文件，怎麼同步與保護內容？"
 description: "以 50 人共編為題，從 WebSocket、CRDT、離線同步到儲存確認，拆解設計與四級回答。"
 pubDate: 2026-11-02
-category: Engineering
+category: "System Design"
 tags: [interview, System Design, WebSocket, CRDT]
 draft: false
 references:

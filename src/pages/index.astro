@@ -3,116 +3,98 @@ import { getCollection } from 'astro:content';
 import CategoryLink from '../components/CategoryLink.astro';
 import TagList from '../components/TagList.astro';
 import { siteConfig } from '../config/site';
+import { categories } from '../config/taxonomy';
+import { seriesDefinitions } from '../config/series';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCategorySlug } from '../utils/categories';
+import { getContentType, getDisplayTitle } from '../utils/contentType';
 import { formatDate } from '../utils/date';
-import { getTagSlug } from '../utils/tags';
+import { getSeriesPosts } from '../utils/series';
 
 const posts = (await getCollection('blog', ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 const latestPosts = posts.slice(0, 6);
-
-const categoryNames = new Map<string, string>();
-const tagNames = new Map<string, string>();
-
-const normalizeTopic = (value: string) =>
-  value.normalize('NFKC').trim().toLocaleLowerCase('en-US');
-
-for (const post of posts) {
-  categoryNames.set(normalizeTopic(post.data.category), post.data.category);
-
-  for (const tag of post.data.tags) {
-    tagNames.set(normalizeTopic(tag), tag);
-  }
-}
+const primaryCategories = categories
+  .filter((category) => category.primary)
+  .map((category) => ({
+    ...category,
+    count: posts.filter((post) => post.data.category === category.name).length,
+  }));
+const activeSeries = seriesDefinitions
+  .map((series) => ({ ...series, count: getSeriesPosts(series.id, posts).length }))
+  .filter((series) => series.count > 0);
 
 const base = import.meta.env.BASE_URL.endsWith('/')
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
-
-const focusTopics = siteConfig.topics.map((topic) => {
-  const key = normalizeTopic(topic);
-  const category = categoryNames.get(key);
-  const tag = tagNames.get(key);
-
-  const href = category
-    ? `${base}categories/${getCategorySlug(category)}/`
-    : tag
-      ? `${base}tags/${getTagSlug(tag)}/`
-      : null;
-
-  return { label: topic, href };
-});
 ---
 
-<BaseLayout
-  title={siteConfig.name}
-  description={siteConfig.description}
->
+<BaseLayout title={siteConfig.name} description={siteConfig.description}>
   <section class="hero">
     <p class="eyebrow">{siteConfig.eyebrow}</p>
     <h1>{siteConfig.author.name}</h1>
     <p class="hero-role">{siteConfig.author.role}</p>
     <p class="hero-description">{siteConfig.description}</p>
-
-    <ul class="focus-topics" aria-label="Focus topics">
-      {focusTopics.map((topic) => (
-        <li>
-          {topic.href ? (
-            <a class="topic-chip topic-chip--available" href={topic.href}>
-              {topic.label}
-            </a>
-          ) : (
-            <button
-              class="topic-chip topic-chip--empty"
-              type="button"
-              aria-disabled="true"
-              title="No posts yet"
-            >
-              {topic.label}
-            </button>
-          )}
-        </li>
-      ))}
-    </ul>
   </section>
 
-  <section
-    id="latest-posts"
-    class="home-section"
-    aria-labelledby="posts-heading"
-  >
+  <section class="home-section" aria-labelledby="topics-heading">
+    <div class="section-heading">
+      <h2 id="topics-heading">Explore Topics</h2>
+      <a class="section-link" href={`${base}categories/`}>All topics →</a>
+    </div>
+    <div class="topic-grid">
+      {primaryCategories.map((category) => (
+        <a class="topic-card" href={`${base}categories/${getCategorySlug(category.name)}/`}>
+          <strong>{category.name}</strong>
+          <span>{category.description}</span>
+          <small>{category.count} posts</small>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section id="latest-posts" class="home-section" aria-labelledby="posts-heading">
     <div class="section-heading">
       <h2 id="posts-heading">Latest Posts</h2>
     </div>
-
     <div class="post-list">
       {latestPosts.map((post) => (
         <article class="post-card">
           <div class="post-meta">
             <CategoryLink category={post.data.category} />
-            <time datetime={post.data.pubDate.toISOString()}>
-              {formatDate(post.data.pubDate)}
-            </time>
-            <TagList tags={post.data.tags} />
+            {getContentType(post.data.title) && (
+              <span class="type-label">{getContentType(post.data.title)}</span>
+            )}
+            <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
           </div>
-
-          <h3>
-            <a href={`${base}posts/${post.id}/`}>{post.data.title}</a>
-          </h3>
-
+          <h3><a href={`${base}posts/${post.id}/`}>{getDisplayTitle(post.data.title)}</a></h3>
           <p>{post.data.description}</p>
-
-          <a class="read-more" href={`${base}posts/${post.id}/`}>
-            Read article →
-          </a>
+          <TagList tags={post.data.tags} limit={2} />
         </article>
       ))}
     </div>
-
-    <nav class="post-list-footer" aria-label="Browse all posts">
-      <span>{posts.length} posts</span>
-      <a href={`${base}archive/`}>View Archive →</a>
-    </nav>
   </section>
+
+  {activeSeries.length > 0 && (
+    <section class="home-section" aria-labelledby="series-heading">
+      <div class="section-heading">
+        <h2 id="series-heading">Series</h2>
+        <a class="section-link" href={`${base}series/`}>All series →</a>
+      </div>
+      <div class="series-grid">
+        {activeSeries.map((series) => (
+          <a class="series-card" href={`${base}series/${series.id}/`}>
+            <strong>{series.title}</strong>
+            <p>{series.description}</p>
+            <small>{series.count} parts</small>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <nav class="post-list-footer" aria-label="Browse all posts">
+    <span>{posts.length} posts</span>
+    <a href={`${base}archive/`}>View Archive →</a>
+  </nav>
 </BaseLayout>

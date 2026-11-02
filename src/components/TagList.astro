@@ -1,19 +1,21 @@
 ---
-import { getTagSlug } from '../utils/tags';
+import { getTagSlug, normalizeTag } from '../utils/tags';
 
 interface Props {
   tags: string[];
+  limit?: number;
 }
 
-const { tags } = Astro.props;
+const { tags, limit } = Astro.props;
+const visibleTags = [...new Set(tags.map(normalizeTag))].slice(0, limit ?? tags.length);
 const base = import.meta.env.BASE_URL.endsWith('/')
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
 ---
 
-{tags.length > 0 && (
+{visibleTags.length > 0 && (
   <span class="tag-list">
-    {tags.map((tag) => (
+    {visibleTags.map((tag) => (
       <a class="tag" href={`${base}tags/${getTagSlug(tag)}/`}>
         {tag}
       </a>

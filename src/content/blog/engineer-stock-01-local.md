@@ -2,7 +2,9 @@
 title: '[Guide] 工程師選股網 01：本機啟動與資料流'
 description: 啟動現有 Next.js 專案，用兩檔測試公司驗證搜尋，找到首頁資料與畫面的程式位置。
 pubDate: 2026-11-02
-category: Web Development
+category: "Full-stack"
+series: engineer-stock
+seriesOrder: 1
 tags:
 - Next.js
 - TypeScript

@@ -2,7 +2,7 @@
 title: "[Insight] SEO、AEO、GEO 差在哪？技術部落格該先做什麼？"
 description: "用三張完整對照表看懂 SEO、AEO、GEO：優化目標、出現位置、運作方式、實際工作、交付物、成效指標與投入順序，直接查表決定要做什麼。"
 pubDate: 2026-10-24
-category: Web Development
+category: "Web Publishing & SEO"
 tags: [SEO, AEO, GEO, Blog]
 draft: false
 relatedPostIds:

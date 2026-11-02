@@ -2,7 +2,7 @@
 title: "[Guide] GEO 怎麼做？讓技術文章成為 AI 搜尋可查證的來源"
 description: "用實作驗收表、WebP 來源範例與引用量測表，整理 GEO 的內容證據、作者、抓取與結構化資料工作，並區分能驗證的改善與 AI 引用限制。"
 pubDate: 2026-10-24
-category: Web Development
+category: "Web Publishing & SEO"
 tags:
   - SEO
   - GEO

@@ -1,0 +1,36 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import type { seriesDefinitions } from '../config/series';
+
+interface Props {
+  navigation: {
+    definition: (typeof seriesDefinitions)[number];
+    index: number;
+    total: number;
+    previous: CollectionEntry<'blog'> | null;
+    next: CollectionEntry<'blog'> | null;
+  };
+}
+
+const { navigation } = Astro.props;
+const base = import.meta.env.BASE_URL.endsWith('/')
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+---
+<nav class="series-navigation" aria-label="系列文章導覽">
+  <div class="series-navigation__heading">
+    <a href={`${base}series/${navigation.definition.id}/`}>{navigation.definition.title}</a>
+    <span>{navigation.index + 1} / {navigation.total}</span>
+  </div>
+  <div class="series-progress" aria-hidden="true">
+    <span style={`width: ${((navigation.index + 1) / navigation.total) * 100}%`}></span>
+  </div>
+  <div class="series-navigation__links">
+    {navigation.previous ? (
+      <a href={`${base}posts/${navigation.previous.id}/`}>← 上一篇</a>
+    ) : <span>系列起點</span>}
+    {navigation.next ? (
+      <a href={`${base}posts/${navigation.next.id}/`}>下一篇 →</a>
+    ) : <span>系列完結</span>}
+  </div>
+</nav>

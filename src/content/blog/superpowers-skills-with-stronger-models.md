@@ -3,7 +3,7 @@ title: "[Review] 模型變強了，還需要 Superpowers 嗎？"
 description: "以官方流程、6.4 調整與一組第三方實驗，評估 Superpowers 能補哪些缺口、增加哪些成本，以及如何驗證是否值得保留。"
 pubDate: 2026-09-22
 updatedDate: 2026-10-17
-category: AI
+category: "AI & Agents"
 tags:
   - AI Agents
   - Skills

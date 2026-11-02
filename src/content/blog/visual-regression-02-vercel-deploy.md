@@ -2,7 +2,9 @@
 title: '[Guide] 把圖片比對網站部署到 Vercel：從 GitHub 匯入到開啟 Demo'
 description: 建立 GitHub Repository，設定 Bun 與 Node 版本，匯入 Vercel、查看部署結果與錯誤。
 pubDate: 2026-10-25
-category: Web Development
+category: "Dev Tools & Quality"
+series: visual-regression
+seriesOrder: 2
 tags:
 - Next.js
 - Vercel

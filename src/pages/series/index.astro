@@ -1,0 +1,32 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { seriesDefinitions } from '../../config/series';
+import { getSeriesPosts } from '../../utils/series';
+
+const posts = await getCollection('blog', ({ data }) => !data.draft);
+const series = seriesDefinitions.map((definition) => ({
+  ...definition,
+  posts: getSeriesPosts(definition.id, posts),
+}));
+const base = import.meta.env.BASE_URL.endsWith('/')
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+---
+
+<BaseLayout title="Series" description="依順序閱讀完整工程專案的系列文章。">
+  <section class="page-header">
+    <p class="eyebrow">SERIES</p>
+    <h1>Series</h1>
+    <p>依實作順序閱讀專案從設計到驗證的每一步。</p>
+  </section>
+  <div class="series-grid">
+    {series.filter((item) => item.posts.length > 0).map((item) => (
+      <a class="series-card" href={`${base}series/${item.id}/`}>
+        <strong>{item.title}</strong>
+        <p>{item.description}</p>
+        <small>{item.posts.length} parts</small>
+      </a>
+    ))}
+  </div>
+</BaseLayout>
