@@ -26,9 +26,11 @@ relatedPostIds:
 - visual-regression-06-correctness-and-access
 ---
 
-系列：[1 起步](../visual-regression-01-nextjs-bun-biome/) · [2 Vercel](../visual-regression-02-vercel-deploy/) · [3 Supabase](../visual-regression-03-supabase-private-storage/) · [4 Actions](../visual-regression-04-ci-cd/) · [5 Worker](../visual-regression-05-web-worker/) · [6 驗收](../visual-regression-06-correctness-and-access/)
+[← 回 Visual Regression Hub 系列目錄](../../series/visual-regression/)
 
 [下載完整範例與圖片（ZIP）](../../downloads/visual-regression-series.zip) · [程式與驗證範圍](../../downloads/visual-regression-series/README.md)
+
+本系列為獨立的 `image-review` 教學範例；實際 Framecheck 產品架構與完成範圍見[公開架構頁](https://visual-regression-hub.vercel.app/source)。
 
 完成畫面：Before、After、差異圖，以及變更像素與比例。
 
