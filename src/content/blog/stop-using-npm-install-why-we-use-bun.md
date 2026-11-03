@@ -2,8 +2,10 @@
 title: "[Review] npm、pnpm、Yarn 與 Bun：重新評估依賴安裝與 CI 成本"
 description: "依官方文件比較 npm、pnpm、Yarn 與 Bun，聚焦安裝效能的測量條件、dependency layout 與 CI 遷移成本，提供可驗證的選型方式。"
 pubDate: 2026-09-28
-updatedDate: 2026-10-17
+updatedDate: 2026-11-03
 category: "Dev Tools & Quality"
+series: tech-stack-comparisons
+seriesOrder: 5
 tags:
   - JavaScript
   - Node.js
@@ -31,6 +33,19 @@ references:
 更換 package manager 前，先確認要改善什麼：安裝等待、重複佔用的磁碟空間，還是 workspace 的依賴管理？如果這些都不是瓶頸，換工具可能只增加一份 lockfile 遷移工作。
 
 本文是文件型評估，依 2026-10-17 可查閱的官方資料修訂，沒有四套工具在同一個專案的實測。Bun 值得加入候選，但「安裝較快」需要自己的測量，不能直接推成團隊交付速度提升。
+
+## GitHub Stars 快照（2026-11-03）
+
+| 工具 / 官方 Repo | Stars |
+| --- | ---: |
+| [npm CLI](https://github.com/npm/cli) | 10,236 |
+| [pnpm](https://github.com/pnpm/pnpm) | 36,997 |
+| [Yarn Berry](https://github.com/yarnpkg/berry) | 8,122 |
+| [Bun](https://github.com/oven-sh/bun) | 96,521 |
+
+Stars 只表示對應 GitHub Repository 在 2026-11-03 的快照；Repo 範圍和版本不同，不能代表效能、規則覆蓋或產品品質，亦不代表本文對所有方案都有獨立實測。
+
+[engineer-stock-data](https://github.com/ntustRay/engineer-stock-data) 使用 Bun 與 bun.lock；[mr-blog](https://github.com/ntustRay/mr-blog) 使用 npm/package-lock.json。這只證明各專案的現況，沒有把不同專案的 Install 時間當成可比的 Benchmark。
 
 ## 這篇的重點
 
