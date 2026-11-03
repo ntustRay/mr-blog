@@ -20,6 +20,7 @@ export const seriesDefinitions = [
     ],
   },
   { id: 'shade-lab', title: 'Shade Lab', description: '從相機、MediaPipe、Web Worker、WebGL 到 AR 妝容的實作。', total: 6 },
+  { id: 'tech-stack-comparisons', title: 'Tech Stack & Tool Comparisons', description: '34 篇工具選型：Framework、Frontend、Data、Quality、Deployment 與 AI Agents。', total: 34, intro: '從實際工程問題出發，比較選擇、GitHub Stars、Pros、Cons、Trade-offs 與驗收。Stars 僅為查詢日期的公開 Repository 快照，不代表效能或成熟度；不公開私人專案內容。' },
 ] as const;
 
 export type SeriesId = (typeof seriesDefinitions)[number]['id'];
