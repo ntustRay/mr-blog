@@ -2,8 +2,10 @@
 title: "[Review] React 專案何時適合從 ESLint + Prettier 換成 Biome？"
 description: "依官方文件評估 React／TypeScript 專案導入 Biome 的條件，保留規則對照、最小設定與遷移驗收，說明何時應保留 ESLint。"
 pubDate: 2026-09-29
-updatedDate: 2026-10-17
+updatedDate: 2026-11-03
 category: "Dev Tools & Quality"
+series: tech-stack-comparisons
+seriesOrder: 6
 tags:
   - React
   - TypeScript
@@ -33,6 +35,20 @@ references:
 React／TypeScript 專案若同時維護 ESLint、Prettier、imports 規則與多份 editor 設定，可以評估將其中幾項收斂到 Biome。但少裝幾個 dependencies，不能抵銷漏掉 correctness rules 的代價。
 
 這篇是依官方文件整理的選型評估，沒有團隊 migration 的測量紀錄，也不宣稱所有 React 規則都等價。判斷的核心是：既有專案真正依賴哪些檢查，Biome 能否接住？
+
+## GitHub Stars 快照（2026-11-03）
+
+| 工具 / 官方 Repo | Stars |
+| --- | ---: |
+| [Biome](https://github.com/biomejs/biome) | 26,041 |
+| [ESLint](https://github.com/eslint/eslint) | 27,605 |
+| [Prettier](https://github.com/prettier/prettier) | 52,404 |
+| [Oxlint / Oxfmt (Oxc)](https://github.com/oxc-project/oxc) | 23,306 |
+| [dprint](https://github.com/dprint/dprint) | 4,123 |
+
+Stars 只表示對應 GitHub Repository 在 2026-11-03 的快照；Repo 範圍和版本不同，不能代表效能、規則覆蓋或產品品質，亦不代表本文對所有方案都有獨立實測。
+
+[engineer-stock-data](https://github.com/ntustRay/engineer-stock-data) 公開使用 Biome；[react-datetime-range-picker](https://github.com/ntustRay/react-datetime-range-picker) 使用 ESLint + Prettier。這不代表兩個 Repository 曾用完全相同的規則集比較效能。
 
 ## 這篇的重點
 
