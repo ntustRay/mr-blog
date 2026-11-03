@@ -21,9 +21,15 @@ interface Props {
   posts: CollectionEntry<'blog'>[];
 }
 const { series, posts } = Astro.props;
+const intro = 'intro' in series ? series.intro : null;
+const notice = 'notice' in series ? series.notice : null;
+const chapters = 'chapters' in series ? series.chapters : [];
+const resources = 'resources' in series ? series.resources : [];
+const previewImage = 'previewImage' in series ? series.previewImage : null;
 const base = import.meta.env.BASE_URL.endsWith('/')
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
+const toHref = (href: string) => /^https?:\/\//u.test(href) ? href : `${base}${href}`;
 ---
 
 <BaseLayout title={series.title} description={series.description}>
@@ -32,11 +38,35 @@ const base = import.meta.env.BASE_URL.endsWith('/')
     <h1>{series.title}</h1>
     <p>{series.description}</p>
   </section>
+  {intro && (
+    <section class="series-guide" aria-labelledby="series-guide-heading">
+      <div class="series-guide__copy">
+        <h2 id="series-guide-heading">閱讀指南</h2>
+        <p>{intro}</p>
+        {notice && <p class="series-guide__notice">{notice}</p>}
+        {resources.length > 0 && (
+          <nav class="series-guide__resources" aria-label="系列資源">
+            {resources.map((resource) => (
+              <a href={toHref(resource.href)}>{resource.label} →</a>
+            ))}
+          </nav>
+        )}
+      </div>
+      {previewImage && (
+        <figure class="series-guide__preview">
+          <img src={toHref(previewImage.src)} alt={previewImage.alt} loading="lazy" decoding="async" />
+          <figcaption>獨立教學範例的實際比對畫面</figcaption>
+        </figure>
+      )}
+    </section>
+  )}
+  <h2 class="series-contents-heading">依順序閱讀</h2>
   <ol class="series-post-list">
     {posts.map((post, index) => (
       <li>
-        <span class="series-index">{String(index + 1).padStart(2, '0')}</span>
+        <span class="series-index">{String(post.data.seriesOrder ?? index + 1).padStart(2, '0')}</span>
         <div>
+          {chapters[index] && <span class="series-stage">{chapters[index]}</span>}
           <div class="post-meta">
             <CategoryLink category={post.data.category} />
             <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
