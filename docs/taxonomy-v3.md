@@ -24,6 +24,7 @@ The `interview` Tag remains a filter, not a fifth Content Type.
 - `engineer-stock`: 10 parts
 - `visual-regression`: 6 parts
 - `shade-lab`: 6 parts, displayed as Shade Lab
+- `tech-stack-comparisons`: 34 parts, 32 new Reviews + 2 updated existing Reviews. Covers Framework, Frontend, Data, Quality, Hosting and Agents. Stars have explicit snapshot dates and are not a quality ranking.
 
 A series may span Categories. The Series pages link to each article by its unchanged ID, and articles show series-specific prev/next navigation.
 

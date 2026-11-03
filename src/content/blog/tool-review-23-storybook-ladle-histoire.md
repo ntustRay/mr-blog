@@ -50,7 +50,7 @@ Component Workbench 的主要價值是可重現 UI State、Document Controls、I
 
 ## 實際使用案例
 
-[chartbuilderlibrary](https://github.com/ntustRay/chartbuilderlibrary) 目前是私人 Repository，因此本文不展示其程式碼；公開的 [react-datetime-range-picker](https://github.com/ntustRay/react-datetime-range-picker) 則可用作元件 API 與交互驗收案例。
+公開的 [react-datetime-range-picker](https://github.com/ntustRay/react-datetime-range-picker) 則可用作元件 API 與交互驗收案例。
 
 ## 導入驗收
 
