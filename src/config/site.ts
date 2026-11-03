@@ -1,5 +1,6 @@
 export const siteConfig = {
   name: 'MR Blog',
+  blogId: 'technical',
   author: {
     name: 'MingRay',
     role: 'Full-Stack Engineer',

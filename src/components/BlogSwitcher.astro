@@ -1,0 +1,68 @@
+---
+import { siteConfig } from '../config/site';
+
+const blogs = [
+  { id: 'technical', label: '技術', name: '技術部落格', href: 'https://ntustray.github.io/mr-blog/' },
+  { id: 'financial', label: '財金', name: '財金部落格', href: 'https://ntustray.github.io/mr-financial-blog/' },
+] as const;
+---
+
+<nav class="blog-switcher" aria-label="切換部落格">
+  {blogs.map((blog) => (
+    <a
+      href={blog.href}
+      aria-current={blog.id === siteConfig.blogId ? 'true' : undefined}
+      aria-label={blog.id === siteConfig.blogId ? `目前網站：${blog.name}` : `切換至${blog.name}`}
+    >
+      {blog.label}
+    </a>
+  ))}
+</nav>
+
+<style>
+  .blog-switcher {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    width: max-content;
+    gap: 2px;
+    padding: 3px;
+    overflow: visible;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+
+  .blog-switcher a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 46px;
+    min-height: 32px;
+    padding: 4px 10px;
+    border-radius: var(--radius);
+    color: var(--muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+    text-decoration: none;
+  }
+
+  .blog-switcher a:hover {
+    background: var(--surface-muted);
+    color: var(--text-strong);
+  }
+
+  .blog-switcher a[aria-current='true'] {
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 750;
+  }
+
+  @media (max-width: 560px) {
+    .blog-switcher a {
+      min-width: 48px;
+      min-height: 40px;
+    }
+  }
+</style>

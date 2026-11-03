@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import { siteConfig } from '../config/site';
+import BlogSwitcher from '../components/BlogSwitcher.astro';
 import ViewCount from '../components/ViewCount.astro';
 import ViewCountLoader from '../components/ViewCountLoader.astro';
 import GiscusSession from '../components/GiscusSession.astro';
@@ -186,10 +187,13 @@ const serializedStructuredData = JSON.stringify([
   <body>
     <header class="site-header">
       <div class="container header-inner">
-        <a class="brand" href={base}>
-          <img class="brand-icon" src={`${base}brand-mark.svg`} width="26" height="26" alt="" aria-hidden="true" />
-          {siteConfig.name}
-        </a>
+        <div class="header-branding">
+          <a class="brand" href={base}>
+            <img class="brand-icon" src={`${base}brand-mark.svg`} width="26" height="26" alt="" aria-hidden="true" />
+            {siteConfig.name}
+          </a>
+          <BlogSwitcher />
+        </div>
         <nav aria-label="Main navigation">
           {navigation.map((item) => (
             <a
@@ -226,3 +230,31 @@ const serializedStructuredData = JSON.stringify([
     <ViewCountLoader />
   </body>
 </html>
+
+<style>
+  .header-inner {
+    flex-wrap: wrap;
+    row-gap: 10px;
+    padding-block: 12px;
+  }
+
+  .header-branding {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 16px;
+    max-width: 100%;
+  }
+
+  .header-branding .brand {
+    flex: none;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 560px) {
+    .header-branding {
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
+</style>
