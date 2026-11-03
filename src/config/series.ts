@@ -1,5 +1,5 @@
 export const seriesDefinitions = [
-  { id: 'engineer-stock', title: '工程師選股網', description: '從公開資料來源、Next.js、Supabase 到部署與整體系統設計。', total: 10 },
+  { id: 'engineer-stock', title: '工程師選股網', description: '從公開資料來源、Next.js、Supabase 到部署、整體系統設計與除錯。', total: 11 },
   {
     id: 'visual-regression',
     title: 'Visual Regression Hub',
