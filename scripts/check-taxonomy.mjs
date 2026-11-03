@@ -9,7 +9,7 @@ const seriesSource = readFileSync(join(root, 'src/config/series.ts'), 'utf8');
 const allowedCategories = new Set(
   [...categoriesSource.split('export const legacyCategories')[0].matchAll(/name:\s*'([^']+)'/g)].map((match) => match[1]),
 );
-const seriesEntries = [...seriesSource.matchAll(/id:\s*'([^']+)'[^\n]*total:\s*(\d+)/g)];
+const seriesEntries = [...seriesSource.matchAll(/id:\s*'([^']+)'[^}]*?\btotal:\s*(\d+)/g)];
 const seriesLimits = new Map(seriesEntries.map((match) => [match[1], Number(match[2])]));
 const seenSeries = new Map();
 const errors = [];
