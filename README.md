@@ -168,3 +168,9 @@ https://ntustray.github.io/mr-blog/
 ## 線上試妝自學系列
 
 [從第 1 篇開始](https://ntustray.github.io/mr-blog/posts/shade-room-01-architecture/)：共 6 篇，依序拆解影像輸入、MediaPipe 與 Worker、WebGL 唇部遮罩、互動與匯出，以及像素驗證與 CI。包含實際畫面、定位與質地診斷圖、流程圖及驗證限制。
+
+## Financial
+
+金錢與純生活文章移至 [Financial](https://ntustray.github.io/mr-financial-blog/)。本次搬移租屋清單與 2020 年加碼券兩篇，舊文章網址提供 canonical 與自動轉址。求職、面試、code 與工程師選股網的全部技術教學仍在此站。
+
+轉址清單：`src/config/moved-posts.json`。giscus 與 Financial 共用 public Discussions backend，保留搬移文章的討論 term。

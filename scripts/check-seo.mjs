@@ -9,6 +9,8 @@ const websiteUrl = new URL(base, origin).href;
 const authorUrl = new URL(`${base}about/`, origin).href;
 const websiteId = `${websiteUrl}#website`;
 const authorId = `${authorUrl}#person`;
+const migratedPosts = JSON.parse(await readFile(new URL('../src/config/moved-posts.json', import.meta.url), 'utf8'));
+const migratedRoutes = new Map(migratedPosts.map(({ id, url }) => [`posts/${id}/index.html`, url]));
 const errors = [];
 const htmlFiles = [];
 
@@ -50,6 +52,15 @@ for (const file of htmlFiles) {
   const route = relative === 'index.html' ? '' : relative.replace(/index\.html$/u, '');
   const expectedUrl = new URL(`${base}${route}`, origin).href;
   const canonical = attribute(extractTag(html, 'link', 'rel', 'canonical'), 'href');
+  const redirectTarget = migratedRoutes.get(relative);
+  if (redirectTarget) {
+    if (canonical !== redirectTarget) errors.push(`${relative}: migrated canonical does not match destination`);
+    if (!html.includes('http-equiv="refresh"') || !html.includes(`url=${redirectTarget}`)) {
+      errors.push(`${relative}: missing migration redirect`);
+    }
+    if (sitemapUrls.has(expectedUrl)) errors.push(`${relative}: migrated URL still in sitemap`);
+    continue;
+  }
   const title = html.match(/<title>([\s\S]*?)<\/title>/iu)?.[1]?.trim();
   const description = attribute(extractTag(html, 'meta', 'name', 'description'), 'content');
   const robots = attribute(extractTag(html, 'meta', 'name', 'robots'), 'content') ?? '';
