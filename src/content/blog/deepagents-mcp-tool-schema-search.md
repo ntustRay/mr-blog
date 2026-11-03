@@ -20,7 +20,7 @@ relatedPostIds:
 
 Agent 接的 MCP server 越多，模型一開始收到的 tool schema 也越長。即使這一輪只需要讀一個檔案，十幾套整合的名稱、描述與參數仍可能一起進入 context。
 
-[Deep Agents Code 0.2.3](https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.3) 在 2026 年 11 月 2 日發布，其中一項改動是用 provider-native tool search 延後載入 MCP tool schema。這篇依 release、merged PR 與測試程式整理；我沒有在本機跑 Deep Agents，也沒有可比較的 token、延遲或成功率實測。
+[Deep Agents Code 0.2.3](https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.3) 在 2026 年 11 月 3 日凌晨發布（台北時間；GitHub 頁面以 UTC 顯示為 11 月 2 日），其中一項改動是用 provider-native tool search 延後載入 MCP tool schema。這篇依 release、merged PR 與測試程式整理；我沒有在本機跑 Deep Agents，也沒有可比較的 token、延遲或成功率實測。
 
 ## TL;DR
 
