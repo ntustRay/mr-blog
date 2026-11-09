@@ -111,11 +111,11 @@ Open WebUI 0.13.1 新增 \`Auto\` tool permission mode，預設關閉。啟用�
 
 ## 成熟度與採用判斷
 
-Open WebUI v0.13.1 是正式 release，涵蓋 289 個 commits；主要能力可以追到多個 merged PR、獨立文件與後續修補。社群發布討論也有實際的相容性回報，例如部分 CLI 尚未被辨識、支援清單依 Open Terminal 版本而異。
+Open WebUI v0.13.1 是正式 release；主要能力可以追到多個 merged PR、獨立文件與後續修補。社群發布討論也有實際的相容性回報，例如部分 CLI 尚未被辨識、支援清單依 Open Terminal 版本而異。
 
 風險同樣明顯。v0.13.1 發布後約 46 分鐘，v0.13.2 修補 plain HTTP 環境無法載入 chat；約 13 小時後的 v0.13.3 又補上 agent automations 與 terminal switching fixes。Tether 本身仍是 0.1.x，Open Terminal 是 0.17.x；Tether 只供個人非商業用途免費，商業或組織 production 使用需要 Enterprise License。
 
-我的採用判斷是：**個人測試環境值得試，團隊 production 先不要把它當作安全隔離層。** 最合適的第一個案例，是每天在 disposable worktree 執行 read-only 檢查或測試，結果回到 chat，由工程師 review 後再合併。先驗證權限拒絕、斷線重試、approval 等待與 credential exposure，再考慮讓它修改長期分支或接正式系統。
+目前較合理的採用判斷是：**個人測試環境值得試，團隊 production 先不要把它當作安全隔離層。** 最合適的第一個案例，是每天在 disposable worktree 執行 read-only 檢查或測試，結果回到 chat，由工程師 review 後再合併。先驗證權限拒絕、斷線重試、approval 等待與 credential exposure，再考慮讓它修改長期分支或接正式系統。
 
 ## 與既有文章的差異
 
