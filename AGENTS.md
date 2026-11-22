@@ -67,6 +67,18 @@
 - Keep connected reasoning in paragraphs; use lists and tables when they improve scanning or comparison. Avoid turning every sentence into its own paragraph.
 - Use bold selectively. Avoid stock phrasing such as 「不是……而是……」、「這不只是……更是……」, generic opening announcements, and formulaic conclusions unless the wording is necessary and precise.
 
+### 作者口吻
+
+每次為 `src/content/blog/` 寫新稿、改稿或審稿，都要使用 `mr-blog-writing`。排程發文也適用。只能透過 GitHub 讀檔的寫作工具，直接照本節寫稿並完成交稿前的檢查。
+
+- 從手上的問題寫起。做選擇時，把「我選什麼、哪個條件讓我這樣選」寫在一起。還在評估，就說打算怎麼試、看到什麼才算過關。
+- 用跟台灣工程師同事說話時會用的字。優先參考作者親寫或認可的段落，保留順口的原句和準確的技術用詞。「開檔」「丟給 CLI」這些寫法用得上再用。
+- 第一人稱要有作者確認的經驗、打算或判斷。寫新聞時說清楚誰改了什麼、影響哪一步；寫面試示範回答時，讓答題的人直接講做法和取捨。
+
+作者認可的範例。這裡的兩分鐘是目標。
+
+> 我想把兩個截圖資料夾丟給 CLI，兩分鐘內就能打開 HTML 報告，看這一萬張圖裡有哪幾張變了。所以我會從 CLI 開始讀檔就計時，等報告寫好才停。
+
 ## Technical Content
 
 - Prefer concrete explanations, examples, constraints, and trade-offs over abstract advice.
@@ -186,6 +198,7 @@ Before publishing an article, check the relevant items:
 
 - Frontmatter is valid and consistent with the schema.
 - The article has a clear connection to the author's confirmed goal and answers one main question.
+- 交稿與發文前，重讀開頭和關鍵判斷。像「工程師應依需求評估」這種換個題目也通的句子，要補上這次的條件與理由，或直接刪掉。核對改後的數字、限制與說話的人。
 - The title has one valid article-type prefix, and the title/description match the actual content and strength of evidence.
 - The selected type's evidence or verification requirements are met; missing evidence is disclosed without inventing tests or experience.
 - Recommendations state the conditions that could change them; unresolved explorations identify a next validation step.
