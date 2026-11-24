@@ -198,7 +198,7 @@ Before publishing an article, check the relevant items:
 
 - Frontmatter is valid and consistent with the schema.
 - The article has a clear connection to the author's confirmed goal and answers one main question.
-- 交稿與發文前，重讀開頭和關鍵判斷。像「工程師應依需求評估」這種換個題目也通的句子，要補上這次的條件與理由，或直接刪掉。核對改後的數字、限制與說話的人。
+- 交稿與發文前，重讀開頭和關鍵判斷。像「工程師應依需求評估」這種換個題目也通的句子，要補上這次的條件與理由，或直接刪掉。逐句核對以作者身分寫下的「我」「我們」。經驗、打算與選擇都要有作者確認。手上只有外部資料或推論時，直接寫誰做了什麼，或交代在哪些條件下建議怎麼做、理由是什麼。核對改後的數字、限制與證據強度。
 - The title has one valid article-type prefix, and the title/description match the actual content and strength of evidence.
 - The selected type's evidence or verification requirements are met; missing evidence is disclosed without inventing tests or experience.
 - Recommendations state the conditions that could change them; unresolved explorations identify a next validation step.
