@@ -14,7 +14,7 @@ export async function getHomeFeed() {
       title: getDisplayTitle(data.title),
       category: data.category,
       date: data.pubDate.toISOString().slice(0, 10),
-      summary: data.description.split(/(?<=[。！？])/u, 1)[0],
+      summary: data.description,
     }));
 }
 

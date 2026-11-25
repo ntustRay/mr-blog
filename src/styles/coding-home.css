@@ -82,7 +82,7 @@
 .coding-row-date small { margin-top: .3rem; font-size: .69rem; color: var(--muted); letter-spacing: .05em; }
 .coding-feed-card:first-child { display: block; padding-block: clamp(20px, 2.5vw, 35px); }
 .coding-feed-card:first-child .coding-row-date,
-.coding-feed-card:not(:first-child) :is(.coding-lead-date, .coding-summary, .coding-read) { display: none; }
+.coding-feed-card:not(:first-child) :is(.coding-lead-date, .coding-read) { display: none; }
 .coding-feed-card:first-child h2 {
   max-width: 25em;
   margin-block: .65rem .72rem;
@@ -94,6 +94,7 @@
 }
 .coding-lead-date { margin-left: .25rem; padding-left: .75rem; border-left: 1px solid var(--line); }
 .coding-summary { max-width: 72ch; font-size: 1rem; line-height: 1.75; color: var(--muted); }
+.coding-feed-card:not(:first-child) .coding-summary { margin-top: .4rem; font-size: .9375rem; overflow-wrap: anywhere; }
 .coding-read { display: inline-block; margin-top: .9rem; font-size: .84rem; font-weight: 650; color: var(--accent); }
 .coding-feed-bottom { display: flex; align-items: center; flex-wrap: wrap; gap: .9rem; padding-block: 1.25rem; color: var(--muted); font-size: .8rem; }
 .coding-feed-bottom button {
