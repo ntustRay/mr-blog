@@ -1,6 +1,6 @@
 ---
 title: "[News] MCP 接上正式環境，Registry、Gateway、Identity、Policy 各管什麼？"
-description: "能呼叫工具只是起點。把 MCP 的發現、連線、身分與業務授權拆清楚，才能知道每個請求究竟被誰允許。"
+description: "從 Agent 讀某份專案報表的請求，釐清 MCP 工具發現、連線、代表身分與資源授權。"
 pubDate: 2026-10-14
 updatedDate: 2026-10-17
 category: "AI & Agents"
@@ -15,65 +15,17 @@ references:
     url: "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway.html"
 ---
 
-本機上能呼叫 MCP tool，通常很快就能做出 demo。正式環境接著會問：誰在呼叫？代表哪個使用者？能讀哪個專案？離職後怎麼撤權？
+假設一個 Agent 用 MCP 的 `read_report` 查報表。它能找到這個工具、也能連上服務，下一個問題才是：它現在代表 Alice，能不能打開 Bob 的專案？這幾個步驟常出現在同一次請求，但各有不同的人和系統負責。
 
-這些問題需要分層處理。Registry、Gateway、Identity、Policy 表示四種責任，可以由既有服務承擔；MCP 並未要求每個系統都另外部署四套服務。 以下是依官方文件整理的架構分析。
+| 要回答的問題 | 在哪裡處理 |
+| --- | --- |
+| 有哪些 MCP server 能找到？ | Registry 提供伺服器目錄。公司可另訂哪些來源能採用 |
+| 如何把既有 API 接給工具呼叫？ | Gateway 可以收請求、轉送並處理兩端連線 |
+| 這次請求代表誰？ | 身分驗證要辨認呼叫方與委派的使用者 |
+| Alice 能讀這份資料嗎？ | 服務端依個別使用者、動作和報表檢查權限 |
 
-## 四層責任分開看
+2025 年 9 月 8 日的 MCP Registry 預覽公告把它定位為用來發現 server 的 catalog。AWS AgentCore Gateway 則是連線層的一個實作，可把既有 API 或 Lambda 接成 MCP 工具，入口和下游也可使用各自的認證。已有 API gateway 和權限服務的團隊，可以先確認現有元件能否承擔這些工作。[MCP Registry 預覽公告](https://blog.modelcontextprotocol.io/posts/2025-09-08-mcp-registry-preview/)｜[AWS Gateway 文件](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway.html)
 
-| 責任 | 要回答的問題 | 不該被誤認為 |
-| --- | --- | --- |
-| Registry | 有哪些 server？去哪裡連？ | 公司核准使用清單或呼叫代理 |
-| Gateway | 請求如何統一接入、轉送與觀察？ | 加上它就自動擁有正確業務授權 |
-| Identity | 呼叫者是誰、代表誰？ | 登入成功就能使用所有資料 |
-| Policy | 這個身分能對這個資源做什麼？ | 寫進 prompt 就能強制執行 |
+## 兩段連線，要用各自適用的憑證
 
-[MCP Registry 的發布說明](https://blog.modelcontextprotocol.io/posts/2025-09-08-mcp-registry-preview/)把它定位成 server discovery 的 catalog 與 API。發現一個 server，不等於已經取得工具存取權，更不等於組織認可其供應鏈。
-
-公司可以另外維護允許使用的 server、版本與來源；這份內部決策不能靠公開目錄代替。
-
-## Gateway 有用，但要知道它接了哪些責任
-
-[AWS AgentCore Gateway 文件](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway.html)提供一個具體例子：它能把既有 API 和 Lambda 接成 MCP-compatible tools，也處理 inbound 與 outbound authentication。
-
-這說明了兩段不同的連線：
-
-- Agent 進入 Gateway：確認 Agent 或使用者的身分。
-- Gateway 呼叫下游：使用下游接受的 credential。
-
-即使兩段都成功，仍要判斷「這個使用者可不可以讀這個客戶的資料」。如果所有請求都用同一個高權限 service account，下游只看到 service account，使用者的權限差異就必須在可信任的執行層補上。
-
-Gateway 的好處是集中管理；代價是它也成為需要維運、觀察與保護的共同路徑。只有少數內部 tools 時，先把 server 本身的授權做好，往往比急著增加一層更清楚。
-
-## Token 不能隨手往下一站轉送
-
-[MCP Authorization spec](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization)要求 server 驗證 token 的 intended audience，不能接受或轉送不屬於自己資源的 token。
-
-因此「使用者登入 Gateway，Gateway 就把同一個 Bearer token 送往所有 downstream」不能當通用做法。每段連線要依各自的授權設計取得 credential，並保留可稽核的身分關係。
-
-這裡談的是 HTTP-based MCP authorization；不要把這套 OAuth 流程直接套成所有本機 stdio server 的必備條件。
-
-## 工具授權要落到資源
-
-假設 tool 叫 `read_report`。只限制這個 tool 名稱仍然不夠：A 專案與 B 專案可能是完全不同的權限範圍。
-
-可以先用這份決策資料檢查設計：
-
-```text
-actor：誰發起
-delegated user：代表誰
-action：讀取或修改什麼
-resource：哪個專案、客戶或資料
-decision：允許或拒絕，依哪個規則
-trace：如何連回這次 Agent 執行
-```
-
-這是設計檢查表，並非 MCP 規定的 wire format。可信任的 server 應自行取得身分；不能把模型填入的 user ID 當成授權證明。
-
-## 起步時先補哪裡？
-
-先選一個真實 tool，測試允許與拒絕兩條路徑。用兩個權限不同的身分讀同一個資源，確認拒絕發生在 server 的執行邊界，而且 log 能說明原因。
-
-等到多個 server 的 credential、audit 與 onboarding 開始重複，再考慮 Gateway 與內部 Registry。
-
-這樣每增加一層，都有明確要解的營運問題，也比較容易驗證它到底提供了什麼。
+Alice 登入拿到的 token 會指定預期的接收服務。MCP Authorization spec 要求驗證 token audience，所以下游 API 需要用對下游有效的認證；也要能辨識這個呼叫在替哪位使用者操作。測試可以安排兩個身分使用同一個工具讀同一份報表：一個應成功，一個應被拒絕。拒絕要在服務端生效，稽核紀錄能解釋是哪個身分碰到哪個資源的規則。[MCP Authorization 規格](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization)
