@@ -53,32 +53,46 @@ release 也修正了 input guardrail rejection 後仍可能留在 queue 的 func
 付款、寄信、刪除、權限異動等流程，建議用下面的兩階段形式：
 
 ```python
-# Phase 1: only validate and plan; no side-effecting tools
-plan = await Runner.run(
-    planning_agent,
-    user_input,
-    run_config=RunConfig(run_in_parallel=False),
-)
+from agents import Agent, GuardrailFunctionOutput, Runner, input_guardrail
 
-# Phase 2: show the reviewed intent, then execute with a narrow credential
-# This phase should be entered only after application-level approval.
-result = await Runner.run(execution_agent, plan.final_output)
+
+@input_guardrail(run_in_parallel=False)
+async def reject_empty_request(_ctx, _agent, request):
+    is_empty = isinstance(request, str) and not request.strip()
+    return GuardrailFunctionOutput(
+        output_info={"is_empty": is_empty},
+        tripwire_triggered=is_empty,
+    )
+
+
+# Phase 1：先檢查輸入，再規劃，不掛會寫入外部系統的 tools。
+planning_agent = Agent(
+    name="Planner",
+    instructions="Propose a plan without executing it.",
+    input_guardrails=[reject_empty_request],
+)
+plan = await Runner.run(planning_agent, user_input)
+
+# Phase 2：由應用程式審核這份計畫，核准後才交給執行 agent。
+if await approve_plan(plan.final_output):
+    result = await Runner.run(execution_agent, plan.final_output)
 ```
 
-這不是 SDK 唯一可用的寫法，而是把「輸入是否允許」和「寫入外部系統」分開。第二段仍需要 application-level approval、idempotency key、最小權限 credential 與 audit log；`run_in_parallel=False` 只處理順序，不能回收已經發出的 request。
+`run_in_parallel=False` 設在第一個 agent 的 input guardrail，不是 `RunConfig`；這裡只用拒絕空白文字示範順序。`approve_plan` 是應用程式提供的審核函式，`execution_agent` 則要配置最小權限。實際寫入還要有 idempotency key 和 audit log；guardrail 不會回收已經發出的 request。 [v0.26.0 guardrail 原始碼](https://github.com/openai/openai-agents-python/blob/v0.26.0/src/agents/guardrail.py)
 
 ## Codex tool 的本機圖片改成顯式 grant
 
 官方 release 的另一個 security 修正是 experimental Codex tool 的 `local_image`。以前若 model 給出一個 path，應用程式可能把它當成可讀取的檔案。v0.26.0 不再信任這個 model-supplied path；應用程式要先把受信任的絕對路徑放進 `image_attachments`，tool 再透過 attachment key 取用。
 
 ```python
-# 只由 application 決定實際檔案；model 只能引用 "diagram" 這個名稱。
-codex_tool = CodexTool(
-    image_attachments={
-        "diagram": "/app/approved-inputs/diagram.png",
-    },
+from agents.extensions.experimental.codex import codex_tool
+
+tool = codex_tool(
+    image_attachments={"diagram": "/app/approved-inputs/diagram.png"},
 )
 ```
+
+模型在 `local_image.path` 傳 `diagram`；實際檔案路徑只由應用程式決定。 [v0.26.0 Codex tool 原始碼](https://github.com/openai/openai-agents-python/blob/v0.26.0/src/agents/extensions/experimental/codex/codex_tool.py)
 
 這個模式的好處是 capability 比 path 更小：模型無法藉由改字串去讀任意本機檔案。但它仍不是完整 sandbox；application 需要自己確保路徑固定、來源可信、附件清單不含 secret 或不應外流的 artifact。
 
