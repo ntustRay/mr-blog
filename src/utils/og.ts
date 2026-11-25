@@ -1,3 +1,8 @@
+import { readFileSync } from 'node:fs';
+import { siteConfig } from '../config/site';
+
+const brandIcon = readFileSync('public/favicon.svg', 'base64');
+
 interface OgImageData {
   title: string;
   tags: string[];
@@ -69,31 +74,22 @@ export function createOgSvg({ title, tags }: OgImageData): string {
     )
     .join('');
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1200" height="630" viewBox="0 0 1200 630">
     <defs>
       <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#111827"/>
-        <stop offset="100%" stop-color="#1e293b"/>
+        <stop offset="0%" stop-color="#191a19"/>
+        <stop offset="100%" stop-color="#272823"/>
       </linearGradient>
       <radialGradient id="glow" cx="0.18" cy="0.1" r="0.9">
-        <stop offset="0%" stop-color="#6366f1" stop-opacity="0.42"/>
-        <stop offset="100%" stop-color="#6366f1" stop-opacity="0"/>
+        <stop offset="0%" stop-color="#67512c" stop-opacity="0.42"/>
+        <stop offset="100%" stop-color="#67512c" stop-opacity="0"/>
       </radialGradient>
     </defs>
 
     <rect width="1200" height="630" fill="url(#background)"/>
     <rect width="1200" height="630" fill="url(#glow)"/>
 
-    <rect x="96" y="78" width="58" height="58" rx="14" fill="#ffffff"/>
-    <text
-      x="125"
-      y="118"
-      text-anchor="middle"
-      font-family="Noto Sans CJK TC, Noto Sans TC, Microsoft JhengHei, PingFang TC, sans-serif"
-      font-size="31"
-      font-weight="800"
-      fill="#111827"
-    >M</text>
+    <image x="96" y="78" width="58" height="58" xlink:href="data:image/svg+xml;base64,${brandIcon}"/>
 
     <text
       x="174"
@@ -102,7 +98,7 @@ export function createOgSvg({ title, tags }: OgImageData): string {
       font-size="30"
       font-weight="700"
       fill="#ffffff"
-    >MR Blog</text>
+    >${escapeXml(siteConfig.name)}</text>
 
     <text
       font-family="Noto Sans CJK TC, Noto Sans TC, Microsoft JhengHei, PingFang TC, sans-serif"
@@ -117,7 +113,7 @@ export function createOgSvg({ title, tags }: OgImageData): string {
       font-family="Noto Sans CJK TC, Noto Sans TC, Microsoft JhengHei, PingFang TC, sans-serif"
       font-size="24"
       font-weight="500"
-      fill="#a5b4fc"
+      fill="#f7c653"
     >${escapeXml(tagText || 'Technical Notes')}</text>
 
     <text
@@ -126,7 +122,7 @@ export function createOgSvg({ title, tags }: OgImageData): string {
       text-anchor="end"
       font-family="Noto Sans CJK TC, Noto Sans TC, Microsoft JhengHei, PingFang TC, sans-serif"
       font-size="22"
-      fill="#94a3b8"
+      fill="#b8b6aa"
     >ntustRay</text>
   </svg>`;
 }

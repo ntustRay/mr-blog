@@ -1,5 +1,7 @@
 export const siteConfig = {
-  name: 'MR Blog',
+  name: 'MR Coding',
+  byline: 'Full-Stack Engineer',
+  peer: { label: 'Financial', url: 'https://ntustray.github.io/mr-financial-blog/' },
   blogId: 'technical',
   author: {
     name: 'MingRay',

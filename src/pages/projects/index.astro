@@ -1,0 +1,76 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import projects from '../../data/projects.json';
+import '../../styles/projects.css';
+
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const categories = ['', ...new Set(projects.map(project => project.category))];
+---
+
+<BaseLayout title="專案作品" description="MingRay 的互動體驗、資料應用與開發工具。瀏覽產品畫面、開啟 Demo，或閱讀各專案的開發紀錄。" wide>
+  <section class="pj-page">
+    <nav class="pj-location" aria-label="導覽路徑">
+      <a href={base}>Home</a><span aria-hidden="true">/</span><span aria-current="page">Projects</span>
+    </nav>
+    <header class="pj-header">
+      <h1>專案作品</h1>
+      <div class="pj-filters" role="group" aria-label="篩選專案類型" hidden>
+        {categories.map(category => (
+          <button type="button" data-filter={category} aria-pressed={category === '' ? 'true' : 'false'}>{category || '全部'}</button>
+        ))}
+      </div>
+    </header>
+    <div class="pj-gallery">
+      {projects.map((project, index) => {
+        const primaryLink = project.links.find(link => link.url === project.demo);
+        const primaryLabel = primaryLink ? (primaryLink.label === 'Demo' ? '開啟 Demo' : primaryLink.label) : '查看原始碼';
+        return (
+          <article class:list={['pj-card', index === 0 ? 'pj-lead' : 'pj-gallery-card']} data-category={project.category}>
+            <div class="pj-media">
+              <img src={base + project.image} alt={project.alt} width={project.width} height={project.height}
+                loading={index === 0 ? 'eager' : 'lazy'} fetchpriority={index === 0 ? 'high' : 'auto'} decoding="async" />
+            </div>
+            <div class="pj-card-text">
+              <span class="pj-category">{project.category}</span>
+              <h2>{project.name}</h2>
+              <p>{project.summary}</p>
+              {project.tech.length > 0 && <div class="pj-stack">{project.tech.slice(0, 3).join(' / ')}</div>}
+              <div class="pj-card-actions">
+                <a class="pj-launch" href={project.demo || project.source} target="_blank" rel="noopener noreferrer" aria-label={primaryLabel + ' · ' + project.name}>
+                  {primaryLabel}<span aria-hidden="true">↗</span>
+                </a>
+                <a class="pj-profile" href={base + 'projects/' + project.id + '/'} aria-label={'專案介紹 · ' + project.name}>專案介紹</a>
+              </div>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+    <span class="pj-sr" role="status"></span>
+  </section>
+</BaseLayout>
+
+<script>
+  const filters = document.querySelector<HTMLElement>('.pj-filters');
+  if (filters) {
+    const buttons = filters.querySelectorAll<HTMLButtonElement>('[data-filter]');
+    const cards = document.querySelectorAll<HTMLElement>('.pj-card[data-category]');
+    const status = document.querySelector<HTMLElement>('.pj-sr');
+    filters.hidden = false;
+    for (const button of buttons) {
+      button.addEventListener('click', () => {
+        const category = button.dataset.filter;
+        let visible = 0;
+        for (const card of cards) {
+          card.hidden = Boolean(category && card.dataset.category !== category);
+          if (!card.hidden) visible++;
+          const isLead = !card.hidden && visible === 1;
+          card.classList.toggle('pj-lead', isLead);
+          card.classList.toggle('pj-gallery-card', !isLead);
+        }
+        for (const option of buttons) option.setAttribute('aria-pressed', String(option === button));
+        if (status) status.textContent = `顯示${category || '全部'}專案，共 ${visible} 個。`;
+      });
+    }
+  }
+</script>

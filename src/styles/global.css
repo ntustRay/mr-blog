@@ -1,28 +1,52 @@
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 100 900;
+  src: url('../assets/fonts/geist.woff2') format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-weight: 100 900;
+  src: url('../assets/fonts/geist-mono.woff2') format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Instrument Serif';
+  font-style: italic;
+  font-weight: 400;
+  src: url('../assets/fonts/instrument-serif.woff2') format('woff2');
+  font-display: swap;
+}
+
 :root {
   color-scheme: dark;
-  --font-sans:
-    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
-  --font-mono:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  --canvas: #1c2021;
-  --surface: #252a2b;
-  --surface-solid: #252a2b;
-  --surface-muted: #303637;
-  --text: #d0d9d3;
-  --text-strong: #edf0ea;
-  --muted: #bec8c3;
-  --subtle: #afbab5;
-  --line: #414a48;
-  --accent: #afc3a7;
-  --accent-strong: #d0d9d3;
-  --accent-soft: #29322f;
-  --accent-line: #45514b;
-  --header-bg: #1c2021;
+  --font-sans: 'Geist', Inter, 'Helvetica Neue', Arial, 'PingFang TC', 'Noto Sans CJK TC', 'Microsoft JhengHei', sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Consolas, monospace;
+  --font-serif: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  --canvas: #191A19;
+  --surface: #20211F;
+  --surface-solid: var(--surface);
+  --surface-muted: #292A26;
+  --text: #D0D0C9;
+  --text-strong: #F4F1E9;
+  --muted: #AAACA4;
+  --subtle: var(--muted);
+  --line: #3A3B36;
+  --accent: #F7C653;
+  --link: #F7C653;
+  --accent-strong: #FFE19A;
+  --accent-soft: #302B20;
+  --accent-line: #685431;
+  --header-bg: var(--canvas);
   --shadow-soft: none;
   --shadow-hover: none;
   --radius: 4px;
-  --container-width: 1200px;
+  --gutter: clamp(20px, 5vw, 68px);
+  --container-width: 1248px;
   --container-wide-width: var(--container-width);
   --article-main-width: 920px;
   font-family: var(--font-sans);
@@ -57,83 +81,16 @@ a {
 }
 
 .container {
-  width: min(var(--container-width), calc(100% - 40px));
+  width: min(var(--container-width), calc(100% - 2 * var(--gutter)));
   margin-inline: auto;
 }
 
 .container--wide {
-  width: min(var(--container-wide-width), calc(100% - 40px));
+  width: min(var(--container-wide-width), calc(100% - 2 * var(--gutter)));
 }
 
-.site-header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  border-bottom: 1px solid var(--line);
-  background: var(--header-bg);
-  box-shadow: none;
-}
-
-.header-inner {
-  min-height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-}
-
-.brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  color: var(--text-strong);
-  font-weight: 800;
-  text-decoration: none;
-  letter-spacing: -0.03em;
-}
-
-.brand-icon {
-  display: block;
-  width: 26px;
-  height: 26px;
-  flex: none;
-}
-
-.site-header nav {
-  display: flex;
-  gap: 20px;
-}
-
-.site-header nav a {
-  position: relative;
-  padding: 6px 0;
-  color: var(--muted);
-  font-size: 0.9rem;
-  font-weight: 600;
-  text-decoration: none;
-  transition: color 140ms ease;
-}
-
-.site-header nav a:hover,
-.brand:hover,
 .post-card h3 a:hover {
   color: var(--accent);
-}
-
-.site-header nav a[aria-current="page"] {
-  color: var(--accent);
-  font-weight: 750;
-}
-
-.site-header nav a[aria-current="page"]::after {
-  position: absolute;
-  right: 0;
-  bottom: -8px;
-  left: 0;
-  height: 2px;
-  border-radius: var(--radius);
-  background: var(--accent);
-  content: '';
 }
 
 .hero {
@@ -706,7 +663,7 @@ pagefind-results {
 }
 
 .prose a {
-  color: var(--accent);
+  color: var(--link);
   text-decoration-thickness: 0.08em;
   text-underline-offset: 0.2em;
 }
@@ -845,7 +802,7 @@ pagefind-results {
 
 .code-block__filename {
   overflow: hidden;
-  color: #d0d9d3;
+  color: var(--text);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 0.76rem;
   font-weight: 700;
@@ -1106,70 +1063,7 @@ pagefind-results {
   text-decoration: none;
 }
 
-.site-footer {
-  padding: 56px 0;
-  color: var(--subtle);
-}
-
-.site-footer .container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 14px 24px;
-}
-
-.site-footer nav {
-  display: flex;
-  gap: 16px;
-  font-size: 0.78rem;
-}
-
-.footer-info {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px 20px;
-}
-
-.site-footer a {
-  text-decoration: none;
-}
-
-.site-footer a:hover {
-  color: var(--accent);
-}
-
 @media (prefers-color-scheme: dark) {
-  :root {
-    --canvas: #1c2021;
-    --surface: #252a2b;
-    --surface-solid: #252a2b;
-    --surface-muted: #303637;
-    --text: #d0d9d3;
-    --text-strong: #edf0ea;
-    --muted: #bec8c3;
-    --subtle: #afbab5;
-    --line: #414a48;
-    --accent: #afc3a7;
-    --accent-strong: #d0d9d3;
-    --accent-soft: #29322f;
-    --accent-line: #45514b;
-    --header-bg: #1c2021;
-    --shadow-soft: none;
-    --shadow-hover: none;
-    color: var(--text-strong);
-    background: var(--canvas);
-  }
-
-  body {
-    background: var(--canvas);
-  }
-
-  .site-header {
-    border-color: var(--line);
-    background: var(--header-bg);
-  }
-
   .section-heading,
   .post-card,
   .article-header,
@@ -1204,7 +1098,6 @@ pagefind-results {
     border-left-color: var(--accent);
   }
 
-  .site-header nav a,
   .hero-description,
   .page-header > p:last-child,
   .post-card p,
@@ -1228,10 +1121,6 @@ pagefind-results {
 }
 
 @media (max-width: 1180px) {
-  :root {
-    --container-width: var(--article-main-width);
-  }
-
   .article {
     display: block;
   }
@@ -1252,36 +1141,12 @@ pagefind-results {
 }
 
 @media (max-width: 560px) {
-  .container {
-    width: min(100% - 28px, var(--container-width));
-  }
-
   .hero {
     padding: 72px 0 56px;
   }
 
   .topic-chip {
     min-height: 38px;
-  }
-
-  .header-inner {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 10px;
-    padding-block: 12px;
-  }
-
-  .site-header nav {
-    width: 100%;
-    gap: 18px;
-    overflow-x: auto;
-    padding-bottom: 3px;
-    white-space: nowrap;
-    scrollbar-width: none;
-  }
-
-  .site-header nav::-webkit-scrollbar {
-    display: none;
   }
 
   .page-header {

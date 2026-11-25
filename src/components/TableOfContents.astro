@@ -18,8 +18,8 @@ const visibleHeadings = headings.filter(
 
 {visibleHeadings.length > 1 && (
   collapsible ? (
-    <details class="toc toc--mobile">
-      <summary class="toc-title">On this page</summary>
+    <details class="toc toc--mobile" data-pagefind-ignore>
+      <summary class="toc-title">文章目錄</summary>
       <ol>
         {visibleHeadings.map((heading) => (
           <li class:list={{ 'toc-item--nested': heading.depth === 3 }}>
@@ -29,8 +29,8 @@ const visibleHeadings = headings.filter(
       </ol>
     </details>
   ) : (
-    <nav class="toc toc--desktop" aria-label="On this page">
-      <p class="toc-title">On this page</p>
+    <nav class="toc toc--desktop" aria-label="文章目錄">
+      <p class="toc-title">文章目錄</p>
       <ol>
         {visibleHeadings.map((heading) => (
           <li class:list={{ 'toc-item--nested': heading.depth === 3 }}>
@@ -41,3 +41,12 @@ const visibleHeadings = headings.filter(
     </nav>
   )
 )}
+
+<script>
+  const menu = document.querySelector<HTMLDetailsElement>('.toc--mobile');
+  menu?.addEventListener('click', event => {
+    if (event.target instanceof Element && event.target.closest('a[href^="#"]')) {
+      menu.open = false;
+    }
+  });
+</script>

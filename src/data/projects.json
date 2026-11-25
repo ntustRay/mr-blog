@@ -1,0 +1,318 @@
+[
+  {
+    "id": "parking",
+    "name": "慢慢停",
+    "category": "互動體驗",
+    "summary": "坐進駕駛座，從三面後視鏡看車身位置，練習路邊停車、倒車入庫與 S 彎。",
+    "description": "Parallel Parking Lab 用第一人稱視角模擬停車。可以跟著分步教學看示範，再自己控制車輛重走一次。",
+    "tech": [
+      "Three.js",
+      "WebGL"
+    ],
+    "features": [
+      "駕駛座視角與三面後視鏡",
+      "路邊停車、倒車入庫、S 彎與迴轉",
+      "可打包成單一離線 HTML"
+    ],
+    "alt": "慢慢停的第一人稱駕駛畫面，可見方向盤、道路與三個後視鏡視野。",
+    "demo": "https://ntustray.github.io/parallel-parking-lab/",
+    "source": "https://github.com/ntustRay/parallel-parking-lab",
+    "links": [
+      {
+        "label": "開始練習",
+        "url": "https://ntustray.github.io/parallel-parking-lab/"
+      },
+      {
+        "label": "Source",
+        "url": "https://github.com/ntustRay/parallel-parking-lab"
+      }
+    ],
+    "image": "images/projects/parking.webp",
+    "width": 880,
+    "height": 516,
+    "imageLabel": "產品畫面"
+  },
+  {
+    "id": "stock",
+    "name": "工程師選股網",
+    "category": "資料應用",
+    "summary": "用多個條件篩台股，在同一頁比較個股行情、公司財報和走勢。",
+    "description": "行情資料由 GitHub Actions 更新成 JSON，會員追蹤清單另外保存。可以先看市場總覽，再從篩選結果進入個股頁。",
+    "tech": [
+      "Next.js",
+      "ECharts",
+      "Supabase",
+      "GitHub Actions"
+    ],
+    "features": [
+      "多條件選股",
+      "個股行情、財報與公司比較",
+      "會員追蹤清單"
+    ],
+    "alt": "工程師選股網首頁的市場總覽、指數走勢與股票行情。",
+    "demo": "https://engineer-stock-web.vercel.app/",
+    "source": null,
+    "links": [
+      {
+        "label": "Demo",
+        "url": "https://engineer-stock-web.vercel.app/"
+      },
+      {
+        "label": "公開資料 Pipeline",
+        "url": "https://github.com/ntustRay/engineer-stock-data"
+      }
+    ],
+    "image": "images/projects/stock.webp",
+    "width": 880,
+    "height": 516,
+    "imageLabel": "產品畫面",
+    "article": {
+      "label": "工程師選股網開發紀錄",
+      "path": "series/engineer-stock/"
+    }
+  },
+  {
+    "id": "shade",
+    "name": "Shade Lab",
+    "category": "互動體驗",
+    "summary": "上傳照片或打開相機試妝，拖動 A／B 分隔線比較上妝前後。",
+    "description": "AR 妝容在裝置上進行臉部追蹤與合成。調整效果後可保存妝容，也可以將結果匯出成 PNG。",
+    "tech": [
+      "React",
+      "MediaPipe",
+      "WebGL2",
+      "Web Worker"
+    ],
+    "features": [
+      "照片與相機即時試妝",
+      "十一種妝效與 A／B 比較",
+      "儲存妝容與匯出 PNG"
+    ],
+    "alt": "Shade Lab 的人臉妝容對照滑桿及右側腮紅設定。",
+    "demo": "https://shade-room.vercel.app/",
+    "source": null,
+    "links": [
+      {
+        "label": "Demo",
+        "url": "https://shade-room.vercel.app/"
+      }
+    ],
+    "image": "images/projects/shade.webp",
+    "width": 880,
+    "height": 516,
+    "imageLabel": "產品畫面",
+    "article": {
+      "label": "Shade Lab 開發紀錄",
+      "path": "series/shade-lab/"
+    }
+  },
+  {
+    "id": "framecheck",
+    "name": "Framecheck",
+    "category": "開發工具",
+    "summary": "批次配對兩組截圖，以四種差異檢視找出畫面改動。",
+    "description": "Visual Regression Hub 支援同步縮放與拖曳。比對完成後可以保存結果、交付審核，並撤銷先前建立的分享。",
+    "tech": [
+      "Next.js",
+      "pixelmatch",
+      "Web Worker",
+      "Supabase"
+    ],
+    "features": [
+      "批次配對圖片",
+      "同步縮放與拖曳",
+      "保存、審核與可撤銷分享"
+    ],
+    "alt": "Framecheck 官網的 Orbit 示範，兩版儀表板以分隔線比較曲線差異。",
+    "demo": "https://visual-regression-hub.vercel.app/demo",
+    "source": null,
+    "links": [
+      {
+        "label": "Demo",
+        "url": "https://visual-regression-hub.vercel.app/demo"
+      },
+      {
+        "label": "架構說明",
+        "url": "https://visual-regression-hub.vercel.app/source"
+      }
+    ],
+    "image": "images/projects/framecheck.webp",
+    "width": 880,
+    "height": 516,
+    "imageLabel": "官網比較範例",
+    "article": {
+      "label": "圖片比對教學系列",
+      "path": "series/visual-regression/"
+    }
+  },
+  {
+    "id": "pixel",
+    "name": "Pixel Workbench",
+    "category": "互動體驗",
+    "summary": "在瀏覽器裡去背、裁切和調色，將完成的圖片一次匯出成 ZIP。",
+    "description": "圖片在裝置上處理。打開工具即可編輯，不需登入或設定 API key。",
+    "tech": [
+      "React",
+      "TypeScript",
+      "Canvas",
+      "MediaPipe"
+    ],
+    "features": [
+      "人像去背、貼紙與人臉馬賽克",
+      "裁切、銳化、浮水印與調色",
+      "批次 ZIP 匯出"
+    ],
+    "alt": "Pixel Workbench 編輯器顯示透明背景盆栽與貼紙調整選項。",
+    "demo": "https://pixel-workbench-eta.vercel.app/",
+    "source": "https://github.com/ntustRay/pixel-workbench",
+    "links": [
+      {
+        "label": "Demo",
+        "url": "https://pixel-workbench-eta.vercel.app/"
+      },
+      {
+        "label": "Source",
+        "url": "https://github.com/ntustRay/pixel-workbench"
+      }
+    ],
+    "image": "images/projects/pixel.webp",
+    "width": 880,
+    "height": 516,
+    "imageLabel": "產品畫面"
+  },
+  {
+    "id": "youbike",
+    "name": "台北 YouBike",
+    "category": "資料應用",
+    "summary": "站點直接標出可借車輛和可還車位，先比較附近的數字，再決定要去哪站。",
+    "description": "地圖把借車與還車數量放在同一個站點標記上。選取站點後可看詳細資訊。",
+    "tech": [],
+    "features": [
+      "台北站點地圖",
+      "同時顯示可借數量與可還車位"
+    ],
+    "alt": "台北 YouBike 的站點標記示意，臺北市政府站有 12 輛可借、8 個空位。數字為示例。",
+    "demo": "https://youbike-map-ixxc.vercel.app/",
+    "source": null,
+    "links": [
+      {
+        "label": "Demo",
+        "url": "https://youbike-map-ixxc.vercel.app/"
+      },
+      {
+        "label": "關於地圖",
+        "url": "https://youbike-map-ixxc.vercel.app/about.html"
+      }
+    ],
+    "image": "images/projects/youbike.webp",
+    "width": 880,
+    "height": 516,
+    "imageLabel": "站點示意"
+  },
+  {
+    "id": "kanban",
+    "name": "GitHub Kanban",
+    "category": "開發工具",
+    "summary": "把 repositories 放進六欄看板，拖動卡片更新狀態，點開補專案筆記。",
+    "description": "免登入 Demo 可以先試看板操作。自己的看板透過 GitHub 登入，狀態與備註儲存在 Postgres。",
+    "tech": [
+      "Next.js",
+      "TypeScript",
+      "Postgres"
+    ],
+    "features": [
+      "六欄狀態與拖曳排序",
+      "專案備註",
+      "免登入 Demo 與 GitHub 登入"
+    ],
+    "alt": "GitHub Kanban 公開看板所使用的藍色三欄圖示。",
+    "demo": "https://github-kanban-ntustray.vercel.app/demo",
+    "source": "https://github.com/ntustRay/github-kanban",
+    "links": [
+      {
+        "label": "開啟看板",
+        "url": "https://github-kanban-ntustray.vercel.app/"
+      },
+      {
+        "label": "免登入試用",
+        "url": "https://github-kanban-ntustray.vercel.app/demo"
+      },
+      {
+        "label": "Source",
+        "url": "https://github.com/ntustRay/github-kanban"
+      }
+    ],
+    "image": "images/projects/kanban.webp",
+    "width": 880,
+    "height": 516,
+    "imageLabel": "品牌圖示"
+  },
+  {
+    "id": "datetime",
+    "name": "React DateTime Range Picker",
+    "category": "開發工具",
+    "summary": "在同一個元件選起訖日期、時間與時區，適用於圖表和 Log 查詢。",
+    "description": "元件分開處理草稿與確認值，以 timestamp 輸出時間區間。可以在 Demo 看操作，或到 npm 安裝。",
+    "tech": [
+      "React",
+      "TypeScript"
+    ],
+    "features": [
+      "IANA 時區",
+      "Draft 與 Commit 分開處理",
+      "半開區間 [start, end)"
+    ],
+    "alt": "日期範圍選擇器反白 8 月 5 至 9 日，右側提供時、分、秒選項。",
+    "demo": "https://ntustray.github.io/react-datetime-range-picker/",
+    "source": "https://github.com/ntustRay/react-datetime-range-picker",
+    "links": [
+      {
+        "label": "Demo",
+        "url": "https://ntustray.github.io/react-datetime-range-picker/"
+      },
+      {
+        "label": "npm",
+        "url": "https://www.npmjs.com/package/@ntustray/react-datetime-range-picker"
+      },
+      {
+        "label": "Source",
+        "url": "https://github.com/ntustRay/react-datetime-range-picker"
+      }
+    ],
+    "image": "images/projects/datetime.webp",
+    "width": 830,
+    "height": 426,
+    "imageLabel": "產品畫面"
+  },
+  {
+    "id": "dev-map",
+    "name": "Dev Map Lab",
+    "category": "互動體驗",
+    "summary": "沿著 JS／TS 路線學習，直接執行程式測資，並在教材旁留下筆記。",
+    "description": "教材與題庫可以擴充。程式在 Web Worker 內執行，個人學習資料保存在瀏覽器。",
+    "tech": [
+      "Next.js",
+      "QuickJS WASM",
+      "Web Worker",
+      "IndexedDB"
+    ],
+    "features": [
+      "JS／TS 學習路線與四種題型",
+      "執行程式測資",
+      "教材註記與個人筆記"
+    ],
+    "alt": "Dev Map Lab 的 D 字路網圖示。",
+    "demo": null,
+    "source": "https://github.com/ntustRay/dev-map-lab",
+    "links": [
+      {
+        "label": "Source",
+        "url": "https://github.com/ntustRay/dev-map-lab"
+      }
+    ],
+    "image": "images/projects/dev-map.webp",
+    "width": 880,
+    "height": 516,
+    "imageLabel": "品牌圖示"
+  }
+]

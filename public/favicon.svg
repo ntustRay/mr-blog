@@ -3,9 +3,9 @@
   <desc>Dark background app icon with MingRay monogram in Sage green. Editable SVG.</desc>
   <style>
     /* Edit these three values to recolor */
-    .bg { fill: #1C2021; }
-    .mark { fill: #AFC3A7; }
-    .light { fill: #EDF0EA; }
+    .bg { fill: #191A19; }
+    .mark { fill: #F7C653; }
+    .light { fill: #F4F1E9; }
   </style>
   <rect class="bg" x="6" y="6" width="116" height="116" rx="18" />
   <!-- Main monogram -->

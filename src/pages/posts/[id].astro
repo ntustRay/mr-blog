@@ -7,6 +7,8 @@ import HeadingAnchorEnhancer from '../../components/HeadingAnchorEnhancer.astro'
 import CopyLink from '../../components/CopyLink.astro';
 import PostNavigation from '../../components/PostNavigation.astro';
 import SeriesNavigation from '../../components/SeriesNavigation.astro';
+import ReadingTools from '../../components/ReadingTools.astro';
+import '../../styles/article-reader.css';
 import References from '../../components/References.astro';
 import RelatedPosts from '../../components/RelatedPosts.astro';
 import TableOfContents from '../../components/TableOfContents.astro';
@@ -50,6 +52,8 @@ interface Props {
 
 const { post, previousPost, nextPost, relatedPosts, seriesNavigation } = Astro.props;
 const { Content, headings } = await render(post);
+const typePrefix = post.data.title.match(/^\[(Guide|Review|Insight|News)\]\s*/iu)?.[0];
+const headline = typePrefix ? post.data.title.slice(typePrefix.length) : post.data.title;
 const ogImage = post.data.coverImage ?? `og/${post.id}.webp`;
 const base = import.meta.env.BASE_URL.endsWith('/')
   ? import.meta.env.BASE_URL
@@ -116,43 +120,33 @@ const structuredData = {
   modifiedTime={(post.data.updatedDate ?? post.data.pubDate).toISOString()}
   wide
 >
-  <article class="article">
-    <div class="article-main" data-pagefind-body>
+  <article class="article reader-page" data-pagefind-body>
+    <div class="article-intro">
       <nav class="breadcrumbs" aria-label="Breadcrumb">
         <a href={base}>Posts</a>
         <span aria-hidden="true">/</span>
-        <a href={`${base}categories/${getCategorySlug(post.data.category)}/`}>
-          {post.data.category}
-        </a>
+        <a href={`${base}categories/${getCategorySlug(post.data.category)}/`}>{post.data.category}</a>
       </nav>
-
       <header class="article-header">
+        <div class="reader-dateline">
+          {typePrefix && <span class="reader-type">{typePrefix.trim()}</span>}
+          <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+        </div>
+        <h1 tabindex="-1">{headline}</h1>
+        <p class="article-description">{post.data.description}</p>
         <div class="post-meta">
-          <a href={`${base}${siteConfig.author.profilePath}`} rel="author">
-            {siteConfig.author.name}
-          </a>
+          <a href={`${base}${siteConfig.author.profilePath}`} rel="author">{siteConfig.author.name}</a>
           <CategoryLink category={post.data.category} />
-          <span>
-            Published <time datetime={post.data.pubDate.toISOString()}>
-              {formatDate(post.data.pubDate)}
-            </time>
-          </span>
           {post.data.updatedDate && (
-            <span>
-              Updated <time datetime={post.data.updatedDate.toISOString()}>
-                {formatDate(post.data.updatedDate)}
-              </time>
-            </span>
+            <span>Updated <time datetime={post.data.updatedDate.toISOString()}>{formatDate(post.data.updatedDate)}</time></span>
           )}
           <TagList tags={post.data.tags} />
           <ViewCount scope="page" />
+          <CopyLink />
         </div>
-
-        <h1>{post.data.title}</h1>
-        <p class="article-description">{post.data.description}</p>
-        <CopyLink />
       </header>
-
+    </div>
+    <div class="article-main">
       {seriesNavigation && <SeriesNavigation navigation={seriesNavigation} />}
       <TableOfContents headings={headings} collapsible />
 
@@ -165,6 +159,7 @@ const structuredData = {
       <HeadingAnchorEnhancer />
       <TocActiveEnhancer />
       <References references={post.data.references} />
+      <div data-reader-end aria-hidden="true"></div>
       <RelatedPosts posts={relatedPosts} />
 
       {!seriesNavigation && (
@@ -173,8 +168,9 @@ const structuredData = {
       <ArticleComments postId={post.id} />
     </div>
 
-    <aside class="article-sidebar">
+    <aside class="article-sidebar" data-pagefind-ignore>
       <TableOfContents headings={headings} />
     </aside>
+    <ReadingTools />
   </article>
 </BaseLayout>

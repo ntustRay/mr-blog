@@ -1,0 +1,121 @@
+<section class="reader-tools" aria-label="閱讀工具" data-pagefind-ignore hidden>
+  <div class="reader-meter" role="progressbar" aria-label="閱讀進度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+    <small aria-hidden="true">閱讀進度</small>
+    <span class="reader-meter-value" aria-hidden="true">0%</span>
+    <span class="reader-meter-track" aria-hidden="true"><i></i></span>
+  </div>
+  <details class="reader-size">
+    <summary class="reader-utility" aria-label="調整內文字級" title="調整內文字級">Aa</summary>
+    <div class="reader-size-panel" role="group" aria-label="內文字級">
+      <p aria-hidden="true">內文字級</p>
+      <div>
+        <button type="button" data-size="normal" aria-pressed="true">標準</button>
+        <button type="button" data-size="large" aria-pressed="false">大</button>
+        <button type="button" data-size="largest" aria-pressed="false">特大</button>
+      </div>
+    </div>
+  </details>
+  <span class="reader-tools-rule" aria-hidden="true"></span>
+  <button class="reader-utility" type="button" data-jump="top" title="回到頁首" aria-label="回到頁首">
+    <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 4h14m-7 15V8m-5 5 5-5 5 5" /></svg>
+  </button>
+  <button class="reader-utility" type="button" data-jump="bottom" title="跳到頁底" aria-label="跳到頁底">
+    <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 20h14M12 5v11m-5-5 5 5 5-5" /></svg>
+  </button>
+</section>
+
+<script>
+  function mountReader(tools: HTMLElement) {
+    const article = tools.closest<HTMLElement>('.reader-page')!;
+    const articleEnd = article.querySelector<HTMLElement>('[data-reader-end]')!;
+    const title = article.querySelector('h1')!;
+    const footer = document.querySelector('footer');
+    const meter = tools.querySelector<HTMLElement>('.reader-meter')!;
+    const value = meter.querySelector<HTMLElement>('.reader-meter-value')!;
+    const picker = tools.querySelector('details')!;
+    const toggle = picker.querySelector('summary')!;
+    const options = Array.from(picker.querySelectorAll('button'));
+    const up = tools.querySelector<HTMLButtonElement>('[data-jump="top"]')!;
+    const down = tools.querySelector<HTMLButtonElement>('[data-jump="bottom"]')!;
+    const mobile = window.matchMedia('(max-width: 820px)');
+    const sizeKey = 'mr-blog-reader-type-size';
+    const page = document.scrollingElement ?? document.documentElement;
+    let frame = 0;
+
+    function setSize(size: string | null) {
+      article.dataset.typeSize = options.find(option => option.dataset.size === size)?.dataset.size ?? 'normal';
+      for (const option of options) {
+        option.setAttribute('aria-pressed', String(option.dataset.size === article.dataset.typeSize));
+      }
+    }
+
+    function update() {
+      frame = 0;
+      const y = Math.max(0, window.scrollY);
+      const max = Math.max(0, page.scrollHeight - page.clientHeight);
+      const dock = mobile.matches ? tools.offsetHeight : 0;
+      const distance = Math.min(max, articleEnd.getBoundingClientRect().bottom + y - page.clientHeight + dock);
+      const percent = distance <= 0 ? 100 : Math.round(100 * Math.min(1, y / distance));
+      value.textContent = percent + '%';
+      meter.setAttribute('aria-valuenow', String(percent));
+      meter.style.setProperty('--progress', String(percent / 100));
+      up.setAttribute('aria-disabled', String(y < 1));
+      down.setAttribute('aria-disabled', String(max - y <= 1));
+    }
+
+    function schedule() {
+      if (!frame) frame = requestAnimationFrame(update);
+    }
+
+    let initialSize: string | null = null;
+    try { initialSize = localStorage.getItem(sizeKey); } catch { /* Storage can be unavailable. */ }
+    setSize(initialSize);
+
+    function closePicker() {
+      picker.open = false;
+      toggle.focus({ preventScroll: true });
+    }
+
+    for (const option of options) {
+      option.addEventListener('click', () => {
+        const size = option.dataset.size!;
+        setSize(size);
+        try { localStorage.setItem(sizeKey, size); } catch { /* Keep the current page preference. */ }
+        closePicker();
+        schedule();
+      });
+    }
+    picker.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && picker.open) {
+        event.preventDefault();
+        closePicker();
+      }
+    });
+    function closeOutside(event: Event) {
+      if (picker.open && event.target instanceof Node && !picker.contains(event.target)) picker.open = false;
+    }
+    document.addEventListener('pointerdown', closeOutside);
+    document.addEventListener('focusin', closeOutside);
+
+    function jump(button: HTMLButtonElement, target: HTMLElement | null, offset: number) {
+      if (button.getAttribute('aria-disabled') === 'true') return;
+      if (target) {
+        target.tabIndex = -1;
+        target.focus({ preventScroll: true });
+      }
+      window.scrollTo({ top: offset, behavior: 'instant' });
+      schedule();
+    }
+    up.addEventListener('click', () => jump(up, title, 0));
+    down.addEventListener('click', () => jump(down, footer, page.scrollHeight));
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule);
+    window.addEventListener('pageshow', schedule);
+    new ResizeObserver(schedule).observe(document.body);
+    tools.hidden = false;
+    update();
+  }
+
+  const tools = document.querySelector<HTMLElement>('.reader-tools');
+  if (tools) mountReader(tools);
+</script>

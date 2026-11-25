@@ -1,100 +1,157 @@
 ---
-import { getCollection } from 'astro:content';
-import CategoryLink from '../components/CategoryLink.astro';
-import TagList from '../components/TagList.astro';
 import { siteConfig } from '../config/site';
 import { categories } from '../config/taxonomy';
-import { seriesDefinitions } from '../config/series';
+import { getSeriesDefinition } from '../config/series';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCategorySlug } from '../utils/categories';
-import { getContentType, getDisplayTitle } from '../utils/contentType';
-import { formatDate } from '../utils/date';
-import { getSeriesPosts } from '../utils/series';
+import { getHomeFeed } from '../utils/homeFeed';
+import '../styles/coding-home.css';
 
-const posts = (await getCollection('blog', ({ data }) => !data.draft))
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
-const latestPosts = posts.slice(0, 6);
-const primaryCategories = categories
-  .filter((category) => category.primary)
-  .map((category) => ({
-    ...category,
-    count: posts.filter((post) => post.data.category === category.name).length,
-  }));
-const activeSeries = seriesDefinitions
-  .map((series) => ({ ...series, count: getSeriesPosts(series.id, posts).length }))
-  .filter((series) => series.count > 0);
-
-const base = import.meta.env.BASE_URL.endsWith('/')
-  ? import.meta.env.BASE_URL
-  : `${import.meta.env.BASE_URL}/`;
+const posts = await getHomeFeed();
+const pageSize = 18;
+const firstPage = posts.slice(0, pageSize);
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const featuredSeries = getSeriesDefinition('visual-regression');
+const topicPaths: Record<string, string> = {
+  'AI & Agents': 'M6.5 8.5h11v10h-11zM9.5 12h.1m4.8 0h.1m-5 3h4m-2-10v4M3.5 11v5m17-5v5',
+  'Frontend': 'M3 4.5h18v15H3zM3.5 8.5h17M7 6.5h.1m2.5 0h.1',
+  'Full-stack': 'm12 3 9 5-9 5-9-5 9-5zm-9 9 9 5 9-5M3 16l9 5 9-5',
+  'Data & Visualization': 'M4 4v15h16M8 15v-4m5 4V7m5 8V9',
+  'Dev Tools & Quality': 'M9 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6M7 13l3.5 3.5L20 6',
+  'System Design': 'M8.5 3.5h7v5h-7zM2 15.5h7v5H2zM15 15.5h7v5h-7zM12 8.5v3.5m-6.5 3v-3h13v3',
+};
 ---
 
-<BaseLayout title={siteConfig.name} description={siteConfig.description}>
-  <section class="hero">
-    <p class="eyebrow">{siteConfig.eyebrow}</p>
-    <h1>{siteConfig.author.name}</h1>
-    <p class="hero-role">{siteConfig.author.role}</p>
-    <p class="hero-description">{siteConfig.description}</p>
-  </section>
-
-  <section class="home-section" aria-labelledby="topics-heading">
-    <div class="section-heading">
-      <h2 id="topics-heading">Explore Topics</h2>
-      <a class="section-link" href={`${base}categories/`}>All topics →</a>
-    </div>
-    <div class="topic-grid">
-      {primaryCategories.map((category) => (
-        <a class="topic-card" href={`${base}categories/${getCategorySlug(category.name)}/`}>
-          <strong>{category.name}</strong>
-          <span>{category.description}</span>
-          <small>{category.count} posts</small>
-        </a>
-      ))}
-    </div>
-  </section>
-
-  <section id="latest-posts" class="home-section" aria-labelledby="posts-heading">
-    <div class="section-heading">
-      <h2 id="posts-heading">Latest Posts</h2>
-    </div>
-    <div class="post-list">
-      {latestPosts.map((post) => (
-        <article class="post-card">
-          <div class="post-meta">
-            <CategoryLink category={post.data.category} />
-            {getContentType(post.data.title) && (
-              <span class="type-label">{getContentType(post.data.title)}</span>
-            )}
-            <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
-          </div>
-          <h3><a href={`${base}posts/${post.id}/`}>{getDisplayTitle(post.data.title)}</a></h3>
-          <p>{post.data.description}</p>
-          <TagList tags={post.data.tags} limit={2} />
-        </article>
-      ))}
-    </div>
-  </section>
-
-  {activeSeries.length > 0 && (
-    <section class="home-section" aria-labelledby="series-heading">
-      <div class="section-heading">
-        <h2 id="series-heading">Series</h2>
-        <a class="section-link" href={`${base}series/`}>All series →</a>
+<BaseLayout title={siteConfig.name} description={siteConfig.description} wide>
+  <div class="coding-home">
+    <section id="latest-posts" aria-labelledby="posts-heading" data-feed-url={base + 'home-feed.json'}
+      data-post-base={base + 'posts/'} data-page-size={pageSize}>
+      <div class="coding-feed-head">
+        <h1 id="posts-heading" lang="en">Latest posts</h1>
+        <div class="coding-filters" role="group" aria-label="依文章類型篩選" hidden>
+          {['全部', 'News', 'Guide', 'Review', 'Insight'].map((type, i) => (
+            <button type="button" data-filter={i ? type : ''} aria-pressed={i === 0}>{type}</button>
+          ))}
+        </div>
       </div>
-      <div class="series-grid">
-        {activeSeries.map((series) => (
-          <a class="series-card" href={`${base}series/${series.id}/`}>
-            <strong>{series.title}</strong>
-            <p>{series.description}</p>
-            <small>{series.count} parts</small>
+      <div class="coding-feed" id="post-feed">
+        {firstPage.map((post) => (
+          <a class="coding-feed-card" href={base + 'posts/' + post.id + '/'}>
+            <time class="coding-row-date" datetime={post.date}>
+              <span>{post.date.slice(5).replace('-', '.')}</span><small>{post.date.slice(0, 4)}</small>
+            </time>
+            <div class="coding-card-body">
+              <div class="coding-metadata">
+                <span class="coding-kind" hidden={!post.type}>{post.type}</span>
+                <span class="coding-category">{post.category}</span>
+                <time class="coding-lead-date" datetime={post.date}>{post.date.replaceAll('-', '.')}</time>
+              </div>
+              <h2>{post.title}</h2>
+              <p class="coding-summary">{post.summary}</p>
+              <span class="coding-read">閱讀文章 <span aria-hidden="true">→</span></span>
+            </div>
           </a>
         ))}
       </div>
+      <div class="coding-feed-bottom">
+        <span role="status" aria-live="polite">顯示 {firstPage.length} 篇</span>
+        <button type="button" aria-controls="post-feed" data-more={posts.length > pageSize} hidden>顯示更多</button>
+        <a href={base + 'archive/'}>瀏覽 Archive <span aria-hidden="true">→</span></a>
+      </div>
     </section>
-  )}
-
-  <nav class="post-list-footer" aria-label="Browse all posts">
-    <span>{posts.length} posts</span>
-    <a href={`${base}archive/`}>View Archive →</a>
-  </nav>
+    <aside class="coding-home-side" aria-labelledby="topics-title">
+      <h2 id="topics-title" lang="en">Topics</h2>
+      <nav class="coding-topics" aria-label="文章主題">
+        {categories.filter((topic) => topic.primary).map(({ name }) => (
+          <a href={base + 'categories/' + getCategorySlug(name) + '/'}>
+            <span class="coding-topic-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d={topicPaths[name]} /></svg>
+            </span>
+            <span>{name}</span><span class="coding-chevron" aria-hidden="true">›</span>
+          </a>
+        ))}
+      </nav>
+      <nav class="coding-home-links" aria-label="系列與專案">
+        {featuredSeries && <a href={base + 'series/' + featuredSeries.id + '/'}><span><small lang="en">Series</small>{featuredSeries.title}</span><span aria-hidden="true">→</span></a>}
+        <a href={base + 'projects/'}><span>專案展示</span><span aria-hidden="true">→</span></a>
+      </nav>
+    </aside>
+  </div>
 </BaseLayout>
+
+<script>
+  import type { HomePost } from '../utils/homeFeed';
+
+  function setupFeed(section: HTMLElement) {
+    const feed = section.querySelector<HTMLElement>('.coding-feed')!;
+    const cardTemplate = feed.querySelector<HTMLAnchorElement>('.coding-feed-card')?.cloneNode(true) as HTMLAnchorElement | undefined;
+    if (!cardTemplate) return;
+
+    const filters = section.querySelector<HTMLElement>('.coding-filters')!;
+    const more = section.querySelector<HTMLButtonElement>('[data-more]')!;
+    const status = section.querySelector<HTMLElement>('[role="status"]')!;
+    const pageSize = Number(section.dataset.pageSize);
+    const buttons = Array.from(filters.querySelectorAll('button'));
+    let posts: HomePost[] | undefined;
+    let activeType = '';
+    let requestPending = false;
+
+    function createCard(post: HomePost) {
+      const card = cardTemplate!.cloneNode(true) as HTMLAnchorElement;
+      card.href = section.dataset.postBase + post.id + '/';
+      card.querySelector('h2')!.textContent = post.title;
+      card.querySelector('.coding-category')!.textContent = post.category;
+      card.querySelector('.coding-summary')!.textContent = post.summary;
+      const kind = card.querySelector<HTMLElement>('.coding-kind')!;
+      kind.textContent = post.type;
+      kind.hidden = !post.type;
+      const leadDate = card.querySelector<HTMLTimeElement>('.coding-lead-date')!;
+      leadDate.dateTime = post.date;
+      leadDate.textContent = post.date.replaceAll('-', '.');
+      const rowDate = card.querySelector<HTMLTimeElement>('.coding-row-date')!;
+      rowDate.dateTime = post.date;
+      rowDate.querySelector('span')!.textContent = post.date.slice(5).replace('-', '.');
+      rowDate.querySelector('small')!.textContent = post.date.slice(0, 4);
+      return card;
+    }
+
+    async function update(type: string, append: boolean) {
+      if (requestPending) return;
+      requestPending = true;
+      section.setAttribute('aria-busy', 'true');
+      try {
+        if (!posts) {
+          const response = await fetch(section.dataset.feedUrl!);
+          if (!response.ok) throw new Error(String(response.status));
+          posts = await response.json() as HomePost[];
+        }
+        const matches = type ? posts.filter((post) => post.type === type) : posts;
+        const offset = append ? feed.children.length : 0;
+        const cards = matches.slice(offset, offset + pageSize).map(createCard);
+        if (append) feed.append(...cards);
+        else feed.replaceChildren(...cards);
+        activeType = type;
+        buttons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.filter === type)));
+        status.textContent = '顯示 ' + feed.children.length + ' 篇';
+        more.hidden = feed.children.length >= matches.length;
+        if (append) cards[0]?.focus();
+      } catch {
+        status.textContent = '文章清單載入失敗，請重試或瀏覽 Archive。';
+      } finally {
+        requestPending = false;
+        section.removeAttribute('aria-busy');
+      }
+    }
+
+    buttons.forEach(button => button.addEventListener('click', () => {
+      const type = button.dataset.filter ?? '';
+      if (type !== activeType) void update(type, false);
+    }));
+    more.addEventListener('click', () => void update(activeType, true));
+    filters.hidden = false;
+    more.hidden = more.dataset.more !== 'true';
+  }
+
+  const home = document.querySelector<HTMLElement>('[data-feed-url]');
+  if (home) setupFeed(home);
+</script>

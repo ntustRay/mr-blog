@@ -1,0 +1,101 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import projects from '../../data/projects.json';
+import '../../styles/projects.css';
+
+export function getStaticPaths() {
+  return projects.map(project => ({ params: { id: project.id }, props: { project } }));
+}
+
+const { project } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const imageUrl = base + project.image;
+const collectionUrl = base + 'projects/';
+---
+
+<BaseLayout title={project.name} description={project.summary} ogImage={project.image} wide>
+  <article class="pj-page">
+    <nav class="pj-location" aria-label="導覽路徑">
+      <a href={base}>Home</a><span aria-hidden="true">/</span><a href={collectionUrl}>Projects</a>
+    </nav>
+    <header class="pj-detail-head">
+      <div class="pj-detail-title">
+        <span class="pj-category">{project.category}</span>
+        <h1>{project.name}</h1>
+        <p class="pj-summary">{project.summary}</p>
+      </div>
+      <div class="pj-actions">
+        {project.links.map((link, i) => (
+          <a class:list={['pj-action', { 'pj-primary': i === 0 }]} href={link.url} target="_blank" rel="noopener noreferrer">
+            {link.label}<span aria-hidden="true">↗</span>
+          </a>
+        ))}
+      </div>
+    </header>
+    <a class="pj-detail-media" href={imageUrl} aria-label={'放大 ' + project.name + ' ' + project.imageLabel}>
+      <span class="pj-media">
+        <img src={imageUrl} alt={project.alt} width={project.width} height={project.height} fetchpriority="high" decoding="async" />
+      </span>
+      <span class="pj-zoom-label">放大{project.imageLabel}</span>
+    </a>
+    <div class="pj-info">
+      <div class="pj-overview">
+        <section>
+          <h2>專案介紹</h2>
+          <p class="pj-description">{project.description}</p>
+        </section>
+        <section class="pj-facts">
+          <h2>主要功能</h2>
+          <ul>{project.features.map(feature => <li>{feature}</li>)}</ul>
+        </section>
+      </div>
+      {(project.tech.length > 0 || project.article) && <div class="pj-meta">
+        {project.tech.length > 0 && <section><h2>使用技術</h2><div class="pj-tech">{project.tech.join(' / ')}</div></section>}
+        {project.article && <section class="pj-notes">
+          <h2>相關文章</h2><a href={base + project.article.path}>{project.article.label}<span aria-hidden="true"> →</span></a>
+        </section>}
+      </div>}
+    </div>
+    <a class="pj-back" href={collectionUrl}>回到所有專案</a>
+  </article>
+  <dialog class="pj-lightbox" aria-label={project.name + ' ' + project.imageLabel}>
+    <div class="pj-lightbox-bar">
+      <span>{project.name}</span>
+      <button class="pj-size" type="button" aria-pressed="false">原始尺寸</button>
+      <button class="pj-close" type="button" aria-label="關閉放大畫面" autofocus>✕</button>
+    </div>
+    <div class="pj-lightbox-frame">
+      <img src={imageUrl} alt={project.alt} width={project.width} height={project.height} loading="lazy" decoding="async" />
+    </div>
+  </dialog>
+</BaseLayout>
+
+<script>
+  const trigger = document.querySelector<HTMLAnchorElement>('.pj-detail-media');
+  const dialog = document.querySelector<HTMLDialogElement>('.pj-lightbox');
+  const frame = dialog?.querySelector<HTMLElement>('.pj-lightbox-frame');
+  const sizing = dialog?.querySelector<HTMLButtonElement>('.pj-size');
+  if (trigger && dialog && frame && sizing && typeof dialog.showModal === 'function') {
+    trigger.setAttribute('aria-haspopup', 'dialog');
+    trigger.addEventListener('click', (event) => {
+      if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+      event.preventDefault();
+      dialog.showModal();
+    });
+    sizing.addEventListener('click', () => {
+      const natural = frame.classList.toggle('pj-natural');
+      sizing.setAttribute('aria-pressed', String(natural));
+      sizing.textContent = natural ? '適合視窗' : '原始尺寸';
+    });
+    dialog.querySelector('.pj-close')?.addEventListener('click', () => dialog.close());
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+    dialog.addEventListener('close', () => {
+      frame.classList.remove('pj-natural');
+      sizing.setAttribute('aria-pressed', 'false');
+      sizing.textContent = '原始尺寸';
+      trigger.focus({ preventScroll: true });
+    });
+  }
+</script>
