@@ -191,6 +191,10 @@ const serializedStructuredData = JSON.stringify([
               !location.pathname.startsWith(base) || navigator.doNotTrack === '1' ||
               navigator.globalPrivacyControl || window['ga-disable-G-2YEXBE8Q9Z']) return;
 
+          // GA can attach the original URL to automatic events.
+          const referrer = document.referrer ? new URL(document.referrer) : null;
+          if (location.search || location.hash || referrer?.search || referrer?.hash) return;
+
           const canonical = new URL(page.href);
           if (canonical.origin !== location.origin || canonical.pathname !== location.pathname) return;
           const measurementId = 'G-2YEXBE8Q9Z';
@@ -199,7 +203,7 @@ const serializedStructuredData = JSON.stringify([
           gtag('js', new Date());
           gtag('config', measurementId, {
             page_location: canonical.origin + canonical.pathname,
-            page_referrer: document.referrer ? new URL(document.referrer).origin : '',
+            page_referrer: referrer?.origin ?? '',
             page_title: document.title,
             cookie_path: base,
             cookie_prefix: 'mr_blog',
