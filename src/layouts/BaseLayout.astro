@@ -121,38 +121,6 @@ const serializedStructuredData = JSON.stringify([
     <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
     <link rel="icon" type="image/svg+xml" href={`${base}favicon-light.svg`} media="(prefers-color-scheme: light)" />
     <link rel="canonical" href={canonicalURL} />
-    {import.meta.env.PROD && !noindex && (
-      <script is:inline>
-        (() => {
-          const page = document.querySelector('link[rel="canonical"]');
-          const base = '/mr-blog/';
-          if (!page || location.origin !== 'https://ntustray.github.io' ||
-              !location.pathname.startsWith(base) || navigator.doNotTrack === '1' ||
-              navigator.globalPrivacyControl || window['ga-disable-G-2YEXBE8Q9Z']) return;
-  
-          const canonical = new URL(page.href);
-          if (canonical.origin !== location.origin || canonical.pathname !== location.pathname) return;
-          const measurementId = 'G-2YEXBE8Q9Z';
-          window.dataLayer = window.dataLayer || [];
-          function gtag() { window.dataLayer.push(arguments); }
-          gtag('js', new Date());
-          gtag('config', measurementId, {
-            page_location: canonical.origin + canonical.pathname,
-            page_referrer: document.referrer ? new URL(document.referrer).origin : '',
-            page_title: document.title,
-            cookie_path: base,
-            cookie_prefix: 'mr_blog',
-            allow_google_signals: false,
-            allow_ad_personalization_signals: false,
-          });
-          const tag = document.createElement('script');
-          tag.async = true;
-          tag.referrerPolicy = 'no-referrer';
-          tag.src = 'https://www.googletagmanager.com/gtag/js?id=' + measurementId;
-          document.head.append(tag);
-        })();
-      </script>
-    )}
     <link
       rel="alternate"
       type="application/rss+xml"
@@ -214,6 +182,38 @@ const serializedStructuredData = JSON.stringify([
     )}
 
     <title>{pageTitle}</title>
+    {import.meta.env.PROD && !noindex && (
+      <script is:inline>
+        (() => {
+          const page = document.querySelector('link[rel="canonical"]');
+          const base = '/mr-blog/';
+          if (!page || location.origin !== 'https://ntustray.github.io' ||
+              !location.pathname.startsWith(base) || navigator.doNotTrack === '1' ||
+              navigator.globalPrivacyControl || window['ga-disable-G-2YEXBE8Q9Z']) return;
+
+          const canonical = new URL(page.href);
+          if (canonical.origin !== location.origin || canonical.pathname !== location.pathname) return;
+          const measurementId = 'G-2YEXBE8Q9Z';
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { window.dataLayer.push(arguments); }
+          gtag('js', new Date());
+          gtag('config', measurementId, {
+            page_location: canonical.origin + canonical.pathname,
+            page_referrer: document.referrer ? new URL(document.referrer).origin : '',
+            page_title: document.title,
+            cookie_path: base,
+            cookie_prefix: 'mr_blog',
+            allow_google_signals: false,
+            allow_ad_personalization_signals: false,
+          });
+          const tag = document.createElement('script');
+          tag.async = true;
+          tag.referrerPolicy = 'no-referrer';
+          tag.src = 'https://www.googletagmanager.com/gtag/js?id=' + measurementId;
+          document.head.append(tag);
+        })();
+      </script>
+    )}
   </head>
   <body>
     <a class="skip-link" href="#main-content">跳到主要內容</a>
