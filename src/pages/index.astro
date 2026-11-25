@@ -3,6 +3,7 @@ import { siteConfig } from '../config/site';
 import { categories } from '../config/taxonomy';
 import { getSeriesDefinition } from '../config/series';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import ViewCount from '../components/ViewCount.astro';
 import { getCategorySlug } from '../utils/categories';
 import { getHomeFeed } from '../utils/homeFeed';
 import '../styles/coding-home.css';
@@ -27,7 +28,10 @@ const topicPaths: Record<string, string> = {
     <section id="latest-posts" aria-labelledby="posts-heading" data-feed-url={base + 'home-feed.json'}
       data-post-base={base + 'posts/'} data-page-size={pageSize}>
       <div class="coding-feed-head">
-        <h1 id="posts-heading" lang="en">Latest posts</h1>
+        <div>
+          <h1 id="posts-heading" lang="en">Latest posts</h1>
+          <div class="home-pageviews"><ViewCount scope="site" /></div>
+        </div>
         <div class="coding-filters" role="group" aria-label="依文章類型篩選" hidden>
           {['全部', 'News', 'Guide', 'Review', 'Insight'].map((type, i) => (
             <button type="button" data-filter={i ? type : ''} aria-pressed={i === 0}>{type}</button>

@@ -68,24 +68,16 @@ The build also generates the Pagefind index and checks internal links.
 Pull requests and pushes to `main` run the quality workflow, including
 Lighthouse CI.
 
-## Public view counters
+## 公開瀏覽量
 
-Busuanzi displays **Total views** in the footer and **Views** in each
-article's metadata. No account, API key, or database is required.
+公開瀏覽量來自 GA4 的 `screenPageViews`。每日部署會依本站正式網址抓取累計瀏覽量，將數字寫進靜態頁面。報表讀取失敗時沿用已發布的快照，首次同步前顯示「待更新」。`pageviews.json` 只發布本站總量、統計截止日及已發布頁面的瀏覽量。
 
-- Counts are page views (PV), not unique visitors. Reloads may count again.
-- Counts begin when tracking is enabled; earlier visits cannot be recovered.
-- The service groups the site total by hostname. Other sites on the same
-  hostname using Busuanzi share that total; article counts are URL-specific.
-- Tracking loads only on the configured production origin and base path,
-  so local development, previews, and Lighthouse do not increment it.
-- An unavailable or blocked counter stays as `—`, rather than a misleading `0`.
-- GitHub Pages only serves the static site; the totals are stored by the
-  third-party service and depend on its availability.
+首次設定：
 
-Integration: `src/components/ViewCount.astro` and
-`src/components/ViewCountLoader.astro`.
-Provider documentation: https://ibruce.info/2015/04/04/busuanzi/
+1. 在 Google Cloud 啟用 Google Analytics Data API，設定 GitHub Actions 的 Workload Identity Federation 和服務帳戶。把可使用該服務帳戶的 GitHub 身分限制在本 repository 的 `main` 部署 workflow。
+2. 在 GA4 的資源存取權管理中給服務帳戶 **Viewer**。
+3. 新增 GitHub Actions repository variables：`GA4_PROPERTY_ID`（GA4 的數字資源 ID）、`GA4_WORKLOAD_IDENTITY_PROVIDER`（完整 provider 路徑）及 `GA4_SERVICE_ACCOUNT`（服務帳戶 Email）。
+4. 執行一次 **Deploy to GitHub Pages**，確認 Refresh public pageviews 成功，且正式首頁、文章頁和一般頁面有數字。
 
 ## Article comments
 
