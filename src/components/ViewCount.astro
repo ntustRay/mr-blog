@@ -1,22 +1,33 @@
 ---
+import { normalizePagePath, readPageviewSnapshot } from '../../scripts/pageviews.mjs';
+
 interface Props {
   scope: 'site' | 'page';
+  label?: string;
 }
 
-const { scope } = Astro.props;
-const label = scope === 'site' ? 'Total views' : 'Views';
+const { scope, label = scope === 'site' ? '全站瀏覽量' : '瀏覽量' } = Astro.props;
+const base = normalizePagePath(import.meta.env.BASE_URL);
+const site = new URL(base, Astro.site ?? Astro.url.origin).href;
+const snapshot = readPageviewSnapshot(site);
+const pathname = normalizePagePath(Astro.url.pathname);
+const count = snapshot ? (scope === 'site' ? snapshot.total : (snapshot.pages[pathname] ?? 0)) : null;
+const tooltip = snapshot
+  ? `Google Analytics 4 累計瀏覽次數，截至 ${snapshot.through}`
+  : '等待 Google Analytics 4 同步';
 ---
 
 <span
   class="view-count"
   data-pagefind-ignore
-  title="瀏覽次數（PV），從啟用統計後累積；無法取得資料時顯示 —。"
+  data-view-count={scope}
+  title={tooltip}
 >
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
     <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
     <circle cx="12" cy="12" r="3" />
   </svg>
-  <span>{label} <span class="view-count-value" id={`busuanzi_value_${scope}_pv`}>—</span></span>
+  <span>{label} <span class="view-count-value">{count === null ? '待更新' : count.toLocaleString('zh-TW')}</span></span>
 </span>
 
 <style>

@@ -1,6 +1,7 @@
 import sitemap from '@astrojs/sitemap';
 import movedPosts from './src/config/moved-posts.json';
 import { defineConfig } from 'astro/config';
+import { publishPageviewSnapshot } from './scripts/pageviews.mjs';
 
 const codeBlockMetaTransformer = {
   name: 'mr-blog-code-block-meta',
@@ -33,6 +34,7 @@ export default defineConfig({
     movedPosts.map(({ id, url }) => [`/posts/${id}/`, { status: 301, destination: url }]),
   ),
   integrations: [
+    publishPageviewSnapshot('https://ntustray.github.io/mr-blog/'),
     sitemap({
       filter: (page) => {
         const pathname = new URL(page).pathname;

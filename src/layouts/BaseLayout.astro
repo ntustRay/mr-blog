@@ -3,7 +3,6 @@ import '../styles/global.css';
 import { siteConfig } from '../config/site';
 import BlogSwitcher from '../components/BlogSwitcher.astro';
 import ViewCount from '../components/ViewCount.astro';
-import ViewCountLoader from '../components/ViewCountLoader.astro';
 import GiscusSession from '../components/GiscusSession.astro';
 import { commentsConfig } from '../config/comments';
 
@@ -182,7 +181,7 @@ const serializedStructuredData = JSON.stringify([
     )}
 
     <title>{pageTitle}</title>
-    {import.meta.env.PROD && !noindex && (
+    {import.meta.env.PROD && (
       <script is:inline>
         (() => {
           const page = document.querySelector('link[rel="canonical"]');
@@ -271,7 +270,9 @@ const serializedStructuredData = JSON.stringify([
         </a>
         <div class="foot-meta">
           <small>© {new Date().getFullYear()} MingRay Hsu</small>
-          <ViewCount scope="site" />
+          {ogType !== 'article' && (
+            <ViewCount scope="page" label={relativePath === '/' ? '首頁瀏覽量' : '此頁瀏覽量'} />
+          )}
         </div>
         <nav aria-label="頁尾導覽">
           <a href={authorURL}>About</a>
@@ -283,7 +284,6 @@ const serializedStructuredData = JSON.stringify([
         </nav>
       </div>
     </footer>
-    <ViewCountLoader />
   </body>
 </html>
 
