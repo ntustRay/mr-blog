@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import projects from '../../data/projects.json';
+import { projectEntity, projectPageUrl } from '../../utils/project-seo';
 import '../../styles/projects.css';
 
 export function getStaticPaths() {
@@ -12,9 +13,39 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 const imageUrl = base + project.image;
 const collectionUrl = base + 'projects/';
 const seriesUrl = base + 'series/' + project.seriesId + '/';
+const siteUrl = new URL(base, Astro.site ?? Astro.url.origin);
+const pageUrl = projectPageUrl(project.id, siteUrl);
+const breadcrumbs = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  '@id': `${pageUrl}#breadcrumbs`,
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl.href },
+    { '@type': 'ListItem', position: 2, name: 'Projects', item: new URL(collectionUrl, siteUrl).href },
+    { '@type': 'ListItem', position: 3, name: project.name, item: pageUrl },
+  ],
+};
+const projectPage = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  '@id': pageUrl,
+  name: project.name,
+  description: project.summary,
+  url: pageUrl,
+  isPartOf: { '@id': `${siteUrl.href}#website` },
+  mainEntity: projectEntity(project, siteUrl),
+  breadcrumb: { '@id': breadcrumbs['@id'] },
+};
 ---
 
-<BaseLayout title={project.name} description={project.summary} ogImage={project.image} wide>
+<BaseLayout
+  title={project.name}
+  description={project.summary}
+  ogImage={project.image}
+  ogImageDetails={{ width: project.width, height: project.height, alt: project.alt }}
+  structuredData={[projectPage, breadcrumbs]}
+  wide
+>
   <article class="pj-page">
     <nav class="pj-location" aria-label="導覽路徑">
       <a href={base}>Home</a><span aria-hidden="true">/</span><a href={collectionUrl}>Projects</a>

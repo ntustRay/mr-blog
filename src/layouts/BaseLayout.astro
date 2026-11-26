@@ -11,6 +11,7 @@ interface Props {
   description: string;
   searchAssets?: boolean;
   ogImage?: string;
+  ogImageDetails?: { width: number; height: number; alt: string };
   ogType?: 'website' | 'article';
   structuredData?: Record<string, unknown> | Record<string, unknown>[];
   seoTitle?: string;
@@ -25,6 +26,7 @@ const {
   description,
   searchAssets = false,
   ogImage = 'og-default.webp',
+  ogImageDetails,
   ogType = 'website',
   structuredData,
   seoTitle,
@@ -149,9 +151,9 @@ const serializedStructuredData = JSON.stringify([
     <meta property="og:url" content={canonicalURL} />
     {ogType === 'article' && <meta name="giscus:backlink" content={canonicalURL} />}
     <meta property="og:image" content={ogImageURL} />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content={pageTitle} />
+    <meta property="og:image:width" content={ogImageDetails?.width ?? 1200} />
+    <meta property="og:image:height" content={ogImageDetails?.height ?? 630} />
+    <meta property="og:image:alt" content={ogImageDetails?.alt ?? pageTitle} />
     {publishedTime && (
       <meta property="article:published_time" content={publishedTime} />
     )}
@@ -163,7 +165,7 @@ const serializedStructuredData = JSON.stringify([
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageURL} />
-    <meta name="twitter:image:alt" content={pageTitle} />
+    <meta name="twitter:image:alt" content={ogImageDetails?.alt ?? pageTitle} />
 
     <script
       is:inline
