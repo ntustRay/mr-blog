@@ -1,0 +1,65 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: '17 4 * * *'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Restore last GA4 totals
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5
+        continue-on-error: true
+        with:
+          path: .cache/ga4-views.json
+          key: ga4-views-v1-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: ga4-views-v1-
+
+      - name: Refresh public view counts
+        id: ga4_views
+        continue-on-error: true
+        env:
+          GA4_PROPERTY_ID: ${{ vars.GA4_PROPERTY_ID }}
+          GA4_APPS_SCRIPT_URL: ${{ vars.GA4_APPS_SCRIPT_URL }}
+          GA4_APPS_SCRIPT_TOKEN: ${{ secrets.GA4_APPS_SCRIPT_TOKEN }}
+        run: node scripts/sync-ga4-views.mjs https://example.github.io/my-blog/
+
+      - name: Cache latest GA4 totals
+        if: steps.ga4_views.outcome == 'success'
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5
+        continue-on-error: true
+        with:
+          path: .cache/ga4-views.json
+          key: ga4-views-v1-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Build and upload Astro site
+        uses: withastro/action@v6
+        with:
+          node-version: 24
+          package-manager: npm@latest
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
