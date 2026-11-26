@@ -1,22 +1,36 @@
 ---
+import { normalizeViewPath, viewSnapshot } from '../utils/viewCounts.mjs';
+
 interface Props {
   scope: 'site' | 'page';
+  label?: string;
 }
 
-const { scope } = Astro.props;
-const label = scope === 'site' ? 'Total views' : 'Views';
+const { scope, label = scope === 'site' ? '全站瀏覽量' : '本頁瀏覽量' } = Astro.props;
+const basePath = normalizeViewPath(import.meta.env.BASE_URL);
+const snapshot = viewSnapshot?.sitePath === basePath ? viewSnapshot : null;
+const pagePath = normalizeViewPath(Astro.url.pathname);
+const count = snapshot
+  ? (scope === 'site' ? snapshot.totalViews : snapshot.pageViews[pagePath] ?? 0)
+  : null;
+const value = count === null ? '暫無資料' : count.toLocaleString('zh-TW');
+const updated = snapshot && new Intl.DateTimeFormat('zh-TW', {
+  dateStyle: 'medium',
+  timeZone: 'Asia/Taipei',
+}).format(new Date(snapshot.updatedAt));
 ---
 
 <span
   class="view-count"
   data-pagefind-ignore
-  title="瀏覽次數（PV），從啟用統計後累積；無法取得資料時顯示 —。"
+  data-view-count={scope}
+  title={updated ? `GA4 累計瀏覽次數 · 更新於 ${updated}` : 'GA4 瀏覽量暫無資料'}
 >
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
     <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
     <circle cx="12" cy="12" r="3" />
   </svg>
-  <span>{label} <span class="view-count-value" id={`busuanzi_value_${scope}_pv`}>—</span></span>
+  <span>{label} <span class="view-count-value">{value}</span></span>
 </span>
 
 <style>

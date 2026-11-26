@@ -3,6 +3,7 @@ import { siteConfig } from '../config/site';
 import { categories } from '../config/taxonomy';
 import { getSeriesDefinition } from '../config/series';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import ViewCount from '../components/ViewCount.astro';
 import { getCategorySlug } from '../utils/categories';
 import { getHomeFeed } from '../utils/homeFeed';
 import '../styles/coding-home.css';
@@ -33,6 +34,10 @@ const topicPaths: Record<string, string> = {
             <button type="button" data-filter={i ? type : ''} aria-pressed={i === 0}>{type}</button>
           ))}
         </div>
+      </div>
+      <div class="home-views">
+        <ViewCount scope="page" label="首頁瀏覽量" />
+        <ViewCount scope="site" />
       </div>
       <div class="coding-feed" id="post-feed">
         {firstPage.map((post) => (

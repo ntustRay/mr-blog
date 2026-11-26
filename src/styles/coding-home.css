@@ -19,6 +19,13 @@
   padding-bottom: 13px;
   border-bottom: 1px solid var(--line);
 }
+.home-views {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin-block: 0 12px;
+}
+
 .coding-feed-head h1, .coding-home-side > h2 {
   font-size: clamp(1.6rem, 2.2vw, 2rem);
   font-weight: 600;

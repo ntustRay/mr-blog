@@ -4,6 +4,8 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  schedule:
+    - cron: '17 4 * * *'
 
 permissions:
   contents: read
@@ -16,12 +18,51 @@ concurrency:
 
 jobs:
   build:
+    if: github.event_name != 'schedule' || (vars.GA4_PROPERTY_ID != '' && vars.GA4_WORKLOAD_IDENTITY_PROVIDER != '' && vars.GA4_SERVICE_ACCOUNT != '')
     runs-on: ubuntu-latest
     env:
       PUBLIC_GOOGLE_SITE_VERIFICATION: ${{ vars.PUBLIC_GOOGLE_SITE_VERIFICATION }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+
+      - name: Restore last GA4 totals
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5
+        continue-on-error: true
+        with:
+          path: .cache/ga4-views.json
+          key: ga4-views-v1-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: ga4-views-v1-
+
+      - name: Get read-only GA4 access
+        id: ga4_auth
+        if: vars.GA4_PROPERTY_ID != '' && vars.GA4_WORKLOAD_IDENTITY_PROVIDER != '' && vars.GA4_SERVICE_ACCOUNT != ''
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        continue-on-error: true
+        with:
+          workload_identity_provider: ${{ vars.GA4_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GA4_SERVICE_ACCOUNT }}
+          token_format: access_token
+          access_token_scopes: https://www.googleapis.com/auth/analytics.readonly
+          create_credentials_file: false
+          export_environment_variables: false
+
+      - name: Refresh public view counts
+        id: ga4_views
+        if: steps.ga4_auth.outcome == 'success'
+        continue-on-error: true
+        env:
+          GA4_PROPERTY_ID: ${{ vars.GA4_PROPERTY_ID }}
+          GA4_ACCESS_TOKEN: ${{ steps.ga4_auth.outputs.access_token }}
+        run: node scripts/sync-ga4-views.mjs https://ntustray.github.io/mr-blog/
+
+      - name: Cache latest GA4 totals
+        if: steps.ga4_views.outcome == 'success'
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5
+        continue-on-error: true
+        with:
+          path: .cache/ga4-views.json
+          key: ga4-views-v1-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Install CJK font
         run: |
