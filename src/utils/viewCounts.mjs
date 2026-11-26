@@ -26,4 +26,17 @@ function readViewSnapshot() {
   }
 }
 
-export const viewSnapshot = readViewSnapshot();
+const viewSnapshot = readViewSnapshot();
+
+/** @param {string} basePath */
+export function getViewSnapshot(basePath) {
+  return viewSnapshot?.sitePath === normalizeViewPath(basePath) ? viewSnapshot : null;
+}
+
+/**
+ * @param {ViewSnapshot | null} snapshot
+ * @param {string} pathname
+ */
+export function getPageViewCount(snapshot, pathname) {
+  return snapshot ? snapshot.pageViews[normalizeViewPath(pathname)] ?? 0 : null;
+}

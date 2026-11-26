@@ -49,6 +49,7 @@ const topicPaths: Record<string, string> = {
               <div class="coding-metadata">
                 <span class="coding-kind" hidden={!post.type}>{post.type}</span>
                 <span class="coding-category">{post.category}</span>
+                <ViewCount scope="post" count={post.viewCount} />
                 <time class="coding-lead-date" datetime={post.date}>{post.date.replaceAll('-', '.')}</time>
               </div>
               <h2>{post.title}</h2>
@@ -106,6 +107,8 @@ const topicPaths: Record<string, string> = {
       card.href = section.dataset.postBase + post.id + '/';
       card.querySelector('h2')!.textContent = post.title;
       card.querySelector('.coding-category')!.textContent = post.category;
+      card.querySelector('[data-view-count="post"] .view-count-value')!.textContent =
+        post.viewCount?.toLocaleString('zh-TW') ?? '—';
       card.querySelector('.coding-summary')!.textContent = post.summary;
       const kind = card.querySelector<HTMLElement>('.coding-kind')!;
       kind.textContent = post.type;

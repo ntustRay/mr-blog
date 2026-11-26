@@ -1,19 +1,27 @@
 ---
-import { normalizeViewPath, viewSnapshot } from '../utils/viewCounts.mjs';
+import { getPageViewCount, getViewSnapshot } from '../utils/viewCounts.mjs';
 
-interface Props {
-  scope: 'site' | 'page';
-  label?: string;
+type Props =
+  | { scope: 'site' | 'page'; label?: string }
+  | { scope: 'post'; count: number | null; label?: never };
+
+const props = Astro.props;
+const { scope } = props;
+const compact = scope === 'post';
+const labels = { site: '全站瀏覽量', page: '本頁瀏覽量', post: '文章瀏覽量' };
+const label = props.label ?? labels[scope];
+const snapshot = getViewSnapshot(import.meta.env.BASE_URL);
+
+let count: number | null;
+if (props.scope === 'post') {
+  count = props.count;
+} else if (props.scope === 'site') {
+  count = snapshot?.totalViews ?? null;
+} else {
+  count = getPageViewCount(snapshot, Astro.url.pathname);
 }
 
-const { scope, label = scope === 'site' ? '全站瀏覽量' : '本頁瀏覽量' } = Astro.props;
-const basePath = normalizeViewPath(import.meta.env.BASE_URL);
-const snapshot = viewSnapshot?.sitePath === basePath ? viewSnapshot : null;
-const pagePath = normalizeViewPath(Astro.url.pathname);
-const count = snapshot
-  ? (scope === 'site' ? snapshot.totalViews : snapshot.pageViews[pagePath] ?? 0)
-  : null;
-const value = count === null ? '暫無資料' : count.toLocaleString('zh-TW');
+const value = count?.toLocaleString('zh-TW') ?? (compact ? '—' : '暫無資料');
 const updated = snapshot && new Intl.DateTimeFormat('zh-TW', {
   dateStyle: 'medium',
   timeZone: 'Asia/Taipei',
@@ -21,16 +29,18 @@ const updated = snapshot && new Intl.DateTimeFormat('zh-TW', {
 ---
 
 <span
-  class="view-count"
+  class:list={['view-count', { 'view-count--compact': compact }]}
   data-pagefind-ignore
   data-view-count={scope}
   title={updated ? `GA4 累計瀏覽次數 · 更新於 ${updated}` : 'GA4 瀏覽量暫無資料'}
 >
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+  <svg width={compact ? 14 : 16} height={compact ? 14 : 16} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
     <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
     <circle cx="12" cy="12" r="3" />
   </svg>
-  <span>{label} <span class="view-count-value">{value}</span></span>
+  <span>
+    <span class="view-count-label">{label}{' '}</span><span class="view-count-value">{value}</span>
+  </span>
 </span>
 
 <style>
@@ -41,6 +51,21 @@ const updated = snapshot && new Intl.DateTimeFormat('zh-TW', {
     color: var(--subtle);
     font-size: 0.8rem;
     white-space: nowrap;
+  }
+
+  .view-count--compact {
+    gap: 4px;
+    border-left: 1px solid var(--line);
+    padding-left: .55rem;
+    font-size: inherit;
+  }
+
+  .view-count--compact .view-count-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
   }
 
   .view-count-value {
