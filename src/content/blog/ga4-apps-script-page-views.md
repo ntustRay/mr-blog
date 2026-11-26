@@ -26,6 +26,11 @@ MR Coding 和 MR Financial 都用 GitHub Pages。我想讓首頁能看到首頁�
 
 我先試了用 GitHub Actions 的 Workload Identity Federation 取權杖。這次專用 Cloud 專案在啟用 Analytics Data API 時跳到帳單頁，API 沒有啟用。我想先維持不綁帳單，就改用 Apps Script 的預設 Cloud 專案。它負責讀報表，GitHub Actions 在每次部署前把數字寫進快照，Astro 建置時再把數字放進 HTML。
 
+<figure>
+  <img src="../../images/ga4-page-views-flow.svg" width="480" height="420" alt="瀏覽量依序經過四個階段。GA4 收集瀏覽事件，Apps Script 唯讀查詢報表，GitHub Actions 驗證報表並將瀏覽量快照寫入網站建置，GitHub Pages 發布含瀏覽量的靜態頁面。" decoding="async" />
+  <figcaption>瀏覽量會在 GitHub Actions 建置時寫入 HTML，部署完成後才會出現在網站上。</figcaption>
+</figure>
+
 ## 這篇的重點
 
 - 先在 Apps Script 讓唯讀報表跑通，再接部署。這樣遇到空值時，可以先排除 GA4 資源與授權問題。
