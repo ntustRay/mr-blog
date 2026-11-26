@@ -6,6 +6,7 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const blogDir = join(root, 'src/content/blog');
 const categoriesSource = readFileSync(join(root, 'src/config/taxonomy.ts'), 'utf8');
 const seriesSource = readFileSync(join(root, 'src/config/series.ts'), 'utf8');
+const projects = JSON.parse(readFileSync(join(root, 'src/data/projects.json'), 'utf8'));
 const allowedCategories = new Set(
   [...categoriesSource.split('export const legacyCategories')[0].matchAll(/name:\s*'([^']+)'/g)].map((match) => match[1]),
 );
@@ -14,6 +15,17 @@ const seriesLimits = new Map(seriesEntries.map((match) => [match[1], Number(matc
 const seenSeries = new Map();
 const errors = [];
 const counts = new Map();
+
+const projectSeries = new Set();
+for (const project of projects) {
+  if (!seriesLimits.has(project.seriesId)) {
+    errors.push(`${project.id}: unknown project series "${project.seriesId}"`);
+  }
+  if (projectSeries.has(project.seriesId)) {
+    errors.push(`${project.id}: project series "${project.seriesId}" is already in use`);
+  }
+  projectSeries.add(project.seriesId);
+}
 
 function readField(frontmatter, key) {
   const match = frontmatter.match(new RegExp(`^${key}:\\s*(.+)$`, 'm'));

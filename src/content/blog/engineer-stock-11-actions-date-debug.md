@@ -4,7 +4,7 @@ description: 從兩筆失敗的 Actions logs，定位執行日期與行情日期
 pubDate: 2026-11-03
 category: 'Dev Tools & Quality'
 series: engineer-stock
-seriesOrder: 11
+seriesOrder: 12
 tags:
   - GitHub Actions
   - TypeScript
@@ -151,7 +151,7 @@ Schema 不符、單一市場混入多個日期等錯誤仍立即失敗，不會�
 
 原有 ingestion test 的 `now` 是週六 `2026-10-31T12:00:00Z`，fixture 行情是週五 10 月 30 日。舊程式會在週末往前推，所以這個案例無法涵蓋「隔天仍是交易日」的錯誤。
 
-新增測試使用固定 fixture 與注入的 `now`、`fetchImpl`、`sleep`，不等待真實排程，也不連正式 API：
+新增測試使用固定 fixture 與注入的 `now`、`fetchImpl`、`sleep`，不等待真實排程，也不連正式 API。
 
 | 測試條件 | 預期 |
 | --- | --- |
@@ -176,6 +176,12 @@ git diff --exit-code -- schemas/
 ```
 
 本次本機結果為 **53 pass、0 fail**。Biome、TypeScript、fixture 快照驗證及 Schema 差異檢查通過；[修正後 CI](https://github.com/ntustRay/engineer-stock-data/actions/runs/41570913865) 也成功。unit tests 的成功範圍是這些固定案例，正式來源仍須另外驗證。
+
+
+<figure>
+  <a href="../../images/engineer-stock-series/11-regression-tests.webp"><img src="../../images/engineer-stock-series/11-regression-tests.webp" alt="本機執行 production 與 calendar 測試的終端輸出節錄，顯示跨午夜案例及 20 pass、0 fail。" loading="lazy" decoding="async" /></a>
+  <figcaption>在修正 commit 執行 production、calendar 兩個測試檔的終端輸出節錄，排版後截取。這 20 項是本節的重現範圍。</figcaption>
+</figure>
 
 ## 6. 確認真的發布，不能只看綠勾
 
@@ -217,3 +223,5 @@ bun src/verify-remote.ts
 ```
 
 這次成功由 **push** 觸發，確認修正版能抓正式來源、驗證並更新快照；尚不能據此宣稱未來的 `schedule` 都會準時，或所有來源日期不同步都能在 60 秒內恢復。後續遇到相同錯誤，先對照 `quote-readiness.dates` 與 `quote-date`，再決定是來源延遲、資料過舊，還是程式規則需要調整。
+
+下一篇：[工程師選股網做完後，怎麼確認資料和權限都可信？](../engineer-stock-project-summary/)

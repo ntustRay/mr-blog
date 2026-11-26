@@ -22,7 +22,7 @@ const categories = ['', ...new Set(projects.map(project => project.category))];
     </header>
     <div class="pj-gallery">
       {projects.map((project, index) => {
-        const primaryLink = project.links.find(link => link.url === project.demo);
+        const primaryLink = project.links.find(link => link.url === project.demo) ?? project.links[0];
         const primaryLabel = primaryLink ? (primaryLink.label === 'Demo' ? '開啟 Demo' : primaryLink.label) : '查看原始碼';
         return (
           <article class:list={['pj-card', index === 0 ? 'pj-lead' : 'pj-gallery-card']} data-category={project.category}>
@@ -36,10 +36,11 @@ const categories = ['', ...new Set(projects.map(project => project.category))];
               <p>{project.summary}</p>
               {project.tech.length > 0 && <div class="pj-stack">{project.tech.slice(0, 3).join(' / ')}</div>}
               <div class="pj-card-actions">
-                <a class="pj-launch" href={project.demo || project.source} target="_blank" rel="noopener noreferrer" aria-label={primaryLabel + ' · ' + project.name}>
+                {primaryLink && <a class="pj-launch" href={primaryLink.url} target="_blank" rel="noopener noreferrer" aria-label={primaryLabel + ' · ' + project.name}>
                   {primaryLabel}<span aria-hidden="true">↗</span>
-                </a>
+                </a>}
                 <a class="pj-profile" href={base + 'projects/' + project.id + '/'} aria-label={'專案介紹 · ' + project.name}>專案介紹</a>
+                <a class="pj-series" href={base + 'series/' + project.seriesId + '/'} aria-label={'教學系列 · ' + project.name}>教學系列</a>
               </div>
             </div>
           </article>

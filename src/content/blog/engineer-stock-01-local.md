@@ -4,7 +4,7 @@ description: 啟動現有 Next.js 專案，用兩檔測試公司驗證搜尋，�
 pubDate: 2026-11-02
 category: "Full-stack"
 series: engineer-stock
-seriesOrder: 1
+seriesOrder: 2
 tags:
 - Next.js
 - TypeScript

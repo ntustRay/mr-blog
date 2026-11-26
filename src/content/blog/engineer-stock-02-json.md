@@ -4,7 +4,7 @@ description: 讀取官方回應樣本，處理日期、字串數字與缺值，�
 pubDate: 2026-11-02
 category: "Data & Visualization"
 series: engineer-stock
-seriesOrder: 2
+seriesOrder: 3
 tags:
 - TypeScript
 - Bun
@@ -84,8 +84,8 @@ bun lesson-normalize.ts
 本次執行結果（保存樣本的數值）：
 
 <figure>
-  <a href="../../images/engineer-stock-series/02-normalize-result.svg"><img src="../../images/engineer-stock-series/02-normalize-result.svg" alt="本機轉換結果對照圖，依實際 JSON 輸出製作；非終端截圖。" loading="lazy" decoding="async" /></a>
-  <figcaption>本機轉換結果對照圖，依實際 JSON 輸出製作；非終端截圖。</figcaption>
+  <a href="../../images/engineer-stock-series/02-normalize-output.webp"><img src="../../images/engineer-stock-series/02-normalize-output.webp" alt="依實際 Bun 終端輸出呈現的畫面：轉換第一筆行情後，產生並驗證 18 個快照檔案。" loading="lazy" decoding="async" /></a>
+  <figcaption>本機實際跑出的終端輸出，排版後截取。最後兩個指令對應下方建立與驗證快照的步驟。</figcaption>
 </figure>
 
 ## 4. 對照三個轉換規則

@@ -1,14 +1,19 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { seriesDefinitions } from '../../config/series';
+import { getSeriesDefinition } from '../../config/series';
+import projects from '../../data/projects.json';
 import { getSeriesPosts } from '../../utils/series';
 
 const posts = await getCollection('blog', ({ data }) => !data.draft);
-const series = seriesDefinitions.map((definition) => ({
-  ...definition,
-  posts: getSeriesPosts(definition.id, posts),
-}));
+const series = projects.map((project) => {
+  const definition = getSeriesDefinition(project.seriesId);
+  const parts = getSeriesPosts(project.seriesId, posts);
+  if (!definition || parts.length === 0) {
+    throw new Error(`Missing published series for project ${project.id}`);
+  }
+  return { ...definition, title: project.name, parts: parts.length };
+});
 const base = import.meta.env.BASE_URL.endsWith('/')
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
@@ -18,14 +23,14 @@ const base = import.meta.env.BASE_URL.endsWith('/')
   <section class="page-header">
     <p class="eyebrow">SERIES</p>
     <h1>Series</h1>
-    <p>依實作順序閱讀專案從設計到驗證的每一步。</p>
+    <p>{series.length} 個專案，各有一套從介紹、實作到總結的教學。</p>
   </section>
   <div class="series-grid">
-    {series.filter((item) => item.posts.length > 0).map((item) => (
+    {series.map((item) => (
       <a class="series-card" href={`${base}series/${item.id}/`}>
         <strong>{item.title}</strong>
         <p>{item.description}</p>
-        <small>{item.posts.length} parts</small>
+        <small>{item.parts} 篇</small>
       </a>
     ))}
   </div>

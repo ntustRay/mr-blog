@@ -4,7 +4,7 @@ description: 從官方 OpenAPI 找到股票資料來源，對照 15 個 endpoint
 pubDate: 2026-11-02
 category: "Dev Tools & Quality"
 series: engineer-stock
-seriesOrder: 10
+seriesOrder: 11
 tags:
 - GitHub Actions
 - TypeScript

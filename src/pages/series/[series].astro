@@ -2,6 +2,7 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { seriesDefinitions } from '../../config/series';
+import projects from '../../data/projects.json';
 import { getSeriesPosts } from '../../utils/series';
 import { formatDate } from '../../utils/date';
 import CategoryLink from '../../components/CategoryLink.astro';
@@ -21,6 +22,7 @@ interface Props {
   posts: CollectionEntry<'blog'>[];
 }
 const { series, posts } = Astro.props;
+const project = projects.find(item => item.seriesId === series.id);
 const intro = 'intro' in series ? series.intro : null;
 const notice = 'notice' in series ? series.notice : null;
 const chapters = 'chapters' in series ? series.chapters : [];
@@ -30,6 +32,9 @@ const base = import.meta.env.BASE_URL.endsWith('/')
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
 const toHref = (href: string) => /^https?:\/\//u.test(href) ? href : `${base}${href}`;
+const getChapterLabel = (index: number) => chapters[index] ?? (project
+  ? index === 0 ? '專案介紹' : index === posts.length - 1 ? '總結與取捨' : '實作教學'
+  : null);
 ---
 
 <BaseLayout title={series.title} description={series.description}>
@@ -37,6 +42,7 @@ const toHref = (href: string) => /^https?:\/\//u.test(href) ? href : `${base}${h
     <p class="eyebrow">SERIES · {posts.length} PARTS</p>
     <h1>{series.title}</h1>
     <p>{series.description}</p>
+    {project && <p><a href={`${base}projects/${project.id}/`}>專案介紹與入口 →</a></p>}
   </section>
   {intro && (
     <section class="series-guide" aria-labelledby="series-guide-heading">
@@ -66,7 +72,7 @@ const toHref = (href: string) => /^https?:\/\//u.test(href) ? href : `${base}${h
       <li>
         <span class="series-index">{String(post.data.seriesOrder ?? index + 1).padStart(2, '0')}</span>
         <div>
-          {chapters[index] && <span class="series-stage">{chapters[index]}</span>}
+          {getChapterLabel(index) && <span class="series-stage">{getChapterLabel(index)}</span>}
           <div class="post-meta">
             <CategoryLink category={post.data.category} />
             <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>

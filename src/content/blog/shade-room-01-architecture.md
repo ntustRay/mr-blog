@@ -1,5 +1,5 @@
 ---
-title: '[Guide] 線上試妝 01：從需求拆到技術架構'
+title: '[Insight] 線上試妝 01：從需求拆到技術架構'
 description: 用 Shade Room 拆解照片、臉部定位與口紅渲染的資料流，說明 Vite、React、MediaPipe、Worker 與 WebGL2 的分工、取捨及讀碼順序。
 pubDate: 2026-11-02
 category: "System Design"
@@ -24,7 +24,9 @@ references:
 
 系列：[1 架構](../shade-room-01-architecture/) · [2 影像輸入](../shade-room-02-image-camera/) · [3 嘴唇定位](../shade-room-03-face-worker/) · [4 WebGL 妝效](../shade-room-04-webgl-lipstick/) · [5 操作與匯出](../shade-room-05-interaction-export/) · [6 測試與部署](../shade-room-06-testing-deploy/)
 
-線上試口紅需要完成三件事：取得影像、找到嘴唇、只改變嘴唇的顏色。Shade Room 把這三件事分成影像生命週期、臉部推論、妝效渲染，再由 React 接上操作介面。
+用同一張照片比較兩種唇色時，拉動濃度就應該看到結果。如果每次改色都重新找臉，新的影像和剛更新的設定可能在不同時間回來。相機還會一直送進新畫面，讓這個問題更明顯。
+
+線上試口紅需要取得影像、找到嘴唇，再只調整嘴唇的顏色。Shade Room 把這三件事分成影像生命週期、臉部推論、妝效渲染，再由 React 接上操作介面。
 
 ## 這篇的重點
 

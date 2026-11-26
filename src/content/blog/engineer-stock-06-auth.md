@@ -4,7 +4,7 @@ description: 核對環境變數、SMTP、Email 驗證與 PKCE callback，用收�
 pubDate: 2026-11-02
 category: "Full-stack"
 series: engineer-stock
-seriesOrder: 6
+seriesOrder: 7
 tags:
 - Supabase
 - Next.js

@@ -4,7 +4,7 @@ description: 從需求拆解選股網的核心架構與技術選型，詳解 Nex
 pubDate: 2026-11-02
 category: "System Design"
 series: engineer-stock
-seriesOrder: 9
+seriesOrder: 10
 tags:
 - Next.js
 - React
@@ -77,6 +77,19 @@ references:
 - RSC、SSR、hydration、資料快取是不同概念，不能混成「都在 Server 跑」。
 - SHA 固定資料版本，Schema 驗證結構，RLS 限制資料所有權；三者解決不同問題。
 - 文末提供面試講法、追問與讀碼順序。已驗證範圍與尚待完成事項分開列出。
+
+## 動手追一次查股請求
+
+先從公開頁面辨認誰負責畫面，再回來對照這篇的 Server 與 Client 分工。這段練習可直接用瀏覽器完成。
+
+1. 打開[正式站](https://engineer-stock-web.vercel.app/)，進入股票查詢並搜尋 `2330`。確認網址包含 `q=2330`，表格列出該代號。
+2. 開啟 DevTools 的 Network，清空紀錄後重新整理。在 Doc 篩選中選取股票查詢的請求，核對 URL 裡的 `q`。因為條件在網址，複製網址到新視窗也能重新得到同樣的查詢。
+3. 點結果列進個股頁，打開圖表。若手上有網站 Repo 權限，將這兩個畫面對應到 `src/app/` 內的路由，再找下文的 `getSnapshot` 與 Chart 元件。這條路徑會經過 Server 取資料，也會在 Browser 執行圖表互動。
+
+<figure>
+  <a href="../../images/engineer-stock-series/04-production-search.webp"><img src="../../images/engineer-stock-series/04-production-search.webp" alt="選股網實際搜尋 2330 的結果畫面，網址帶查詢參數，表格顯示一筆結果。" loading="lazy" decoding="async" /></a>
+  <figcaption>正式站查股實拍。用同一份網址重開，可確認查詢條件能跨重整保留。</figcaption>
+</figure>
 
 ## 1. 先用需求限制選型
 

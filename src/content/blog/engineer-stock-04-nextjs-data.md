@@ -4,7 +4,7 @@ description: 從 Server Component 追到 GitHub SHA、快照驗證與快取，�
 pubDate: 2026-11-02
 category: "Full-stack"
 series: engineer-stock
-seriesOrder: 4
+seriesOrder: 5
 tags:
 - Next.js
 - TypeScript

@@ -4,7 +4,7 @@ description: 核對既有 Vercel 專案、Production 環境變數與部署版本
 pubDate: 2026-11-02
 category: "Dev Tools & Quality"
 series: engineer-stock
-seriesOrder: 8
+seriesOrder: 9
 tags:
 - Vercel
 - Next.js

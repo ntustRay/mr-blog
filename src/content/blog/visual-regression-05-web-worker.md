@@ -4,7 +4,7 @@ description: 先錄下 Main Thread，再將 pixelmatch 移到 Worker，核對結
 pubDate: 2026-10-25
 category: "Frontend"
 series: visual-regression
-seriesOrder: 5
+seriesOrder: 6
 tags:
 - Next.js
 - TypeScript
@@ -170,6 +170,10 @@ Record →「開始比對」→ 結果出現 → Stop。展開 Worker track，�
 ## 14. 核對數值
 
 對照步驟 6：changed pixels、百分比與差異圖應相同。
+
+![本機 Worker 版本的實際畫面。範例的兩張小圖比對後，顯示 17,760／134,400 像素有變動。](../../assets/visual-regression-series/local/07-worker-result.webp)
+
+這張圖用「載入範例」內建的小圖擷取。先用它核對數值與差異圖，再用步驟 2 的大圖錄製 Performance，能避免把兩種測試的結果混在一起。
 
 Worker 讓計算離開 Main Thread；啟動與資料複製仍有成本，總耗時可能增加。量測前不寫加速倍數。
 

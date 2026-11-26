@@ -4,7 +4,7 @@ description: 讓提交自動執行型別、格式、測試與建置，再核對 
 pubDate: 2026-10-25
 category: "Dev Tools & Quality"
 series: visual-regression
-seriesOrder: 4
+seriesOrder: 5
 tags:
 - GitHub Actions
 - Vercel

@@ -11,6 +11,7 @@ const { project } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 const imageUrl = base + project.image;
 const collectionUrl = base + 'projects/';
+const seriesUrl = base + 'series/' + project.seriesId + '/';
 ---
 
 <BaseLayout title={project.name} description={project.summary} ogImage={project.image} wide>
@@ -25,6 +26,7 @@ const collectionUrl = base + 'projects/';
         <p class="pj-summary">{project.summary}</p>
       </div>
       <div class="pj-actions">
+        {project.links.length === 0 && <a class="pj-action pj-primary" href={seriesUrl}>開始教學<span aria-hidden="true"> →</span></a>}
         {project.links.map((link, i) => (
           <a class:list={['pj-action', { 'pj-primary': i === 0 }]} href={link.url} target="_blank" rel="noopener noreferrer">
             {link.label}<span aria-hidden="true">↗</span>
@@ -49,12 +51,12 @@ const collectionUrl = base + 'projects/';
           <ul>{project.features.map(feature => <li>{feature}</li>)}</ul>
         </section>
       </div>
-      {(project.tech.length > 0 || project.article) && <div class="pj-meta">
+      <div class="pj-meta">
         {project.tech.length > 0 && <section><h2>使用技術</h2><div class="pj-tech">{project.tech.join(' / ')}</div></section>}
-        {project.article && <section class="pj-notes">
-          <h2>相關文章</h2><a href={base + project.article.path}>{project.article.label}<span aria-hidden="true"> →</span></a>
-        </section>}
-      </div>}
+        <section class="pj-notes">
+          <h2>教學系列</h2><a href={seriesUrl}>依序閱讀<span aria-hidden="true"> →</span></a>
+        </section>
+      </div>
     </div>
     <a class="pj-back" href={collectionUrl}>回到所有專案</a>
   </article>

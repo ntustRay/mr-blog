@@ -4,7 +4,7 @@ description: 用 URL 重現篩選結果，追到篩選函式、個股資料與 E
 pubDate: 2026-11-02
 category: "Data & Visualization"
 series: engineer-stock
-seriesOrder: 5
+seriesOrder: 6
 tags:
 - Next.js
 - React

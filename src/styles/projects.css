@@ -53,6 +53,7 @@
 .pj-lead .pj-card-actions { margin-top: clamp(17px, 2.1vw, 29px); }
 .pj-card-actions a { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; font-size: .88rem; }
 .pj-card-actions .pj-launch { position: relative; z-index: 2; color: var(--accent); font-weight: 600; }
+.pj-card-actions .pj-series { position: relative; z-index: 2; color: var(--accent); text-decoration: underline; text-underline-offset: .25em; }
 .pj-lead .pj-launch { padding: 7px 14px; color: #211d13; background: var(--accent); border-radius: 3px; }
 .pj-lead .pj-launch:hover { background: #ffda7c; }
 .pj-gallery-card .pj-launch:hover { text-decoration: underline; text-underline-offset: .23em; }

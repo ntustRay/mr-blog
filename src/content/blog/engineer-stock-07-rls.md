@@ -4,7 +4,7 @@ description: 追查 user_id 的來源，用本機 PostgreSQL 測試驗證自身�
 pubDate: 2026-11-02
 category: "Full-stack"
 series: engineer-stock
-seriesOrder: 7
+seriesOrder: 8
 tags:
 - Supabase
 - PostgreSQL

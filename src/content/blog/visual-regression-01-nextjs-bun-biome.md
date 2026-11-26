@@ -4,7 +4,7 @@ description: 建立教學專案，載入兩張範例圖，顯示差異圖與比�
 pubDate: 2026-10-25
 category: "Full-stack"
 series: visual-regression
-seriesOrder: 1
+seriesOrder: 2
 tags:
 - Next.js
 - TypeScript

@@ -4,7 +4,7 @@ description: 建立 Supabase 教學專案，設定 RLS、私人 Bucket、GitHub 
 pubDate: 2026-10-25
 category: "Full-stack"
 series: visual-regression
-seriesOrder: 3
+seriesOrder: 4
 tags:
 - Next.js
 - Supabase

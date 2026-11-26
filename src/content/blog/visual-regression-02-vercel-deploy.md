@@ -4,7 +4,7 @@ description: 建立 GitHub Repository，設定 Bun 與 Node 版本，匯入 Verc
 pubDate: 2026-10-25
 category: "Dev Tools & Quality"
 series: visual-regression
-seriesOrder: 2
+seriesOrder: 3
 tags:
 - Next.js
 - Vercel

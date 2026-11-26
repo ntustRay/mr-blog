@@ -30,7 +30,8 @@
     "image": "images/projects/parking.webp",
     "width": 880,
     "height": 516,
-    "imageLabel": "產品畫面"
+    "imageLabel": "產品畫面",
+    "seriesId": "parking"
   },
   {
     "id": "stock",
@@ -66,10 +67,7 @@
     "width": 880,
     "height": 516,
     "imageLabel": "產品畫面",
-    "article": {
-      "label": "工程師選股網開發紀錄",
-      "path": "series/engineer-stock/"
-    }
+    "seriesId": "engineer-stock"
   },
   {
     "id": "shade",
@@ -101,10 +99,7 @@
     "width": 880,
     "height": 516,
     "imageLabel": "產品畫面",
-    "article": {
-      "label": "Shade Lab 開發紀錄",
-      "path": "series/shade-lab/"
-    }
+    "seriesId": "shade-lab"
   },
   {
     "id": "framecheck",
@@ -140,10 +135,7 @@
     "width": 880,
     "height": 516,
     "imageLabel": "官網比較範例",
-    "article": {
-      "label": "圖片比對教學系列",
-      "path": "series/visual-regression/"
-    }
+    "seriesId": "visual-regression"
   },
   {
     "id": "pixel",
@@ -178,7 +170,8 @@
     "image": "images/projects/pixel.webp",
     "width": 880,
     "height": 516,
-    "imageLabel": "產品畫面"
+    "imageLabel": "產品畫面",
+    "seriesId": "pixel"
   },
   {
     "id": "youbike",
@@ -207,7 +200,8 @@
     "image": "images/projects/youbike.webp",
     "width": 880,
     "height": 516,
-    "imageLabel": "站點示意"
+    "imageLabel": "站點示意",
+    "seriesId": "youbike"
   },
   {
     "id": "kanban",
@@ -245,7 +239,8 @@
     "image": "images/projects/kanban.webp",
     "width": 880,
     "height": 516,
-    "imageLabel": "品牌圖示"
+    "imageLabel": "品牌圖示",
+    "seriesId": "kanban"
   },
   {
     "id": "datetime",
@@ -282,7 +277,8 @@
     "image": "images/projects/datetime.webp",
     "width": 830,
     "height": 426,
-    "imageLabel": "產品畫面"
+    "imageLabel": "產品畫面",
+    "seriesId": "datetime"
   },
   {
     "id": "dev-map",
@@ -313,6 +309,270 @@
     "image": "images/projects/dev-map.webp",
     "width": 880,
     "height": 516,
-    "imageLabel": "品牌圖示"
+    "imageLabel": "品牌圖示",
+    "seriesId": "dev-map"
+  },
+  {
+    "id": "toolbox",
+    "name": "MR 工具百科",
+    "category": "資料應用",
+    "summary": "在瀏覽器轉 CSV、比對文字和轉換圖片格式，從單獨的工具頁開始操作。",
+    "description": "工具各有獨立網址。可以輸入一份小樣本確認輸出，再複製或下載結果。",
+    "tech": [
+      "React",
+      "TypeScript",
+      "Canvas"
+    ],
+    "features": [
+      "CSV 與 JSON 雙向轉換",
+      "文字差異比對",
+      "圖片格式互轉"
+    ],
+    "alt": "MR 工具百科的 CSV 與 JSON 轉換介面。",
+    "demo": "https://mr-toolbox-two.vercel.app/",
+    "source": null,
+    "links": [
+      {
+        "label": "開啟工具百科",
+        "url": "https://mr-toolbox-two.vercel.app/"
+      }
+    ],
+    "image": "images/projects/toolbox.webp",
+    "width": 1280,
+    "height": 910,
+    "imageLabel": "產品畫面",
+    "seriesId": "toolbox"
+  },
+  {
+    "id": "mr-coding",
+    "name": "MR Coding",
+    "category": "開發工具",
+    "summary": "用 Topics 找主題，用 Series 跟著實作，用 Projects 打開作品和 Demo。",
+    "description": "技術文章以 Markdown 保存，Astro 產出靜態頁面，Pagefind 提供站內全文搜尋。",
+    "tech": [
+      "Astro",
+      "Markdown",
+      "Pagefind"
+    ],
+    "features": [
+      "主題與標籤導覽",
+      "有順序的專案教學",
+      "站內全文搜尋"
+    ],
+    "alt": "MR Coding 首頁的文章列表與導覽。",
+    "demo": "https://ntustray.github.io/mr-blog/",
+    "source": "https://github.com/ntustRay/mr-blog",
+    "links": [
+      {
+        "label": "進入 MR Coding",
+        "url": "https://ntustray.github.io/mr-blog/"
+      },
+      {
+        "label": "Source",
+        "url": "https://github.com/ntustRay/mr-blog"
+      }
+    ],
+    "image": "images/projects/mr-coding.webp",
+    "width": 1220,
+    "height": 930,
+    "imageLabel": "網站畫面",
+    "seriesId": "mr-coding"
+  },
+  {
+    "id": "mr-financial",
+    "name": "MR Financial",
+    "category": "資料應用",
+    "summary": "依日期回看財經日報，從消息和數字回到原始來源。",
+    "description": "財經文章和技術站各有自己的歸檔。可以從日報找來源，並在 Archive 回看先前的時間點。",
+    "tech": [
+      "Astro",
+      "Markdown",
+      "GitHub Pages"
+    ],
+    "features": [
+      "財經日報",
+      "依日期查找舊文章",
+      "切換至 MR Coding"
+    ],
+    "alt": "MR Financial 的財經文章和導覽。",
+    "demo": "https://ntustray.github.io/mr-financial-blog/",
+    "source": "https://github.com/ntustRay/mr-financial-blog",
+    "links": [
+      {
+        "label": "進入 MR Financial",
+        "url": "https://ntustray.github.io/mr-financial-blog/"
+      },
+      {
+        "label": "Source",
+        "url": "https://github.com/ntustRay/mr-financial-blog"
+      }
+    ],
+    "image": "images/projects/mr-financial.webp",
+    "width": 1280,
+    "height": 840,
+    "imageLabel": "正式站畫面",
+    "seriesId": "mr-financial"
+  },
+  {
+    "id": "pap-qc",
+    "name": "PAP 品管工作台",
+    "category": "資料應用",
+    "summary": "匯入表格後檢查欄位和規則比對結果，再匯出可回查的報表。",
+    "description": "瀏覽器工作台把表格匯入、規則和報表分開。教學以虛構資料演示匯入與匯出流程。",
+    "tech": [
+      "TypeScript",
+      "CSV"
+    ],
+    "features": [
+      "表格匯入",
+      "檢視規則比對",
+      "匯出報表"
+    ],
+    "alt": "PAP 品管工作台載入虛構範例資料後的結果。",
+    "demo": "https://ntustray.github.io/pap-qc-workbench/",
+    "source": "https://github.com/ntustRay/pap-qc-workbench",
+    "links": [
+      {
+        "label": "開啟工作台",
+        "url": "https://ntustray.github.io/pap-qc-workbench/"
+      },
+      {
+        "label": "Source",
+        "url": "https://github.com/ntustRay/pap-qc-workbench"
+      }
+    ],
+    "image": "images/projects/pap-qc.webp",
+    "width": 1380,
+    "height": 920,
+    "imageLabel": "範例操作畫面",
+    "seriesId": "pap-qc"
+  },
+  {
+    "id": "auto-shutdown",
+    "name": "R Auto Shutdown",
+    "category": "開發工具",
+    "summary": "在排定的關機前顯示倒數，提供延後和取消。可以先用模擬模式試操作。",
+    "description": "Rust 桌面工具把倒數介面與系統關機動作分開。教學使用模擬模式，方便重覆驗證延後、取消與最小化。",
+    "tech": [
+      "Rust",
+      "egui"
+    ],
+    "features": [
+      "關機前倒數",
+      "延後與取消",
+      "模擬模式"
+    ],
+    "alt": "R Auto Shutdown 的模擬倒數介面。",
+    "demo": null,
+    "source": "https://github.com/ntustRay/rust-auto-shutdown",
+    "links": [
+      {
+        "label": "Source",
+        "url": "https://github.com/ntustRay/rust-auto-shutdown"
+      },
+      {
+        "label": "CI 建置",
+        "url": "https://github.com/ntustRay/rust-auto-shutdown/actions"
+      }
+    ],
+    "image": "images/projects/auto-shutdown.webp",
+    "width": 840,
+    "height": 760,
+    "imageLabel": "模擬模式畫面",
+    "seriesId": "auto-shutdown"
+  },
+  {
+    "id": "web-auth",
+    "name": "Web Authentication Component",
+    "category": "開發工具",
+    "summary": "將 GitHub 登入與帳密表單放進可重用的 React 登入面板。",
+    "description": "登入面板提供 UI、驗證提示和互動狀態。產品可以自行接上驗證服務，並處理 session。",
+    "tech": [
+      "React",
+      "TypeScript",
+      "npm"
+    ],
+    "features": [
+      "GitHub 登入入口",
+      "帳密表單",
+      "載入與錯誤狀態"
+    ],
+    "alt": "Web Authentication Component 的登入面板與 GitHub 按鈕。",
+    "demo": null,
+    "source": "https://github.com/ntustRay/web-authentication-component",
+    "links": [
+      {
+        "label": "Source",
+        "url": "https://github.com/ntustRay/web-authentication-component"
+      },
+      {
+        "label": "npm",
+        "url": "https://www.npmjs.com/package/@ntustray/web-authentication-component"
+      }
+    ],
+    "image": "images/projects/web-auth.webp",
+    "width": 1380,
+    "height": 920,
+    "imageLabel": "元件畫面",
+    "seriesId": "web-auth"
+  },
+  {
+    "id": "pair-practice",
+    "name": "Pair Practice",
+    "category": "互動體驗",
+    "summary": "雙人協作解題專案，將題目、共編和測資放在同一個房間。",
+    "description": "Pair Practice 目前為 Alpha。公開教學用本機範例重現雙分頁共編，再對照遠端房間和測資執行要驗證的行為。",
+    "tech": [
+      "Yjs",
+      "TypeScript"
+    ],
+    "features": [
+      "一起閱讀題目與編輯程式",
+      "以範例和邊界測資核對結果"
+    ],
+    "alt": "獨立教學範例收到另一個分頁的測資後，顯示單字數符合預期。",
+    "demo": null,
+    "source": null,
+    "links": [],
+    "image": "images/projects/pair-practice.webp",
+    "width": 1160,
+    "height": 750,
+    "imageLabel": "獨立教學範例",
+    "seriesId": "pair-practice"
+  },
+  {
+    "id": "markdown-reader",
+    "name": "Ray Markdown Reader",
+    "category": "開發工具",
+    "summary": "開啟一份本機 Markdown，切換預覽與編輯，再將修改存回原檔。",
+    "description": "Android 版透過系統選檔器開檔和儲存。切換檔案前可以核對未儲存改動，適合單檔閱讀與編輯。",
+    "tech": [
+      "Tauri",
+      "TypeScript",
+      "Android"
+    ],
+    "features": [
+      "本機單檔預覽",
+      "編輯與存回",
+      "未儲存修改確認"
+    ],
+    "alt": "Ray Markdown Reader 顯示本機 Markdown 的預覽。",
+    "demo": null,
+    "source": "https://github.com/ntustRay/markdown-file-reader",
+    "links": [
+      {
+        "label": "Source",
+        "url": "https://github.com/ntustRay/markdown-file-reader"
+      },
+      {
+        "label": "隱私政策",
+        "url": "https://ntustray.github.io/markdown-file-reader/privacy-policy/"
+      }
+    ],
+    "image": "images/projects/markdown-reader.webp",
+    "width": 420,
+    "height": 670,
+    "imageLabel": "本機前端測試畫面",
+    "seriesId": "markdown-reader"
   }
 ]

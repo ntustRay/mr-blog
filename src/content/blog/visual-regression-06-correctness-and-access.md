@@ -4,7 +4,7 @@ description: 用固定圖片與兩個教學帳號檢查結果、資料隔離，�
 pubDate: 2026-10-25
 category: "Dev Tools & Quality"
 series: visual-regression
-seriesOrder: 6
+seriesOrder: 7
 tags:
 - TypeScript
 - Supabase
@@ -196,3 +196,5 @@ SQL Editor 的管理員查詢可能繞過 RLS，不能代替這一步。
 
 
 真實跨帳號與 Storage HTTP 驗收仍待專用教學 Project 執行；不要把本機五項測試填成這些項目的通過結果。
+
+下一篇：[Framecheck 做完後，圖片比對工具還要驗收什麼？](../visual-regression-project-summary/)
