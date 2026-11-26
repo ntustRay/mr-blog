@@ -1,0 +1,70 @@
+const SITE = {
+  propertyId: '123456789',
+  hostname: 'example.github.io',
+  sitePath: '/my-blog/',
+};
+
+function verifyGa4() {
+  const report = readViews('7daysAgo', 'yesterday', false);
+  if (report.metricHeaders?.[0]?.name !== 'screenPageViews') {
+    throw new Error('找不到 screenPageViews 指標');
+  }
+  const views = Number(report.rows?.[0]?.metricValues?.[0]?.value ?? 0);
+  console.log('前 7 個完整日的瀏覽量 = ' + views);
+}
+
+function readViews(startDate, endDate, byPath) {
+  const match = (fieldName, matchType, value) => ({
+    filter: { fieldName, stringFilter: { matchType, value, caseSensitive: true } },
+  });
+  const pathFilters = [match('pagePath', 'BEGINS_WITH', SITE.sitePath)];
+  if (SITE.sitePath !== '/') {
+    pathFilters.push(match('pagePath', 'EXACT', SITE.sitePath.slice(0, -1)));
+  }
+  const request = {
+    dateRanges: [{ startDate, endDate }],
+    metrics: [{ name: 'screenPageViews' }],
+    dimensionFilter: { andGroup: { expressions: [
+      match('hostName', 'EXACT', SITE.hostname),
+      { orGroup: { expressions: pathFilters } },
+    ] } },
+  };
+  if (byPath) {
+    request.dimensions = [{ name: 'pagePath' }];
+    request.limit = '250000';
+  }
+  return AnalyticsData.Properties.runReport(request, 'properties/' + SITE.propertyId);
+}
+
+function doPost(event) {
+  try {
+    const body = event?.postData?.contents;
+    if (typeof body !== 'string' || body.length > 512) {
+      return json({ error: 'Invalid request' });
+    }
+    const { sitePath, token } = JSON.parse(body);
+    const expected = PropertiesService.getScriptProperties().getProperty('GA4_APPS_SCRIPT_TOKEN');
+    if (sitePath !== SITE.sitePath || !matchesToken(token, expected)) {
+      return json({ error: 'Unauthorized' });
+    }
+    const report = readViews('2020-01-01', 'today', true);
+    return json({ sitePath, propertyId: SITE.propertyId, report });
+  } catch {
+    return json({ error: 'Report unavailable' });
+  }
+}
+
+function matchesToken(input, expected) {
+  if (typeof input !== 'string' || typeof expected !== 'string' ||
+      !/^[0-9a-f]{64}$/.test(expected) || input.length !== expected.length) return false;
+  let difference = 0;
+  for (let i = 0; i < expected.length; i++) {
+    difference |= input.charCodeAt(i) ^ expected.charCodeAt(i);
+  }
+  return difference === 0;
+}
+
+function json(value) {
+  return ContentService.createTextOutput(JSON.stringify(value))
+    .setMimeType(ContentService.MimeType.JSON);
+}
