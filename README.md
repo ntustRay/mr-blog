@@ -70,7 +70,7 @@ Lighthouse CI.
 
 ## GA4 瀏覽量
 
-首頁顯示首頁與全站瀏覽量，文章顯示於標題下方，其餘頁面顯示於頁尾。GitHub Pages 部署時使用 GA4 Data API 讀取這個網站的累計瀏覽量，每天安排一次更新。GA4 暫時無法連線時，沿用快取內最近一次成功取得的資料。首次同步前顯示「暫無資料」。
+首頁上方顯示首頁與全站瀏覽量，每篇文章在分類右側顯示各自的瀏覽量。文章頁的瀏覽量顯示於標題下方，其餘頁面顯示於頁尾。GitHub Pages 部署時使用 GA4 Data API 讀取這個網站的累計瀏覽量，每天安排一次更新。GA4 暫時無法連線時，沿用快取內最近一次成功取得的資料。首次同步前顯示「暫無資料」，首頁文章列以「—」表示。
 
 1. 在 Google Cloud 啟用 [Google Analytics Data API](https://developers.google.com/analytics/devguides/reporting/data/v1/quickstart)，建立服務帳戶，並在此站的 GA4 資源授予該帳戶 **Viewer**。
 2. [設定 GitHub Actions 的 Workload Identity Federation](https://cloud.google.com/iam/docs/workload-identity-federation-with-deployment-pipelines)，將信任範圍限於此 repo 的 `refs/heads/main`，並授予該工作負載 `roles/iam.workloadIdentityUser` 以使用服務帳戶。
