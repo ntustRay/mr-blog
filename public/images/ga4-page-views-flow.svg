@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 350" role="img" aria-labelledby="title description">
+  <title id="title">GA4 瀏覽量如何到達網站</title>
+  <desc id="description">GA4 收集瀏覽事件。Apps Script 唯讀查詢報表。GitHub Actions 驗證報表、寫入快照並建置 HTML。GitHub Pages 發布含瀏覽量的靜態頁面。</desc>
+  <rect width="400" height="350" rx="16" fill="#111a19"/>
+  <g fill="none" stroke="#9bc7b3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M200 82v13m-5-5 5 5 5-5"/>
+    <path d="M200 167v13m-5-5 5 5 5-5"/>
+    <path d="M200 252v13m-5-5 5 5 5-5"/>
+  </g>
+  <g font-family="system-ui, 'Noto Sans TC', 'Microsoft JhengHei', sans-serif" fill="#edf6f1">
+    <g transform="translate(20 16)">
+      <rect width="360" height="62" rx="9" fill="#21342b" stroke="#638d77"/>
+      <text x="16" y="26" font-size="22" font-weight="700">GA4</text>
+      <text x="16" y="49" font-size="17" fill="#c4dccf">收集網站瀏覽事件</text>
+    </g>
+    <g transform="translate(20 101)">
+      <rect width="360" height="62" rx="9" fill="#21342b" stroke="#638d77"/>
+      <text x="16" y="26" font-size="22" font-weight="700">Apps Script</text>
+      <text x="16" y="49" font-size="17" fill="#c4dccf">用唯讀權限查詢 GA4 報表</text>
+    </g>
+    <g transform="translate(20 186)">
+      <rect width="360" height="62" rx="9" fill="#21342b" stroke="#638d77"/>
+      <text x="16" y="26" font-size="22" font-weight="700">GitHub Actions</text>
+      <text x="16" y="49" font-size="17" fill="#c4dccf">驗證報表、寫入快照並建置 HTML</text>
+    </g>
+    <g transform="translate(20 271)">
+      <rect width="360" height="62" rx="9" fill="#294936" stroke="#9bc7b3"/>
+      <text x="16" y="26" font-size="22" font-weight="700">GitHub Pages</text>
+      <text x="16" y="49" font-size="17" fill="#d2eadb">發布含瀏覽量的靜態網頁</text>
+    </g>
+  </g>
+</svg>
