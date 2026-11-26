@@ -414,40 +414,6 @@
     "seriesId": "mr-financial"
   },
   {
-    "id": "pap-qc",
-    "name": "PAP 品管工作台",
-    "category": "資料應用",
-    "summary": "匯入表格後檢查欄位和規則比對結果，再匯出可回查的報表。",
-    "description": "瀏覽器工作台把表格匯入、規則和報表分開。教學以虛構資料演示匯入與匯出流程。",
-    "tech": [
-      "TypeScript",
-      "CSV"
-    ],
-    "features": [
-      "表格匯入",
-      "檢視規則比對",
-      "匯出報表"
-    ],
-    "alt": "PAP 品管工作台載入虛構範例資料後的結果。",
-    "demo": "https://ntustray.github.io/pap-qc-workbench/",
-    "source": "https://github.com/ntustRay/pap-qc-workbench",
-    "links": [
-      {
-        "label": "開啟工作台",
-        "url": "https://ntustray.github.io/pap-qc-workbench/"
-      },
-      {
-        "label": "Source",
-        "url": "https://github.com/ntustRay/pap-qc-workbench"
-      }
-    ],
-    "image": "images/projects/pap-qc.webp",
-    "width": 1380,
-    "height": 920,
-    "imageLabel": "範例操作畫面",
-    "seriesId": "pap-qc"
-  },
-  {
     "id": "auto-shutdown",
     "name": "R Auto Shutdown",
     "category": "開發工具",
