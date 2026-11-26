@@ -22,6 +22,7 @@ import { getCategorySlug } from '../../utils/categories';
 import { formatDate } from '../../utils/date';
 import { getRelatedPosts } from '../../utils/relatedPosts';
 import { getSeriesNavigation } from '../../utils/series';
+import { projectForSeries } from '../../utils/project-seo';
 
 export async function getStaticPaths() {
   const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
@@ -100,6 +101,7 @@ const structuredData = {
   },
   publisher: { '@id': `${authorURL.href}#person` },
   isPartOf: { '@id': `${siteURL.href}#website` },
+  about: projectForSeries(post.data.series, siteURL),
   keywords: post.data.tags,
   citation: post.data.references.map((reference) => ({
     '@type': 'CreativeWork',

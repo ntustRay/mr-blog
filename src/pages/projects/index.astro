@@ -1,13 +1,36 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import projects from '../../data/projects.json';
+import { projectPageUrl } from '../../utils/project-seo';
 import '../../styles/projects.css';
 
 const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 const categories = ['', ...new Set(projects.map(project => project.category))];
+const siteUrl = new URL(base, Astro.site ?? Astro.url.origin);
+const pageUrl = new URL('projects/', siteUrl).href;
+const title = '專案作品';
+const description = 'MingRay 的互動體驗、資料應用與開發工具。瀏覽產品畫面、開啟 Demo，或閱讀各專案的開發紀錄。';
+const collection = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  '@id': pageUrl,
+  name: title,
+  description,
+  url: pageUrl,
+  isPartOf: { '@id': `${siteUrl.href}#website` },
+  mainEntity: {
+    '@type': 'ItemList',
+    itemListElement: projects.map((project, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: project.name,
+      url: projectPageUrl(project.id, siteUrl),
+    })),
+  },
+};
 ---
 
-<BaseLayout title="專案作品" description="MingRay 的互動體驗、資料應用與開發工具。瀏覽產品畫面、開啟 Demo，或閱讀各專案的開發紀錄。" wide>
+<BaseLayout title={title} description={description} structuredData={collection} wide>
   <section class="pj-page">
     <nav class="pj-location" aria-label="導覽路徑">
       <a href={base}>Home</a><span aria-hidden="true">/</span><span aria-current="page">Projects</span>

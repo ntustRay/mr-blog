@@ -11,6 +11,8 @@ const websiteId = `${websiteUrl}#website`;
 const authorId = `${authorUrl}#person`;
 const migratedPosts = JSON.parse(await readFile(new URL('../src/config/moved-posts.json', import.meta.url), 'utf8'));
 const migratedRoutes = new Map(migratedPosts.map(({ id, url }) => [`posts/${id}/index.html`, url]));
+const projects = JSON.parse(await readFile(new URL('../src/data/projects.json', import.meta.url), 'utf8'));
+const projectRoutes = new Map(projects.map((project) => [`projects/${project.id}/index.html`, project]));
 const errors = [];
 const htmlFiles = [];
 
@@ -94,6 +96,34 @@ for (const file of htmlFiles) {
       if (profile?.url !== expectedUrl || profile?.mainEntity?.['@id'] !== authorId) {
         errors.push(`${relative}: profile does not identify the article author`);
       }
+    }
+    const collection = nodes.find((node) => node['@type'] === 'CollectionPage');
+    if (relative === 'projects/index.html') {
+      const expectedItems = projects.map(({ id }) => new URL(`projects/${id}/`, websiteUrl).href);
+      const items = collection?.mainEntity?.itemListElement;
+      if (collection?.url !== expectedUrl || collection?.mainEntity?.['@type'] !== 'ItemList'
+        || items?.length !== expectedItems.length
+        || items.some((item, index) => item.position !== index + 1 || item.url !== expectedItems[index])) {
+        errors.push(`${relative}: structured project list does not match the listed routes`);
+      }
+    }
+    const project = projectRoutes.get(relative);
+    if (project) {
+      const page = nodes.find((node) => node['@type'] === 'WebPage');
+      const breadcrumbs = nodes.find((node) => node['@type'] === 'BreadcrumbList');
+      const expectedId = project.id === 'mr-coding' ? websiteId
+        : project.id === 'mr-financial' ? `${project.demo}#website` : `${expectedUrl}#product`;
+      if (page?.url !== expectedUrl || page?.mainEntity?.['@id'] !== expectedId
+        || breadcrumbs?.itemListElement?.at(-1)?.item !== expectedUrl || !sitemapUrls.has(expectedUrl)) {
+        errors.push(`${relative}: missing canonical project identity, breadcrumb, or sitemap entry`);
+      }
+      for (const size of ['width', 'height']) {
+        const actual = attribute(extractTag(html, 'meta', 'property', `og:image:${size}`), 'content');
+        if (actual !== String(project[size])) errors.push(`${relative}: incorrect Open Graph image ${size}`);
+      }
+    }
+    if (relative === 'series/pap-qc/index.html' && collection?.about?.['@id'] !== `${expectedUrl}#product`) {
+      errors.push(`${relative}: missing PAP workbench identity`);
     }
     if (!route.startsWith('posts/')) continue;
 
