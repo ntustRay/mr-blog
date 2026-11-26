@@ -8,35 +8,67 @@ const site = new URL(process.argv[2]);
 const sitePath = normalizeViewPath(site.pathname);
 const siteRoot = sitePath.slice(0, -1);
 
-if (!propertyId || !/^\d+$/u.test(propertyId) || !accessToken) {
-  throw new Error('The GA4 numeric Property ID and a read-only access token are required.');
+if (!/^\d+$/u.test(propertyId ?? '')) {
+  throw new Error('The numeric GA4 Property ID is required.');
 }
 
-const filter = (fieldName, matchType, value) => ({
-  filter: { fieldName, stringFilter: { matchType, value, caseSensitive: true } },
-});
+const scriptUrl = process.env.GA4_APPS_SCRIPT_URL;
+const report = scriptUrl ? await fetchScriptReport(scriptUrl) : await fetchDataApiReport();
 
-const response = await fetch(`https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runReport`, {
-  method: 'POST',
-  headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    dimensions: [{ name: 'pagePath' }],
-    metrics: [{ name: 'screenPageViews' }],
-    dateRanges: [{ startDate: '2020-01-01', endDate: 'today' }],
-    dimensionFilter: { andGroup: { expressions: [
-      filter('hostName', 'EXACT', site.hostname),
-      { orGroup: { expressions: [
-        filter('pagePath', 'EXACT', siteRoot),
-        filter('pagePath', 'BEGINS_WITH', sitePath),
+async function fetchScriptReport(scriptUrl) {
+  const endpoint = new URL(scriptUrl);
+  const secret = process.env.GA4_APPS_SCRIPT_TOKEN;
+  if (
+    endpoint.origin !== 'https://script.google.com' ||
+    !/^\/macros\/s\/[\w-]+\/exec$/u.test(endpoint.pathname) ||
+    endpoint.username || endpoint.password || endpoint.search || endpoint.hash ||
+    !/^[0-9a-f]{64}$/u.test(secret ?? '')
+  ) {
+    throw new Error('A deployed Apps Script URL and snapshot token are required.');
+  }
+
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sitePath, token: secret }),
+    signal: AbortSignal.timeout(45_000),
+  });
+  if (!response.ok) throw new Error(`Apps Script returned HTTP ${response.status}.`);
+  const payload = await response.json();
+  if (payload?.sitePath !== sitePath || payload?.propertyId !== propertyId || !payload?.report) {
+    throw new Error('Apps Script did not return a GA4 report for this site.');
+  }
+  return payload.report;
+}
+
+async function fetchDataApiReport() {
+  if (!accessToken) throw new Error('A read-only GA4 access token is required.');
+  const filter = (fieldName, matchType, value) => ({
+    filter: { fieldName, stringFilter: { matchType, value, caseSensitive: true } },
+  });
+  const response = await fetch(`https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runReport`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      dimensions: [{ name: 'pagePath' }],
+      metrics: [{ name: 'screenPageViews' }],
+      dateRanges: [{ startDate: '2020-01-01', endDate: 'today' }],
+      dimensionFilter: { andGroup: { expressions: [
+        filter('hostName', 'EXACT', site.hostname),
+        { orGroup: { expressions: [
+          filter('pagePath', 'EXACT', siteRoot),
+          filter('pagePath', 'BEGINS_WITH', sitePath),
+        ] } },
       ] } },
-    ] } },
-    limit: '250000',
-  }),
-  signal: AbortSignal.timeout(30_000),
-});
+      limit: '250000',
+    }),
+    signal: AbortSignal.timeout(30_000),
+  });
 
-if (!response.ok) throw new Error(`GA4 Data API returned HTTP ${response.status}.`);
-const report = await response.json();
+  if (!response.ok) throw new Error(`GA4 Data API returned HTTP ${response.status}.`);
+  return response.json();
+}
+
 const rows = report.rows ?? [];
 if (
   report.dimensionHeaders?.[0]?.name !== 'pagePath' ||

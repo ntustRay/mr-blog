@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   build:
-    if: github.event_name != 'schedule' || (vars.GA4_PROPERTY_ID != '' && vars.GA4_WORKLOAD_IDENTITY_PROVIDER != '' && vars.GA4_SERVICE_ACCOUNT != '')
+    if: github.event_name != 'schedule' || (vars.GA4_PROPERTY_ID != '' && (vars.GA4_APPS_SCRIPT_URL != '' || (vars.GA4_WORKLOAD_IDENTITY_PROVIDER != '' && vars.GA4_SERVICE_ACCOUNT != '')))
     runs-on: ubuntu-latest
     env:
       PUBLIC_GOOGLE_SITE_VERIFICATION: ${{ vars.PUBLIC_GOOGLE_SITE_VERIFICATION }}
@@ -36,7 +36,7 @@ jobs:
 
       - name: Get read-only GA4 access
         id: ga4_auth
-        if: vars.GA4_PROPERTY_ID != '' && vars.GA4_WORKLOAD_IDENTITY_PROVIDER != '' && vars.GA4_SERVICE_ACCOUNT != ''
+        if: vars.GA4_APPS_SCRIPT_URL == '' && vars.GA4_PROPERTY_ID != '' && vars.GA4_WORKLOAD_IDENTITY_PROVIDER != '' && vars.GA4_SERVICE_ACCOUNT != ''
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
         continue-on-error: true
         with:
@@ -49,9 +49,11 @@ jobs:
 
       - name: Refresh public view counts
         id: ga4_views
-        if: steps.ga4_auth.outcome == 'success'
+        if: vars.GA4_APPS_SCRIPT_URL != '' || steps.ga4_auth.outcome == 'success'
         continue-on-error: true
         env:
+          GA4_APPS_SCRIPT_URL: ${{ vars.GA4_APPS_SCRIPT_URL }}
+          GA4_APPS_SCRIPT_TOKEN: ${{ secrets.GA4_APPS_SCRIPT_TOKEN }}
           GA4_PROPERTY_ID: ${{ vars.GA4_PROPERTY_ID }}
           GA4_ACCESS_TOKEN: ${{ steps.ga4_auth.outputs.access_token }}
         run: node scripts/sync-ga4-views.mjs https://ntustray.github.io/mr-blog/
