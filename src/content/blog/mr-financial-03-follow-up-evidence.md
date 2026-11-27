@@ -1,34 +1,32 @@
 ---
-title: '[Insight] 財金日報寫完後，下一篇要怎麼接得上？'
-description: '保留文章日期、事件時間、可查來源與待驗證條件，讓新資料能對照回前一篇。'
+title: "[Insight] 一列日報從哪裡來？用日期、缺版和資料截點驗收"
+description: "回顧日報索引的資料模型，分清期別、資料截至時間與發布時間，保留日後能追查的證據。"
 pubDate: 2026-11-26
-category: 'Web Publishing & SEO'
-tags: [Astro, Content Architecture, 財經日報]
+updatedDate: 2026-11-27
+category: "Web Publishing & SEO"
+tags: ["Astro","Content Architecture","Testing", "財經日報"]
 series: mr-financial
 seriesOrder: 3
-draft: false
 references:
-- title: MR Financial · 依年份整理的 Archive
-  url: https://ntustray.github.io/mr-financial-blog/archive/
-- title: MR Financial · Topics 與 Daily editions
-  url: https://ntustray.github.io/mr-financial-blog/
+  - title: "MR Financial 的日報分組與首頁"
+    url: "https://github.com/ntustRay/mr-financial-blog/blob/main/src/pages/index.astro"
+  - title: "MR Financial 的部署流程"
+    url: "https://github.com/ntustRay/mr-financial-blog/blob/main/.github/workflows/deploy.yml"
+  - title: "MR Financial 公開首頁"
+    url: "https://ntustray.github.io/mr-financial-blog/"
 ---
 
-一篇報導寫「公司下季會更新展望」。之後新聞標題換了一輪，回頭看時，最需要知道的是當時寫到哪裡，哪一項說法有文件支持，以及要等什麼才能確認。光保存標題，很難區分當時已經發生的事和當時還在等的消息。
+日報索引完成後，最值得回頭檢查的是那個空格。國際版還沒刊出時，表格只要保留日期，台灣版照常能讀。等到另一個 Markdown 加進 repository，下次建置自然會補上連結。若一開始把一列的兩篇都設成必填，早發的那一版反而得等。
 
-可以直接在自己的讀書筆記留一列。下面是寫法示意，內容不指涉特定公司。
+![正式文章把資料截至時間放在正文開頭，期別日期可另外從文章網址辨認。](../../assets/project-series/mr-financial/02-as-of.webp)
 
-| 欄位 | 要留下的資料 |
+| 問題 | 查哪一份資料 |
 | --- | --- |
-| 文章日期 | 日報日期與永久連結，方便回到當時的寫法 |
-| 事件時間 | 公司公告標的時間、時區和報告涵蓋期間 |
-| 可查來源 | 原始公告或交易所資料，附文件日期與段落 |
-| 下次要確認的條件 | 公司是否調整展望，有調整時再分清營收區間、毛利或交貨時間 |
+| 首頁為什麼把兩篇排在同一列？ | 兩個檔名的期別日期一致 |
+| 文章出現在目錄，資料到底收錄到幾點？ | 正文標明的截至時間和時區 |
+| 文中引用的數字後來有沒有修正？ | 文章引用的一手公告、公告的版本或日期 |
+| 今天剛補一篇，公開首頁何時才看得到？ | 包含該檔案的 commit 是否已成功部署 |
 
-![MR Financial 正式站右欄的 Topics 與 Daily editions，分別支援按主題和按日期找文章。](../../assets/project-series/mr-financial/03-topics-editions.webp)
+![日報的 References 列出可返回核對的公告和資料來源。](../../assets/project-series/mr-financial/02-references.webp)
 
-## 同一日期用兩個入口，後續更新靠來源接起來
-
-想回到同一天，從 **Daily editions** 或 **Archive** 開台灣與國際版。要回顧同一個議題，從 **Topics** 找文章，再依原始公告的時間排列。台灣和海外可能用不同時區刊登，先核對原始文件日期及統計區間，才知道兩篇是不是在講同一件事。
-
-對維護這個站的人，日期穩定只解決找得到舊文章。真正的接續點是留一個下次能驗證的問題。新資料只有發布日期變動時，先更新時間，保留原本的待查問題。若公告真的修正了數值或期間，就把原句、更新來源與改變的部分放在一起，讀者回頭才知道判斷是何時改變的。
+上一章把第一個問題做成純函式，能直接用 Node 測。第二、三個問題需要文章保存來源與時間，不能靠分組程式推算。日後若加入週報，把它做成另一個明確的期別格式，並補一個「週報不進日報表格」的測試。這樣做比從標題猜日期可靠，也讓既有文章網址能繼續使用。

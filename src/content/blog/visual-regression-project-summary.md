@@ -1,7 +1,8 @@
 ---
-title: '[Insight] Framecheck 做完後，圖片比對工具還要驗收什麼？'
-description: 從差異可信、操作順暢與跨帳號存取三個方向驗收圖片比對工具，說明何時要再做批次 CLI 或分享。
+title: "[Insight] Framecheck 做完後，怎麼判讀一張 Diff 和一筆私人紀錄"
+description: "收回第一次的問題，從同一組輸入追到 Diff、Worker、Postgres 和 Storage，分辨哪些結果可信、哪些還要驗。"
 pubDate: 2026-11-26
+updatedDate: 2026-11-27
 category: 'Dev Tools & Quality'
 series: visual-regression
 seriesOrder: 8
@@ -16,18 +17,24 @@ references:
     url: https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Transferable_objects
 ---
 
-把兩張圖交給工具之後，審核者要能回答「差在哪裡？」、「為什麼判成有差？」和「結果可以交給誰看？」。教學把像素比對做成可驗證的流程，也讓圖片歷史記錄能以私人帳號存取。要把它拿來交付多人審核，還有獨立的權限與結果生命週期要驗。
+第一次看到色塊移動，肉眼只知道畫面不同。現在可以說出哪個輸入、哪個容差、哪個演算法得到 17,760 個不同像素，也能用同一組圖在主執行緒與 Worker 跑出相同結果。比例是後續審查的入口；要決定變動能不能接受，仍需要人看變動位置。
 
-![本機教學實際畫面，選兩張相同圖片後顯示零個變動像素。](../../assets/visual-regression-series/local/04-identical-images.webp)
+![對照第一篇的固定色塊。現在運算位置換到 Worker，右側 Diff 仍對應相同變動。](../../assets/visual-regression-series/local/07-worker-result.webp)
 
-| 要驗收的事 | 觀察的結果 |
-| --- | --- |
-| 比對沒有誤判 | 同一張圖的差異為零。已知變更區塊能在 Diff 找到。不同尺寸顯示錯誤，並能換圖恢復。 |
-| Worker 搬移維持相同結果 | 固定圖片和容差，比對像素數與百分比一致。在 Performance 記錄中可追到計算移至 Worker。 |
-| 私人結果不會跨帳號 | A 登入後可重開歷史，B 查不到 A 的結果。短效圖片連結到期後失效。 |
+## 沿著一筆私人紀錄回頭查
 
-Worker 可以把重的計算移出 Main Thread，啟動與搬資料仍需時間和記憶體。這篇系列的結果也很適合拿來區分兩種問題。如果主要是滑動或點擊卡住，就看 Main Thread 的工作；如果大量圖片從讀檔到產出報告都太慢，就先分開量讀檔、解碼、Diff 與寫報告。單組畫面的測試覆蓋不到批次吞吐量。
+| 問題 | 先看哪裡 | 可以得到的答案 |
+| --- | --- | --- |
+| 兩張看起來相同的圖，為什麼算出差異？ | read-image.ts、diff.ts | 解碼、白底合成、尺寸、threshold 和抗鋸齒設定 |
+| 換圖後怎麼又出現上一組結果？ | viewer.tsx、run-compare.ts | 是否取消舊工作，以及晚到回應能否更新目前畫面 |
+| 已登入卻找不到歷史？ | tutorial_comparisons、own_read | 列是否成功寫入、owner_id 是否與 session 相符 |
+| 歷史可見但開不了圖？ | before_path、Bucket 與簽名時效 | 物件確實存在、路徑屬於這個帳號、連結仍有效 |
+| 本機正常、正式站返回登入頁？ | Vercel 環境與 Supabase Redirect URLs | 新 build 是否帶入正式設定，以及回程 host 是否列入允許清單 |
 
-同樣地，登入後才能看到私人圖片，還要再設計完整的分享。正式產品的可撤銷分享會牽涉連結權限和到期後的行為。要實作到自己的系統時，先定義撤銷後的新請求要怎麼判、已取得的短效 URL 幾時失效，以及清理失敗怎麼重試和留下紀錄。
+## 哪些是練習結果，哪些要在自己環境確認
 
-回到[正式 Demo](https://visual-regression-hub.vercel.app/demo)，用分隔線與放大檢查同一個差異區塊。若要用程式驗收，下載[獨立教學範例](../../downloads/visual-regression-series.zip)，從[正確性與權限的步驟](../visual-regression-06-correctness-and-access/)逐項檢查。
+附件附有三個階段的[型別、測試與 build 紀錄](../../downloads/visual-regression-series/code/VERIFICATION.md)。Vercel Production 網址、OAuth 回程、兩帳號隔離和 Worker 所花時間取決於你自己的設定，應留下這次的觀察值，才知道下一次修改是否有退步。
+
+練習版由瀏覽器提交 changed_pixels；RLS 能約束哪個人可寫，無法證明送出的數字真的來自那兩個檔案。若要把數值拿來當團隊核准的依據，下一步是讓伺服器讀回兩張原圖，以同版本解碼器與演算法重算，並處理存圖成功但資料列寫入結果不明的情況。只需要在自己機器比兩張圖，可以停在第一篇的本機版。
+
+[回 Framecheck 系列目錄](../../series/visual-regression/)

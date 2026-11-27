@@ -2,6 +2,7 @@
 title: '[Insight] 線上試妝 01：從需求拆到技術架構'
 description: 用 Shade Room 拆解照片、臉部定位與口紅渲染的資料流，說明 Vite、React、MediaPipe、Worker 與 WebGL2 的分工、取捨及讀碼順序。
 pubDate: 2026-11-02
+updatedDate: 2026-11-27
 category: "System Design"
 series: shade-lab
 seriesOrder: 1
@@ -10,8 +11,8 @@ coverImage: /images/shade-room-series/01-desktop.webp
 relatedPostIds: [shade-room-02-image-camera, shade-room-03-face-worker, shade-room-04-webgl-lipstick]
 draft: false
 references:
-  - title: 本文對照的 Shade Room 程式版本（Private，需讀取權限）
-    url: https://github.com/ntustRay/shade-room/tree/879fff388bde8e06fd825690aa88717c4146b763
+  - title: Shade Lab 公開練習原始檔
+    url: https://ntustray.github.io/mr-blog/downloads/shade-workshop.zip
   - title: MediaPipe Face Landmarker Web
     url: https://developers.google.com/edge/mediapipe/solutions/vision/face_landmarker/web_js
   - title: Vite 靜態部署
@@ -119,6 +120,6 @@ export type EffectSettings = {
 
 能把這四個答案放回上面的檔案，就已經掌握架構。下一篇先處理影像的進入與離開。
 
-本文對照 2026-11-02 的 commit `879fff3`。原始 Repo 為 Private；文中必要片段與流程圖可直接閱讀，完整來源連結需要權限。
+[下載 Shade Lab 公開練習專案](../../downloads/shade-workshop.zip)。解壓後，從含 `package.json` 的目錄使用 Node.js 24 執行 `npm install`、`npm run dev`，開終端機列出的網址。 首頁有一張固定幾何測試圖。打開 `main.js` 看來源與遮罩，`face.worker.js` 看單張圖片推論，`tint.js` 看 WebGL2 shader。練習使用原生 JavaScript；文章裡 React、Zustand 與長時間相機追蹤的架構說明對應完整產品。
 
 下一篇：[照片與相機的生命週期](../shade-room-02-image-camera/)。

@@ -1,7 +1,8 @@
 ---
-title: '[Guide] 工程師選股網 05：接上篩選、個股與圖表'
-description: 用 URL 重現篩選結果，追到篩選函式、個股資料與 ECharts，並驗證缺值與比較條件。
+title: "[Guide] 工程師選股網 05：將篩選後的股票畫成價格長條圖"
+description: "以公開 fixture 實作共用 rows 的表格和圖表，從 URL 驗證缺值、空結果和圖表比例。"
 pubDate: 2026-11-02
+updatedDate: 2026-11-27
 category: "Data & Visualization"
 series: engineer-stock
 seriesOrder: 6
@@ -14,100 +15,52 @@ relatedPostIds:
 - engineer-stock-04-nextjs-data
 - engineer-stock-06-auth
 references:
-- title: 網站程式（本文對照版本）
-  url: https://github.com/ntustRay/engineer-stock-web/tree/23b2d914017adb6f6a7029f53314839e6db235be
+- title: 公開的 Next.js 選股練習與測試資料
+  url: https://ntustray.github.io/mr-blog/downloads/stock-fixture-lab.zip
 - title: ECharts K 線資料格式
   url: https://echarts.apache.org/en/option.html#series-candlestick.data
 ---
 
-系列：[1 本機啟動](../engineer-stock-01-local/) · [2 股票 JSON](../engineer-stock-02-json/) · [3 Actions](../engineer-stock-03-actions/) · [4 Next.js 資料流](../engineer-stock-04-nextjs-data/) · [5 篩選與圖表](../engineer-stock-05-screener-charts/) · [6 註冊登入](../engineer-stock-06-auth/) · [7 追蹤與 RLS](../engineer-stock-07-rls/) · [8 Vercel 部署](../engineer-stock-08-vercel/) · [9 核心架構與選型](../engineer-stock-09-architecture/) · [10 Workflow 與 API 來源](../engineer-stock-10-workflow-api-sources/)
+沿用[第一課的公開練習](../../downloads/stock-fixture-lab.zip)。這次把相同的本益比篩選結果同時畫成表格與長條。兩筆固定公司資料，一家本益比是 12，另一家是缺值。這樣能看出條件到底套在哪一層。
 
-完成這篇：從一個篩選條件，追到查詢參數、資料列與圖表。先在 fixture 模式練習，正式站畫面作為操作對照。
+## 1. 讓圖表直接吃表格的 rows
 
-<figure>
-  <a href="../../images/engineer-stock-series/05-query-flow.svg"><img src="../../images/engineer-stock-series/05-query-flow.svg" alt="查詢流程示意：URL 保存條件，Server 篩選資料；圖表在 Client 繪製，缺值與不可比較資料另行處理。" loading="lazy" decoding="async" /></a>
-  <figcaption>查詢流程示意：URL 保存條件，Server 篩選資料；圖表在 Client 繪製，缺值與不可比較資料另行處理。</figcaption>
-</figure>
+新增 `src/app/price-bars.tsx`。所有長條從零開始，共用目前資料的最高價。金額同時顯示成文字，資料筆數為零時回傳提示。這是練習用的收盤價比較圖，不表示股價高低對應報酬或估值高低。
 
-## 1. 讓 URL 記住條件
+```tsx title="src/app/price-bars.tsx"
+import type { Stock } from "@/lib/stock-fixture";
 
-以第 1 篇的 fixture 設定啟動網站。在本機依序開啟：
-
-| 路徑 | 預期結果 |
-| --- | --- |
-| `/screener?per_max=15` | 只剩 `9001 測試電子` |
-| `/stocks?sort=close&direction=asc` | 先顯示收盤價 51 的 `9002`，再顯示 129 的 `9001` |
-| `/stocks?q=notfound` | 找不到符合條件的股票 |
-
-重整頁面，條件仍可從 URL 還原。正式站實拍操作是名稱 `2330`、本益比最大值 `30`；數值只用來示範表單。
-
-<figure>
-  <a href="../../images/engineer-stock-series/05-screener.webp"><img src="../../images/engineer-stock-series/05-screener.webp" alt="正式站篩選表單實拍：q=2330、per_max=30。可用資料與結果會隨來源更新。" loading="lazy" decoding="async" /></a>
-  <figcaption>正式站篩選表單實拍：q=2330、per_max=30。可用資料與結果會隨來源更新。</figcaption>
-</figure>
-
-## 2. 找到篩選函式
-
-開 `src/lib/stock-data/screener.ts`，依序找 `parseFilters` → `screen`。
-
-`parseFilters` 把 URL 轉成條件；`screen` 依序篩選、排序、分頁。多個條件以 AND 組合。
-
-| 原始值 | `per_max=15` 結果 |
-| --- | --- |
-| `12` | 保留 |
-| `18` | 排除 |
-| `null` | 排除 |
-
-fixture 的 `9002` 本益比是 `null`。若轉成 0，就會錯誤通過這個條件。可調整 `per_max` 自己驗證。
-
-## 3. 從個股頁追到圖表
-
-開本機 `/stocks/TWSE/9001`，對照這三個位置：
-
-| 檔案／函式 | 責任 |
-| --- | --- |
-| `src/app/stocks/[market]/[symbol]/page.tsx` | 讀取 market、symbol 與資料 |
-| `src/lib/stock-data/client.ts` → `getStockPageData` | 固定快照版本，讀個股與財報 |
-| `src/components/price-chart.tsx` → `PriceChart` | Client 繪圖，缺少開高低收的日期不畫 K 線 |
-
-K 線餵給 ECharts 的順序是：
-
-```ts
-data: complete.map((d) => [d.open, d.close, d.low, d.high])
+export function PriceBars({ rows }: { rows: Stock[] }) {
+  if (!rows.length) return <p>沒有可繪製的公司</p>;
+  const max = Math.max(1, ...rows.map(row => row.price));
+  return <figure>
+    <figcaption>篩選結果的股價（元）</figcaption>
+    {rows.map(row => <p key={row.code}>
+      <span>{row.code} {row.name}　{row.price} 元</span>
+      <span aria-hidden="true" style={{
+        display: "block", width: (100 * row.price / max) + "%",
+        background: "#267663", height: "0.85rem",
+      }} />
+    </p>)}
+  </figure>;
+}
 ```
 
-對照 `price-chart.tsx` 的 `'use client'` 與 `dynamic(..., { ssr: false })`。Server 準備資料，Client 處理互動繪圖；數值表可用來對照圖上的數字。
+## 2. 將它放進真正的查詢頁
 
-<figure>
-  <a href="../../images/engineer-stock-series/05-stock.webp"><img src="../../images/engineer-stock-series/05-stock.webp" alt="正式站個股頁實拍：累計營收圖與各資料集日期。這張不是 K 線圖；累計 EPS 也不能當作 EPS TTM。" loading="lazy" decoding="async" /></a>
-  <figcaption>正式站個股頁實拍：累計營收圖與各資料集日期。這張不是 K 線圖；累計 EPS 也不能當作 EPS TTM。</figcaption>
-</figure>
+在 `src/app/page.tsx` 的 import 區加入 `import { PriceBars } from "./price-bars";`。找到 `</table>`，在下一行、`</main>` 之前加入 `<PriceBars rows={rows} />`。執行 `npm run dev`，開首頁，清空欄位後查詢。9001 的 48 元應比 9002 的 30 元長；兩根的長度比是 48:30。
 
-保留 30 個日曆天是上限；來源只有一個交易日時，就只有一個交易日可畫。fixture 的長度也不代表正式歷史已回補。
+![公開練習實際渲染的兩家公司，名單、價格與下方長條來自同一份查詢結果。](../../assets/project-series/engineer-stock/fixture-bars.webp)
 
-## 4. 比較兩家公司
+## 3. 用網址、缺值和空結果驗收
 
-開本機：
+| 操作 | 表格和圖表都應顯示 |
+| --- | --- |
+| 在原始兩筆資料輸入本益比上限 15 | 只留 9001；9002 的缺值沒有被當成 0 |
+| 在「代號或名稱」輸入 `missing` | 表格為 0 筆，圖表位置提示沒有可繪製的公司 |
+| 用瀏覽器複製有條件的網址，開新分頁 | 內容和表單條件相同，網址上有 `q`、`per_max` |
+| 若已在第一課新增 9003，清空名稱、上限填 15 | 表格和圖各有 9001、9003；分母跟著這組資料的最高價變動 |
 
-```text
-/compare?stock=TWSE%3A9001&stock=TPEX%3A9002
-```
+最後執行 `npm test`。若 9002 通過本益比篩選，先修 `src/lib/stock-fixture.ts` 的 `stock.pe !== null` 條件。若只有圖多一家公司，檢查是不是把整份 `stocks` 傳給元件。表格和圖都收已經篩過的 `rows`，才不會各寫一套條件。
 
-應顯示兩檔的指標，財報區顯示「沒有可安全比較的同期間財報」。這是 fixture 沒有同期間財報的預期結果。
-
-<figure>
-  <a href="../../images/engineer-stock-series/05-compare.webp"><img src="../../images/engineer-stock-series/05-compare.webp" alt="正式站比較實拍：選取兩家公司。欄位可能顯示缺值，不能補成 0。" loading="lazy" decoding="async" /></a>
-  <figcaption>正式站比較實拍：選取兩家公司。欄位可能顯示缺值，不能補成 0。</figcaption>
-</figure>
-
-看 `src/lib/stock-data/compare-financials.ts`：季度、幣別、會計準則與合併／個別編制需一致，才會產生可比資料。
-
-## 5. 跑完再自己改條件
-
-```sh
-npm test -- tests/screener.test.ts tests/compare-financials.test.ts
-```
-
-把 `per_max=15` 改成 `per_max=10`，應剩 0 筆。能指出這個判斷在 `screen`，再改排序方向，確認只是順序改變。
-
-[下載系列程式片段、圖片與驗證紀錄](../../downloads/engineer-stock-series.zip)
+正式站的歷史走勢使用 ECharts，可以放大日期區間。這課只畫當下篩出的少量公司，Server 直接產生 HTML 就足以驗證查詢和繪圖的接線。[公開成品的圖表](https://engineer-stock-web.vercel.app/)。

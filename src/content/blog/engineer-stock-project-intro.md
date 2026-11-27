@@ -2,6 +2,7 @@
 title: '[Insight] 工程師選股網為什麼把公開行情與個人追蹤分開？'
 description: 從查股、篩選與追蹤的需求出發，解釋公開行情為何先整理成快照，以及會員資料如何獨立保存。
 pubDate: 2026-11-26
+updatedDate: 2026-11-27
 category: 'System Design'
 series: engineer-stock
 seriesOrder: 1
@@ -37,6 +38,6 @@ references:
 
 ## 從哪篇開始
 
-先看[正式站](https://engineer-stock-web.vercel.app/)的行情日期，打開股票查詢再進入個股頁。下一篇用兩家虛構公司把同一條路徑跑起來。公開 Pipeline 可以另外 clone 操作，網站本機練習需要網站 Repo 的讀取權限，各篇會標出所需條件。
+先看[正式站](https://engineer-stock-web.vercel.app/)的行情日期，打開股票查詢再進入個股頁。下一篇用兩家虛構公司把同一條路徑跑起來。網站練習直接從[公開範例 ZIP](../../downloads/stock-fixture-lab.zip)開始，用兩筆虛構行情把 Next.js 頁面和查詢 API 跑起來，再接會員登入。資料 Pipeline 則可以從公開 GitHub repo 另外 clone 操作。
 
 接著讀[本機啟動與資料流](../engineer-stock-01-local/)，或打開[完整系列目錄](../../series/engineer-stock/)。

@@ -12,6 +12,7 @@ const linkPattern = /\b(?:href|src)=(['"])(.*?)\1/giu;
 const ignoredProtocols = /^(?:data|javascript|mailto|tel):/iu;
 const failures = [];
 let checkedLinks = 0;
+const projects = JSON.parse(await readFile(new URL('../src/data/projects.json', import.meta.url), 'utf8'));
 
 async function walk(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -71,6 +72,14 @@ function hasFragment(html, fragment) {
   return new RegExp(`\\b(?:id|name)=["']${escapedFragment}["']`, 'u').test(html);
 }
 
+function previewImages(html) {
+  return [...html.matchAll(/<img\b[^>]*>/giu)]
+    .map(([tag]) => tag)
+    .filter(tag => /\balt="\s*[^"\s][^"]*"/u.test(tag) && /\bwidth="[1-9]\d*"/u.test(tag) && /\bheight="[1-9]\d*"/u.test(tag))
+    .map(tag => tag.match(/\bsrc="([^"]+)"/u)?.[1])
+    .filter(Boolean);
+}
+
 const htmlFiles = (await walk(outputDirectory)).filter((filePath) =>
   filePath.endsWith('.html'),
 );
@@ -78,6 +87,22 @@ const htmlFiles = (await walk(outputDirectory)).filter((filePath) =>
 for (const htmlFile of htmlFiles) {
   const html = await readFile(htmlFile, 'utf8');
   const pageURL = new URL(getPagePath(htmlFile), testOrigin);
+  const route = pageURL.pathname.slice(siteBase.length);
+  if (route === 'series/') {
+    const links = [...html.matchAll(/<a\b[^>]*>[\s\S]*?<\/a>/giu)].map(([link]) => link);
+    for (const { seriesId } of projects) {
+      const href = `${siteBase}series/${seriesId}/`;
+      if (!links.some(link => link.includes(`href="${href}"`) && previewImages(link).length)) {
+        failures.push(`${pageURL.pathname}: missing card preview for ${seriesId}`);
+      }
+    }
+  } else if (/^series\/[^/]+\/$/u.test(route)) {
+    const shareImage = html.match(/<meta\b[^>]*property="og:image"[^>]*content="([^"]+)"/iu)?.[1];
+    const visible = previewImages(html.match(/<main\b[^>]*>([\s\S]*?)<\/main>/iu)?.[1] ?? '');
+    if (!shareImage || !visible.some(src => new URL(src, shareImage).href === shareImage)) {
+      failures.push(`${pageURL.pathname}: expected a visible series preview matching og:image`);
+    }
+  }
 
   for (const match of html.matchAll(linkPattern)) {
     const value = match[2].trim();

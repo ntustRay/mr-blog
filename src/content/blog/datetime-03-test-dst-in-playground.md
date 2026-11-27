@@ -1,7 +1,8 @@
 ---
-title: "[Guide] 在 Picker Playground 重現夏令時間缺口和重複時刻"
-description: "用公開 Demo 重現 New York 的 02:30 缺口和 01:30 重複時刻，判斷什麼時候可以送出時間查詢。"
+title: "[Guide] 幫時間選擇器寫 Playwright 測試，抓出夏令時間的兩種錯"
+description: "在套件專案新增 Chromium 測試，實際輸入紐約的缺口時間與重複時間，核對錯誤訊息和 UTC offset 選擇。"
 pubDate: 2026-11-26
+updatedDate: 2026-11-27
 category: Frontend
 tags: ["React", "Timezone", "Testing"]
 series: datetime
@@ -15,32 +16,67 @@ references:
     url: https://github.com/ntustRay/react-datetime-range-picker/blob/cefadde623e4260ae1235363ae501da7d57c7cec/docs/PUBLIC_API.md#validation
 ---
 
-紐約在 2024 年有一天的 02:30 根本沒有發生，另一天的 01:30 則發生兩次。用 [Picker Playground](https://ntustray.github.io/react-datetime-range-picker/) 的兩個案例重現，看看 UI 要在哪裡擋住輸入、在哪裡等使用者選 offset。這些案例已把時區設成 `America/New_York`，電腦可留在自己的時區。
+紐約在 2024 年 3 月 10 日從 01:59 跳到 03:00。秋天則有兩個 01:30。這次直接在套件的 Demo 加一個 E2E 測試檔，讓瀏覽器輸入這兩個時刻。畫面下方的錯誤文字和 offset 選單就是測試的觀察點。
 
-## 1. 先輸入不存在的當地時刻
+[下載兩個 DST 案例的 Playwright 測試檔（ZIP）](../../downloads/series-labs/dst.zip)。完成第一步的 `git checkout` 後，在套件根目錄解壓縮即可得到 `e2e/dst-lesson.spec.ts`。
 
-1. 往下滑到 **Make failure inspectable**，找到 **Spring-forward gap**。
-2. 在該區點日曆圖示，把 `2024/03/10 02:30:00` 貼到 **Start**。
-3. 按 Tab 離開欄位。日曆區會顯示 **This local time does not exist.**
-4. 點 **Cancel** 關閉案例。
+## 1. 在套件專案開一個測試檔
 
-![紐約春季轉換案例，輸入的 02:30 顯示 This local time does not exist。](../../assets/project-series/datetime/03-gap.webp)
+另開目錄，準備 Node.js 22.18+ 與 Git。使用與截圖同一版的 Demo，可以讓表單名稱和測試定位一致。
 
-那天牆上的鐘從 01:59 跳到 03:00，輸入的 02:30 對不到 UTC instant。把時區選在這裡的目的，是讓使用者知道是哪個本地時刻不成立。
+```sh
+git clone https://github.com/ntustRay/react-datetime-range-picker.git
+cd react-datetime-range-picker
+git checkout cefadde623e4260ae1235363ae501da7d57c7cec
+npm ci
+npx playwright install chromium
+```
 
-## 2. 再輸入會發生兩次的時刻
+在 `e2e/dst-lesson.spec.ts` 寫下第一個測試。`playwright.config.ts` 會啟動 Demo，`page.goto('/')` 使用設定裡的本機網址。頁面有多個 Picker，所以先找對應案例卡片，再找輸入框。
 
-1. 找到 **Fall-back overlap**，點該區的日曆圖示。
-2. 在 **Start** 貼入 `2024/11/03 01:30:00`，再按 Tab。
-3. 確認顯示 **Start UTC offset**。展開選單會看到 **Earlier (-04:00)** 和 **Later (-05:00)**。前者是 `2024-11-03T05:30:00Z`，後者是 `2024-11-03T06:30:00Z`。
-4. 選 offset 後，按 **Next**把結束設成同日 `02:30:00`。兩種 offset 選擇對應的完整區間長度相差一小時。
+```ts title="e2e/dst-lesson.spec.ts"
+import { expect, test } from '@playwright/test';
 
-![紐約秋季轉換案例，Start UTC offset 下拉選單用來區分兩個 01:30。](../../assets/project-series/datetime/03-overlap.webp)
+test('跳過的 02:30 顯示錯誤', async ({ page }) => {
+  await page.goto('/');
+  const card = page.locator('.scenario-card').filter({ hasText: 'Spring-forward gap' });
+  await card.getByRole('button', { name: 'Open calendar' }).click();
+  const start = card.getByTestId('dtrp-start-input');
+  await start.fill('2024/03/10 02:30:00');
+  await start.blur();
+  const dialog = page.getByRole('dialog', { name: 'DST gap example' });
+  await expect(dialog).toContainText('This local time does not exist.');
+});
+```
 
-## 3. 確認只有完整區間可以套用
+![春季缺口案例中，02:30 找不到對應的 instant，對話框顯示錯誤訊息。](../../assets/project-series/datetime/03-gap.webp)
 
-點開同頁 **Invalid controlled range** 的日曆。在這個案例，起點比終點晚，畫面會顯示 **End must be after start.**，**Next** 不可按，無法走到 Apply。
+## 2. 測試重複時刻能不能選 UTC offset
 
-![顛倒的時間範圍顯示錯誤，Next 停用。](../../assets/project-series/datetime/03-invalid.webp)
+同一個檔案接著寫第二個測試。11 月 3 日的 01:30 可能是 UTC 05:30，也可能是 UTC 06:30；欄位上相同的文字仍需要使用者選擇 offset。
 
-實際接圖表時，把這三組輸入各留成一個測試。成功的重複時刻選擇應產生明確的 timestamp，缺口與顛倒的區間應留在表單驗證，等使用者修正後再送請求。
+```ts title="e2e/dst-lesson.spec.ts（接續）"
+test('重複的 01:30 有兩個 offset 可選', async ({ page }) => {
+  await page.goto('/');
+  const card = page.locator('.scenario-card').filter({ hasText: 'Fall-back overlap' });
+  await card.getByRole('button', { name: 'Open calendar' }).click();
+  const start = card.getByTestId('dtrp-start-input');
+  await start.fill('2024/11/03 01:30:00');
+  await start.blur();
+  const dialog = page.getByRole('dialog', { name: 'DST overlap example' });
+  const offsets = dialog.getByRole('combobox', { name: 'Start UTC offset' });
+  await expect(offsets).toBeVisible();
+  await expect(offsets.locator('option').filter({ hasText: '-04:00' })).toHaveCount(1);
+  await expect(offsets.locator('option').filter({ hasText: '-05:00' })).toHaveCount(1);
+});
+```
+
+![秋季重複案例的 Start UTC offset 可選較早與較晚的 01:30。](../../assets/project-series/datetime/03-overlap.webp)
+
+## 3. 讓測試跑一次，再觀察失敗時停在哪
+
+```sh
+npx playwright test e2e/dst-lesson.spec.ts --project=chromium
+```
+
+預期看到兩個案例通過。把第一個案例中的輸入暫時改成有效的 `2024/03/10 03:30:00` 再跑一次；第一個 assertion 應失敗，第二個仍通過。把值改回來。如果測試在錯誤文字出現前就停住，用 `--headed` 重跑，確認選到對應的卡片、輸入後也有離開欄位。這兩個案例已固定使用 `America/New_York`，電腦可以保持台北時區。

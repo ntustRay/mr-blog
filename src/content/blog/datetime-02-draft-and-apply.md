@@ -1,7 +1,8 @@
 ---
-title: "[Guide] 把 DateTime Range Picker 的查詢接在 Apply"
-description: "在公開 Playground 核對草稿、提交與時區，再用 npm 套件做出只在 Apply 更新的 React 事件篩選器。"
+title: "[Guide] 在 React 實作 Apply 後才更新的 Log 篩選器"
+description: "用 Vite 建立 React 頁面，分開草稿與查詢區間，再以三筆 Log 驗證時間邊界。"
 pubDate: 2026-11-26
+updatedDate: 2026-11-27
 category: Frontend
 tags: ["React", "TypeScript", "Timezone"]
 series: datetime
@@ -15,81 +16,80 @@ references:
     url: https://github.com/ntustRay/react-datetime-range-picker/blob/cefadde623e4260ae1235363ae501da7d57c7cec/docs/PUBLIC_API.md
 ---
 
-這次把圖表的時間篩選拆成草稿和已提交參數。先在公開 Playground 改一次值、換一次時區，接著把這兩個 state 接進 React。沒有現成圖表也能用三筆事件確認行為。
+最後要做出的互動如下。結束時間從 13:30 改成 13:00，編輯時保留三筆 Log，按 Apply 才剩一筆。
 
-## 1. 改結束時間，先看 Draft
+![本機 React 範例套用 UTC 12:00 到 13:00 後，只保留 12:30 的事件。](../../assets/project-series/datetime/02-events.webp)
 
-打開 [Playground](https://ntustray.github.io/react-datetime-range-picker/)，往下滑到 **Edit the time. Keep the timestamps.**。右側標籤預設是 **UTC · LIGHT**。兩欄初始值為 `2026/08/09 12:00:00` 與 `2026/08/09 13:30:00`。把結束欄改成 `2026/08/09 13:00:00`，按 Tab，先別按「套用」。
+[下載 Log 篩選器的兩個原始檔（ZIP）](../../downloads/series-labs/datetime.zip)。先用第一步建立 React 專案與安裝套件，再把 ZIP 裡的 `src` 放進專案根目錄。
 
-Draft 的 `endTimestamp` 應是 `1786280400000`，Committed 仍是 `1786282200000`。日曆浮層如果遮住數字，可以在 DevTools 的 Elements 搜尋 `state-readout`，展開下方兩組讀值。
+## 1. 安裝套件，建立資料檔
 
-![套用前的實際資料，截圖暫時隱藏日曆浮層以顯示兩組毫秒值。](../../assets/project-series/datetime/02-draft.webp)
-
-## 2. 套用後切換時區
-
-在日曆按「套用」。Committed 的結束值現在應等於 Draft。再按「開啟日曆」，把時區下拉選成 `Asia/Taipei`，便能看到開始與結束時間移到 `20:00:00` 和 `21:00:00`。下方兩組 timestamps 仍代表同一段時間。
-
-![按套用後，Draft 和 Committed 的開始、結束值相同。](../../assets/project-series/datetime/02-applied.webp)
-
-![顯示時區切到 Asia/Taipei，兩組毫秒值維持原樣。](../../assets/project-series/datetime/02-timezone.webp)
-
-## 3. 接到 React 的事件清單
-
-準備 Node.js 22.18+。已有 React 專案時只要裝第三行的套件，並把範例接到要篩選的頁面。
+準備 Node.js 22.18 或更新的 22.x／24.x 版本，在終端機執行。若建立工具詢問是否直接啟動，先跳過，等檔案寫完再跑。
 
 ```sh
 npm create vite@latest picker-lab -- --template react-ts
 cd picker-lab
+npm install
 npm install @ntustray/react-datetime-range-picker@0.2.2
-npm run dev
 ```
 
-把 Vite 專案的 `src/App.tsx` 改成下面這段，開啟開發伺服器顯示的網址。範例用名為 `committed` 的已提交區間篩事件；接 API 時可在相同位置使用這組參數。
+新增 `src/events.ts`。這三筆資料故意放在結束點之前、剛好相等、之後。查詢採半開區間 `[start, end)`，右邊界不含在內。
+
+```ts title="src/events.ts"
+import type { DateTimeRangeValue } from '@ntustray/react-datetime-range-picker';
+
+const events = [
+  { label: '12:30 UTC', at: Date.UTC(2026, 7, 9, 12, 30) },
+  { label: '13:00 UTC', at: Date.UTC(2026, 7, 9, 13) },
+  { label: '13:15 UTC', at: Date.UTC(2026, 7, 9, 13, 15) },
+];
+
+export function eventsIn({ startTimestamp, endTimestamp }: DateTimeRangeValue) {
+  if (startTimestamp === null || endTimestamp === null) return [];
+  return events.filter(({ at }) => startTimestamp <= at && at < endTimestamp);
+}
+```
+
+## 2. 把草稿和查詢接到不同的 callback
+
+用下面內容取代 `src/App.tsx`。兩份 state 同時從 UTC 12:00 到 13:30 開始；JavaScript 的 `Date.UTC` 以 0 表示一月，所以 7 表示八月。
 
 ```tsx title="src/App.tsx"
-import { useState } from "react";
+import { useState } from 'react';
 import {
-  DateTimeRangePicker,
-  type DateTimeRangeValue,
-} from "@ntustray/react-datetime-range-picker";
-import "@ntustray/react-datetime-range-picker/styles.css";
+  DateTimeRangePicker, type DateTimeRangeValue,
+} from '@ntustray/react-datetime-range-picker';
+import '@ntustray/react-datetime-range-picker/styles.css';
+import { eventsIn } from './events';
 
 const initial = {
   startTimestamp: Date.UTC(2026, 7, 9, 12),
   endTimestamp: Date.UTC(2026, 7, 9, 13, 30),
 };
 
-const events = [
-  { label: "12:30 UTC", at: Date.UTC(2026, 7, 9, 12, 30) },
-  { label: "13:00 UTC", at: Date.UTC(2026, 7, 9, 13) },
-  { label: "13:15 UTC", at: Date.UTC(2026, 7, 9, 13, 15) },
-];
-
 export default function App() {
   const [draft, setDraft] = useState<DateTimeRangeValue>(initial);
-  const [committed, setCommitted] = useState<DateTimeRangeValue>(initial);
-  const { startTimestamp, endTimestamp } = committed;
-  const visible = startTimestamp === null || endTimestamp === null
-    ? []
-    : events.filter(({ at }) => startTimestamp <= at && at < endTimestamp);
-
-  return (
-    <main>
-      <DateTimeRangePicker
-        value={draft}
-        onChange={setDraft}
-        onCommit={setCommitted}
-        locale="zh-TW"
-        timezone="UTC"
-      />
-      <ul>
-        {visible.map(({ label }) => <li key={label}>{label}</li>)}
-      </ul>
-    </main>
-  );
+  const [query, setQuery] = useState<DateTimeRangeValue>(initial);
+  return <main>
+    <DateTimeRangePicker value={draft} onChange={setDraft}
+      onCommit={setQuery} locale="zh-TW" timezone="UTC" />
+    <ul>{eventsIn(query).map(event => <li key={event.at}>{event.label}</li>)}</ul>
+  </main>;
 }
 ```
 
-先確認三筆事件都在清單。把結束改成 `2026/08/09 13:00:00`，按 Tab 時應仍看見三筆。按「套用」後應只剩 `12:30 UTC`。`13:00 UTC` 正好是結束邊界，依 `[start, end)` 排除。
+`onChange` 把新值交還給受控元件；`onCommit` 才把這份值交給查詢。若每次編輯都先更新清單，回頭檢查傳進 `eventsIn` 的是哪一份 state。
 
-![本機 React 範例套用 12:00 至 13:00，事件清單只顯示 12:30 UTC。](../../assets/project-series/datetime/02-events.webp)
+## 3. 用同一份輸入驗收兩種狀態
+
+1. 執行 `npm run dev`，開終端機印出的網址。應看到三筆 Log。
+2. 把結束欄改成 `2026/08/09 13:00:00`，按 Tab。畫面仍應有三筆。要看內部狀態，可在[套件 Playground](https://ntustray.github.io/react-datetime-range-picker/)做相同操作，對照下圖的 Draft 與 Committed。
+3. 按「套用」，回到清單。只剩 `12:30 UTC` 才算通過；若還看得到 `13:00 UTC`，檢查右邊界有沒有誤用 `<=`。
+
+![Playground 對照：剛編輯時，Draft 已更新，Committed 仍是原本結束時間。](../../assets/project-series/datetime/02-draft.webp)
+
+![Playground 對照：按套用後，兩組 timestamp 對齊。](../../assets/project-series/datetime/02-applied.webp)
+
+日後把陣列換成 API，可在提交時把同一組 epoch 毫秒送出。資料庫使用 timestamp 型別時，先在伺服器轉成對應型別，再套用相同邊界。
+
+[第三篇把容易漏掉的夏令時間輸入寫成 Playwright 測試。](../datetime-03-test-dst-in-playground/)

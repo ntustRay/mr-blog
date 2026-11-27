@@ -4,7 +4,9 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getSeriesDefinition } from '../../config/series';
 import projects from '../../data/projects.json';
 import { getSeriesPosts } from '../../utils/series';
+import { getSeriesPreview } from '../../utils/series-preview';
 
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 const posts = await getCollection('blog', ({ data }) => !data.draft);
 const series = projects.map((project) => {
   const definition = getSeriesDefinition(project.seriesId);
@@ -12,26 +14,45 @@ const series = projects.map((project) => {
   if (!definition || parts.length === 0) {
     throw new Error(`Missing published series for project ${project.id}`);
   }
-  return { ...definition, title: project.name, parts: parts.length };
+  return { ...definition, title: project.name, parts: parts.length, preview: getSeriesPreview(definition, base, project) };
 });
-const base = import.meta.env.BASE_URL.endsWith('/')
-  ? import.meta.env.BASE_URL
-  : `${import.meta.env.BASE_URL}/`;
 ---
 
-<BaseLayout title="Series" description="依順序閱讀完整工程專案的系列文章。">
+<BaseLayout title="Series" description="從程式碼到部署，跟著實作建立能運作的專案。">
   <section class="page-header">
     <p class="eyebrow">SERIES</p>
     <h1>Series</h1>
-    <p>{series.length} 個專案，各有一套從介紹、實作到總結的教學。</p>
+    <p>選一個想自己做的專案。從第一篇看架構，跟著中間的教學動手寫，最後核對完成的功能和工程取捨。</p>
   </section>
   <div class="series-grid">
-    {series.map((item) => (
-      <a class="series-card" href={`${base}series/${item.id}/`}>
-        <strong>{item.title}</strong>
+    {series.map((item, index) => (
+      <a class="series-card" href={`${base}series/${item.id}/`} aria-labelledby={`course-${item.id}`}>
+        <img src={item.preview.src} alt={item.preview.alt} width={item.preview.width}
+          height={item.preview.height} loading={index === 0 ? 'eager' : 'lazy'} decoding="async" />
+        <strong id={`course-${item.id}`}>{item.title}</strong>
         <p>{item.description}</p>
         <small>{item.parts} 篇</small>
       </a>
     ))}
   </div>
 </BaseLayout>
+
+<style>
+  .series-card {
+    padding: 0 0 16px;
+    overflow: hidden;
+  }
+  .series-card img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: contain;
+    background: var(--surface-muted);
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 6px;
+  }
+  .series-card :is(strong, p, small) {
+    margin-inline: 16px;
+  }
+</style>

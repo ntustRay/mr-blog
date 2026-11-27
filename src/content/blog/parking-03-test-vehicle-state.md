@@ -1,7 +1,8 @@
 ---
-title: '[Guide] 跑慢慢停的物理測試：蠕行、煞停和入格判定'
-description: 從公開原始碼啟動慢慢停，把 D／R 檔、煞停和車身入格拆成可重跑的 Node.js 測試。
+title: "[Guide] 寫入格測試，將車身與判定畫在一起，再部署到 GitHub Pages"
+description: "用同一份物理模型驗證置中、未排 P、車身越線三個案例，將結果畫成俯視圖，最後用原專案建置流程發布練習場。"
 pubDate: 2026-11-26
+updatedDate: 2026-11-27
 category: Game Development
 series: parking
 seriesOrder: 3
@@ -16,84 +17,50 @@ references:
   url: https://nodejs.org/api/test.html
 ---
 
-排進 P 後立刻按提交，起點的車仍在車格外。這個案例只需要車身狀態、目標格和評分函式，在 Node.js 裡就能重跑。接下來也用同樣方法確認放開煞車後為什麼會動，以及煞車和油門同時按住時誰優先。
+![本機執行本課附件後的三個案例。中間與左邊車身相同，右邊的前端超過格線。](../../assets/project-series/parking/03-bay-cases.webp)
 
-## 1. 跑原專案的測試與練習場
+## 1. 寫一個通過案例，再一次只改一個欄位
 
-需要 Git、Node.js 22 以上和支援 WebGL 2 的瀏覽器。從原始碼重跑本文版本。
+在[上一課](../parking-02-parallel-parking-practice/)的 repo 根目錄新增 `bay.test.mjs`。目標格的中心、方向都取自 scenario，車身尺寸則由 physics 模組沿用遊戲設定。
 
-```sh
-git clone https://github.com/ntustRay/parallel-parking-lab.git
-cd parallel-parking-lab
-git switch --detach cdf58af05a07de45c3a47706b2af5fe635968e57
-npm test
-npm start
-```
+```js
+import assert from "node:assert/strict";
+import { test } from "node:test";
+import { result, scenario } from "./physics.js";
 
-這個版本隨附 Three.js，這兩個指令無需另裝 npm 套件。開啟 `http://127.0.0.1:4173/`，開始右側路邊停車。保持 P 檔、車停在起點，按 `E`。結果會顯示尚未達標。
-
-## 2. 只替換一個條件
-
-另開一個終端機，在原始碼根目錄新增 `parking-check.test.mjs`。將下面內容貼進去，再執行 `node --test parking-check.test.mjs`。
-
-```js title="parking-check.test.mjs"
-import assert from 'node:assert/strict';
-import { test } from 'node:test';
-import { result, scenario, step } from './physics.js';
-
-const scene = scenario('normal', 1, 'parallel');
+const scene = scenario("normal", 1, "parallel");
+const parked = {
+  ...scene.start,
+  x: scene.target.x, z: scene.target.z, angle: scene.target.angle,
+  speed: 0, gear: "P",
+};
 const stats = { hits: 0, corrections: 0 };
-
-function advance(state, input, steps = 120) {
-  for (let index = 0; index < steps; index++) {
-    state = step(state, { slow: true, ...input }, 1 / 120);
-  }
-  return state;
+for (const [name, state, passed] of [
+  ["置中並排 P", parked, true],
+  ["位置相同、留在 R 檔", { ...parked, gear: "R" }, false],
+  ["向前越界三公尺", { ...parked, z: parked.z + 3 }, false],
+]) {
+  test(name, () => assert.equal(result(state, scene, stats).passed, passed));
 }
-
-test('D 和 R 蠕行方向不同，踩住煞車後會停', () => {
-  const forward = advance({ ...scene.start, gear: 'D' }, {});
-  const reverse = advance({ ...scene.start, gear: 'R' }, {});
-
-  assert.ok(forward.z > scene.start.z);
-  assert.ok(reverse.z < scene.start.z);
-  assert.equal(advance(reverse, { throttle: true, brake: true }).speed, 0);
-});
-
-test('起點排 P 不通過，入格煞停排 P 才通過', () => {
-  const parked = {
-    ...scene.start,
-    x: scene.target.x,
-    z: scene.target.z,
-    angle: scene.target.angle,
-    speed: 0,
-    gear: 'P',
-  };
-
-  assert.equal(result(scene.start, scene, stats).passed, false);
-  assert.equal(result(parked, scene, stats).passed, true);
-  assert.equal(result({ ...parked, gear: 'R' }, scene, stats).passed, false);
-});
 ```
 
-測試一以固定的 `1/120` 秒更新 120 次，讓結果不受螢幕多久重畫一次影響。測試二先把車放在格子中心，再只變更排檔。兩個入格案例座標相同，能看到結果的差異來自排檔條件。
+執行 `node --test bay.test.mjs`。應有三個案例通過。把第三個案例的 3 改為 0，保留「預期 false」，再跑一次；只應這一個案例失敗。接著改回 3，確定測試恢復。
 
-這兩個測試的實際輸出如下，計時欄已省略。
+## 2. 用實際車身輪廓解釋測試
 
-```text
-✔ D 和 R 蠕行方向不同，踩住煞車後會停
-✔ 起點排 P 不通過，入格煞停排 P 才通過
-ℹ tests 2
-ℹ pass 2
-ℹ fail 0
-```
+執行 [parking-report.mjs](../../downloads/series-labs/parking-report.mjs)（放在 repo 根目錄，執行 `node parking-report.mjs`），打開 `bay-report.html`。圖中的車殼來自 `corners(state)`，輪廓由多個頂點描述；虛線格使用 target 的長寬。置中與 R 檔案例的 inside 均為 true，差別是 parked。越線案例仍是 P 檔，但 inside 已是 false。
 
-## 3. 回到畫面檢查判定邊界
+回 `physics.js` 找 `result()`。一般練習要求車身入格、角度在容許範圍、車停好且排 P；考試還額外檢查碰撞次數。要新增驗收條件時，把測試放在物理層。鏡面與相機留給畫面對照，換視角就能使用同一套判定。
 
-改成將 `parked` 的 `z` 加 3，保留 P 檔。用 `assert.equal(result({ ...parked, z: parked.z + 3 }, scene, stats).passed, false)` 檢查越過車格端線的情況。接著回瀏覽器切到「正上方」，看格線和車身的長邊如何相對移動。測試只證明這組車身和格線的規則，畫面還能幫你發現格線與碰撞位置是否畫在一起。
+## 3. 用原專案的靜態建置與 Actions 發布
 
-原專案的 42 個 Node.js 測試和本文的兩個案例都已重跑。車窗開口、鏡面裡的視野和車身位置仍需各自看畫面。[慢慢停的公開圖庫](https://ntustray.github.io/parallel-parking-lab/screenshots/) 提供固定姿勢的車內視角供對照。
+1. 在 GitHub Fork 原 repository 到自己的帳號。在自己的 Fork 進 **Settings → Pages → Build and deployment → Source → GitHub Actions**。若 Fork 的 Actions 尚未啟用，到 Actions 頁啟用。
+2. 本機在 repo 根目錄執行 `npm test` 和 `npm run build`。輸出位於 `_site/`；`build.js` 處理模組路徑、模型與快取檔名。只驗收正式 build 可執行 `node server.js --built`；先關掉原本佔用 4173 的 dev 伺服器。
+3. 將測試放入 `tests/bay-regression.test.js`，把 import 改成 `../physics.js`，讓預設 `npm test` 一起跑。從自己的 Fork clone 或將它加為 remote，提交這項變更並推到該 Fork 的 main。
+4. 到 Fork 的 Actions 打開 `.github/workflows/ci.yml` 這次執行的 run。查看測試、建置及 Pages deployment 的結果，從 Pages 設定頁開已發布的網址。若首頁有畫面但車模沒有載入，Network 中檢查模型及模組的實際網址和回應狀態。
 
-![公開圖庫的車內右側視角，從副駕座一側能看到右窗和車外路緣](../../assets/project-series/parking/03-cabin-right.webp)
+![官方 GitHub Actions 範例，點該次 run 的 job 看測試或 Pages 建置的紀錄。](../../assets/visual-regression-series/official/github-actions-job.webp)
 
-[下一篇：停歪時，沿著哪個線索重練](../parking-04-review-a-parking-attempt/)
+[官方介面截圖來源](https://github.com/github/docs/blob/02c25d16369fe27f9bdb28d1201f6b452f0d21dd/assets/images/help/repository/actions-quickstart-job.png)
+
+部署的是由 build 產生的遊戲站。兩張用來除錯的練習報告留在本機。最後回到[駕駛座、物理與評分的架構總結](../parking-04-review-a-parking-attempt/)。

@@ -1,7 +1,8 @@
 ---
-title: "[Insight] DateTime Range Picker 接到查詢後，怎麼驗證兩端的毫秒"
-description: "用半開區間驗證連續查詢，回顧時間值、顯示時區和 Apply 事件各自要測的契約。"
+title: "[Insight] 時間篩選器做完後，怎麼知道圖表查對了"
+description: "從 Apply、夏令時間到相鄰查詢，用同一組驗收標準檢查 React 與 API 的時間契約。"
 pubDate: 2026-11-26
+updatedDate: 2026-11-27
 category: Data & Visualization
 tags: ["React", "TypeScript", "Timezone"]
 series: datetime
@@ -13,26 +14,28 @@ references:
     url: https://github.com/ntustRay/react-datetime-range-picker/blob/cefadde623e4260ae1235363ae501da7d57c7cec/e2e/demo.spec.ts
 ---
 
-把 Picker 接到圖表之後，最先驗證兩筆相鄰的區間。以 UTC 09:00 到 10:00、10:00 到 11:00 為例，10:00 整的事件只應出現在第二段。條件寫成 `start <= timestamp && timestamp < end`，就是包含開始、排除結束的半開區間 `[start, end)`。若兩段都把結束算進去，10:00 會出現兩次。
+回到第一篇的三筆 Log。改結束時間時仍看見三筆，按 Apply 後只剩 12:30，代表 React 能區分「正在編輯」和「拿去查資料」兩個時機。第三篇再用紐約案例確認：春季輸入能收到缺口提示，秋季輸入則有兩種 offset 可選。
 
-以下用毫秒欄位查詢。若資料庫用 `timestamptz`，在綁定參數時把毫秒值轉成時間型別，仍保留相同的不等式。
+![套件 Playground 把顯示時區切到 Asia/Taipei 後，可比對切換前後的 timestamps。](../../assets/project-series/datetime/02-timezone.webp)
+
+## 如果圖表接上資料庫，還剩哪一段要驗
+
+在資料庫準備三筆事件，時間分別是 UTC 09:59:59.999、10:00:00.000、10:00:00.001。各查一次 09:00–10:00 與 10:00–11:00。第一段應回一筆，第二段兩筆；兩份結果中的事件 ID 不應重複。
+
+若資料欄位存 epoch 毫秒，SQL 和前端要用同樣的比較：
 
 ```sql
 SELECT event_id, timestamp_ms
 FROM events
-WHERE timestamp_ms >= $1
-  AND timestamp_ms < $2
+WHERE timestamp_ms >= $1 AND timestamp_ms < $2
 ORDER BY timestamp_ms, event_id;
 ```
 
-## 先固定資料，再切換畫面時區
+| 現象 | 第一個要檢查的位置 |
+| --- | --- |
+| 打字就重新載入圖表 | 查詢是否訂閱了 `draft`，或在 `onChange` 裡發送。 |
+| 邊界那筆 Log 連著出現兩次 | 前後端有沒有把結束值當成包含端點。 |
+| 改顯示時區後整張圖平移 | 比對兩次送出的 epoch 值，檢查呼叫端有沒有重複加上 offset。 |
+| 紐約的重複時間選錯一小時 | 看 UI 選的是 −04:00 還是 −05:00，再核對送出的 UTC instant。 |
 
-測試資料放在 09:59:59.999、10:00:00.000 和 10:00:00.001。第一段只應回傳 09:59:59.999，第二段應回傳另外兩筆。在瀏覽器把顯示時區從 UTC 改成 Asia/Taipei，重新套用同一組 instants，API 參數和查詢結果也應相同。這個測試能拆開兩類問題：畫面顯示的時刻不對，或者實際送到 API 的查詢值變了。
-
-再編輯一次開始時間，先別 Apply。Draft 可以改，網路面板應看不到因這次操作發出的圖表請求。按下 Apply 後再核對 request 裡兩個數字。若查詢允許連按兩次 Apply，各請求還要處理回應次序，避免較舊的結果晚回來覆蓋畫面。
-
-## 把夏令時間和查詢邊界分開測
-
-兩個紐約本地時間都寫成 `2024/11/03 01:30:00`，但一個是 `UTC−04:00`，一個是 `UTC−05:00`。若 UI 讓人選了 offset，測試要讀回精確的 UTC instant；碰到春天跳過的時刻，則要確認錯誤顯示後沒帶著上一個合法值誤送查詢。
-
-epoch 毫秒適合事件、Log 和圖表區間，前提是兩端統一單位和邊界規則。若需求是「每個工作日台北時間 09:00」這種當地排程，就要在排程設計保留時區與本地時間，等計算某一次執行時才轉成 instant。這兩種資料即使共用同一套顯示元件，後端保存的資訊也有不同責任。
+這套範例把畫面、查詢與時間解析分成可獨立重跑的檢查。正式圖表若會同時發出多次查詢，還應用兩個不同區間驗一次「後送先回」：最後畫面要顯示最後提交的區間，避免較慢的舊回應蓋掉新資料。

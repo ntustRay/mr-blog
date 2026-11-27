@@ -1,7 +1,8 @@
 ---
-title: '[Guide] 工程師選股網 07：儲存追蹤清單，用 RLS 隔離會員資料'
-description: 追查 user_id 的來源，用本機 PostgreSQL 測試驗證自身操作、跨會員隔離、重複追蹤與匿名禁止。
+title: "[Guide] 工程師選股網 07：在 Supabase 建立個人追蹤清單，實作三條 RLS policy"
+description: "在自己的測試專案建表、接 Next.js Server Action，拿兩個測試帳號驗證同一代號不會互相影響。"
 pubDate: 2026-11-02
+updatedDate: 2026-11-27
 category: "Full-stack"
 series: engineer-stock
 seriesOrder: 8
@@ -14,100 +15,93 @@ relatedPostIds:
 - engineer-stock-06-auth
 - engineer-stock-08-vercel
 references:
-- title: 網站程式（本文對照版本）
-  url: https://github.com/ntustRay/engineer-stock-web/tree/23b2d914017adb6f6a7029f53314839e6db235be
+- title: 公開的 Next.js 選股練習與測試資料
+  url: https://ntustray.github.io/mr-blog/downloads/stock-fixture-lab.zip
 - title: Supabase Row Level Security
   url: https://supabase.com/docs/guides/database/postgres/row-level-security
 ---
 
-系列：[1 本機啟動](../engineer-stock-01-local/) · [2 股票 JSON](../engineer-stock-02-json/) · [3 Actions](../engineer-stock-03-actions/) · [4 Next.js 資料流](../engineer-stock-04-nextjs-data/) · [5 篩選與圖表](../engineer-stock-05-screener-charts/) · [6 註冊登入](../engineer-stock-06-auth/) · [7 追蹤與 RLS](../engineer-stock-07-rls/) · [8 Vercel 部署](../engineer-stock-08-vercel/) · [9 核心架構與選型](../engineer-stock-09-architecture/) · [10 Workflow 與 API 來源](../engineer-stock-10-workflow-api-sources/)
+先完成[上一課的 Email 登入](../engineer-stock-06-auth/)，並在自己的 Supabase **測試專案**建立兩個能登入的測試帳號。這一課會新增一張教學表和一個頁面。做完後，A、B 可以各自追蹤 9001；A 登出之後，B 只能移除自己的那筆。
 
-完成這篇：找到誰決定資料擁有者，並用實際 SQL 驗證 A 不能讀寫 B 的追蹤資料。
+## 1. 建一張帶有擁有者的表
 
-<figure>
-  <a href="../../images/engineer-stock-series/07-rls-flow.svg"><img src="../../images/engineer-stock-series/07-rls-flow.svg" alt="權限流程示意：Server 確認使用者，資料庫用 RLS 限制資料列；未登入與跨會員操作分開驗證。" loading="lazy" decoding="async" /></a>
-  <figcaption>權限流程示意：Server 確認使用者，資料庫用 RLS 限制資料列；未登入與跨會員操作分開驗證。</figcaption>
-</figure>
+開啟 Supabase Dashboard 的 **SQL Editor → New query**。在測試專案只執行一次以下 SQL。若提示同名表已存在，先從 Table Editor 核對之前的練習，再決定是否沿用。
 
-## 1. 先看未登入的結果
-
-開 `/watchlist`，未登入應導回登入頁。API 的結果不同：
-
-```sh
-curl -i 'http://localhost:3000/api/v1/watchlist'
-```
-
-在沒有登入 Cookie 的本機請求，本次得到 `401`，並有 `Cache-Control: private, no-store`。
-
-<figure>
-  <a href="../../images/engineer-stock-series/07-watchlist.webp"><img src="../../images/engineer-stock-series/07-watchlist.webp" alt="正式站未登入開追蹤清單的實拍；被導回登入頁，未讀取任何會員資料。" loading="lazy" decoding="async" /></a>
-  <figcaption>正式站未登入開追蹤清單的實拍；被導回登入頁，未讀取任何會員資料。</figcaption>
-</figure>
-
-## 2. 追到 user_id 的來源
-
-看 `src/app/api/v1/watchlist/route.ts` 的 `member` 與 `write`：
-
-1. `getUser()` 確認目前使用者。
-2. body 只接受 `market`、`symbol`，並驗證股票存在。
-3. 寫入時由 Server 填入 `user_id: auth.user.id`。
-4. 透過該使用者的 Supabase client 寫資料庫，RLS 再判斷資料列權限。
-
-`user_id` 不從瀏覽器 body 取得。只在 UI 隱藏按鈕，無法限制直接送 API 的請求。
-
-## 3. 讀三個資料表與約束
-
-| Table | 用途 | 所有權欄位 |
-| --- | --- | --- |
-| `profiles` | 顯示名稱等會員資料 | `user_id` |
-| `watchlists` | 追蹤的市場與代號 | `user_id` |
-| `user_preferences` | 預設市場等設定 | `user_id` |
-
-看 `supabase/migrations/20261031091410_member_tables_and_rls.sql`。`watchlists` 的 `unique(user_id, market, symbol)` 防止同會員重複追蹤，但允許不同會員追蹤同一檔。
-
-本次唯讀核對：正式專案這三表均啟用 RLS，存在 12 條 SELECT／INSERT／UPDATE／DELETE policies。這次沒有重新執行建表 SQL。
-
-## 4. 看懂兩個 policy 條件
-
-以下是既有 UPDATE policy 的對照片段：
+<figure><img src="../../downloads/visual-regression-series/images/official/supabase-sql-editor-tabs.webp" alt="Supabase 官方 SQL Editor 示意，從新分頁輸入自己的建表指令。" loading="lazy" decoding="async" /></figure>
 
 ```sql
-using ((select auth.uid()) = user_id)
-with check ((select auth.uid()) = user_id);
+create table public.lesson_watchlist (
+  user_id uuid not null default auth.uid() references auth.users(id) on delete cascade,
+  symbol text not null check (symbol in ('9001','9002','9003')),
+  primary key (user_id, symbol)
+);
+alter table public.lesson_watchlist enable row level security;
+revoke all on public.lesson_watchlist from anon, authenticated;
+grant select, insert, delete on public.lesson_watchlist to authenticated;
+
+create policy own_read on public.lesson_watchlist for select to authenticated
+  using (user_id = (select auth.uid()));
+create policy own_add on public.lesson_watchlist for insert to authenticated
+  with check (user_id = (select auth.uid()));
+create policy own_remove on public.lesson_watchlist for delete to authenticated
+  using (user_id = (select auth.uid()));
 ```
 
-`USING` 限制可操作的既有資料列；`WITH CHECK` 檢查更新後的資料列，阻止把擁有者改成別人。UPDATE 也需相應 SELECT policy。細節對照 [Supabase RLS 文件](https://supabase.com/docs/guides/database/postgres/row-level-security)。
+在 Table Editor 確認兩個欄位。`user_id` 預設來自當前登入者，`symbol` 是文字，兩個欄位合起來是主鍵。確認專案啟用了 **Data API** 且 API 開放 `public` schema，讓 SDK 可經由這個介面存取資料。前台沿用上一課的 publishable key 和登入者的 Cookie。
 
-## 5. 跑真的 SQL 測試
+## 2. 讓登入者加入和移除 9001
 
-在網站 Repo 執行：
+在練習專案新增以下頁面。寫入只交 `symbol`，Postgres 用登入者身分補上 `user_id`；資料庫的主鍵會阻止同一人重複追蹤。移除時程式只篩代號，哪一列可以刪由 DELETE policy 決定。
 
-```sh
-npm run test:rls
+```tsx title="src/app/watch-lab/page.tsx"
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { serverClient } from "@/lib/supabase/server";
+
+async function change(form: FormData) {
+  "use server";
+  const db = await serverClient();
+  const { data: { user } } = await db.auth.getUser();
+  if (!user) redirect("/email-lab");
+  const action = form.get("action");
+  if (action !== "add" && action !== "remove") throw new Error("未知操作");
+  const table = db.from("lesson_watchlist");
+  const result = action === "add"
+    ? await table.insert({ symbol: "9001" })
+    : await table.delete().eq("symbol", "9001");
+  if (result.error) throw new Error("追蹤清單寫入失敗");
+  revalidatePath("/watch-lab");
+}
+
+export default async function WatchLab() {
+  const db = await serverClient();
+  const { data: { user } } = await db.auth.getUser();
+  if (!user) redirect("/email-lab");
+  const { data, error } = await db.from("lesson_watchlist").select("symbol");
+  if (error) throw new Error("無法查詢教學表");
+  const saved = data.some(row => row.symbol === "9001");
+  return <main>
+    <h1>我的追蹤清單</h1><p>{user.email}</p>
+    <p>9001：{saved ? "已追蹤" : "未追蹤"}</p>
+    <form action={change}>
+      <button name="action" value={saved ? "remove" : "add"}>
+        {saved ? "移除 9001" : "加入 9001"}
+      </button>
+    </form>
+  </main>;
+}
 ```
 
-`scripts/test-rls.mjs` 啟動隔離的 PGlite PostgreSQL，套用 migrations、建立測試角色與兩個虛擬會員，再執行 `supabase/tests/member_rls.sql`。測試完 rollback 並檢查測試資料已清除。
+在 `src/proxy.ts` 的 `matcher` 陣列再加上 `"/watch-lab/:path*"`，保留上一課的路徑，重新執行 `npm run dev`。從 `/email-lab` 登入後，手動開 `http://localhost:3000/watch-lab`。
 
-<figure>
-  <a href="../../images/engineer-stock-series/07-rls-proof.svg"><img src="../../images/engineer-stock-series/07-rls-proof.svg" alt="本機 SQL 執行結果對照圖，依實際 test:rls 記錄製作；不是正式會員資料或終端截圖。" loading="lazy" decoding="async" /></a>
-  <figcaption>本機 SQL 執行結果對照圖，依實際 test:rls 記錄製作；不是正式會員資料或終端截圖。</figcaption>
-</figure>
+## 3. 用兩個帳號驗證同一檔股票
 
-| 測試 | 預期結果 |
-| --- | --- |
-| A 讀取自己的資料 | 只看到 A 的一筆 |
-| A 修改／刪除 B 的資料 | 影響 0 筆 |
-| A 新增資料但填 B 的 user_id | 權限錯誤 |
-| A 將資料的 user_id 改成 B | 權限錯誤 |
-| A 重複追蹤同市場同代號 | unique constraint 拒絕 |
-| anon 存取會員表 | 權限錯誤 |
+| 在哪裡做 | 操作 | 應看到 |
+| --- | --- | --- |
+| 一般視窗 A | 加入 9001，重整 | A 仍顯示「已追蹤」 |
+| 無痕視窗 B | 以另一帳號登入，打開相同頁面 | B 初始是「未追蹤」 |
+| B | 先加入、再移除 9001 | B 回到「未追蹤」 |
+| A | 重整 | A 仍是「已追蹤」 |
+| 另一個未登入視窗 | 直接開 `/watch-lab` | 導回 `/email-lab` |
 
-這些案例本次全部通過。測試用角色與 JWT claims 是隔離模擬，不是透過正式 Auth 登入的實測。
-
-## 6. 登入後自己驗證 CRUD
-
-完成第 6 篇後，用測試帳號 A 加入一檔正式存在的股票；重整追蹤清單，再用另一個瀏覽器帳號 B 確認看不到 A 的清單。回 A 移除，重整後應消失。
-
-本機 SQL 驗證不能代替這段 Cookie、Auth、API 與正式資料庫的整合驗收。自刪帳號 migration 在本機測試通過，但本次唯讀查詢確認正式 `public.delete_own_account()` 尚不存在；正式自刪帳號仍待處理。
-
-[下載系列程式片段、圖片與驗證紀錄](../../downloads/engineer-stock-series.zip)
+若 B 剛登入就顯示「已追蹤」，核對兩個畫面顯示不同 Email，再到 Table Editor 的 **RLS policies** 找 `own_read`。若 B 移除後 A 的項目也消失，檢查 `own_remove` 的 `using`。不要用 Dashboard 的 SQL Editor 身分代替兩個帳號測試，管理者有較高的權限。[Supabase RLS 的角色與政策說明](https://supabase.com/docs/guides/database/postgres/row-level-security)。

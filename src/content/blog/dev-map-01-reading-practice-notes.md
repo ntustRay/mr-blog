@@ -1,30 +1,32 @@
 ---
-title: '[Insight] Dev Map Lab 為什麼把教材、測資和筆記放在同一個單元？'
-description: 從 JavaScript 讀完卻寫不出來的情境，拆解學習路線、瀏覽器執行器和本機筆記怎麼接起來。
+title: "[Insight] 做一個能跑程式題的學習站，教材、執行器和筆記放哪裡？"
+description: "用一題 TypeScript 解釋 Next.js 靜態頁、QuickJS Worker、IndexedDB 與 Neon 如何分工。"
 pubDate: 2026-11-26
+updatedDate: 2026-11-27
 category: Full-stack
 series: dev-map
 seriesOrder: 1
 tags: [TypeScript, Next.js, IndexedDB, Web Worker]
 references:
-  - title: Dev Map Lab 公開程式碼與使用說明
-    url: https://github.com/ntustRay/dev-map-lab
-  - title: Dev Map Lab 架構
+  - title: "Dev Map Lab 架構與資料流"
     url: https://github.com/ntustRay/dev-map-lab/blob/main/docs/ARCHITECTURE.md
+  - title: "教材格式與驗證規則"
+    url: https://github.com/ntustRay/dev-map-lab/blob/main/docs/CONTENT.md
+  - title: "會員、Neon 服務設定與 migrations"
+    url: https://github.com/ntustRay/dev-map-lab/blob/main/docs/MEMBERSHIP.md
 ---
 
-理解兩個 JavaScript 變數可以共用同一個物件，和寫出一支不會修改原始陣列的函式，中間還有一段要練。把教材、習題、筆記分開讀，當下做錯的空陣列或負數案例，很容易只留在某次作答裡。Dev Map Lab 把三個動作放在同一個學習單元：讀完一段，跑測資，把沒想到的情況記回原段落。
+出一道「把 -3 限制在 0 到 10」的題目，需要讓學員看見三樣東西：規格、自己寫的函式，以及測資為什麼沒有過。隔天回來，又應該找到同一題的草稿和筆記。Dev Map Lab 把這些東西放在同一個學習單元，背後各有不同的保存方式。
 
-一開始就能用「值、參照與不修改輸入」這個單元驗證。教材先放物件共用參照的例子，實作題要求保留原始輸入，測資再帶到陣列為空或全部是負數時該回傳什麼。筆記可以直接連回「用輸入與輸出描述資料處理」的段落。下次重讀時，看得到題意、曾寫過的程式，以及出錯時漏想的是哪一筆資料。
+![自訂 clamp 單元的完成畫面。三筆測資通過，最後一筆列出輸入、預期與實際輸出。](../../assets/project-series/dev-map/clamp-verified.webp)
 
-## 教材、程式和學習紀錄各有一個地方
-
-| 要做的事 | Dev Map Lab 的做法 | 這樣做的代價 |
+| 內容 | 放在哪裡 | 如何交給下一層 |
 | --- | --- | --- |
-| 新增路線和題目 | Markdown 放教材，JSON 放題目與測資 | 檔案需維護穩定 ID，格式和關係要跑驗證 |
-| 直接跑 JS／TS 程式 | QuickJS WASM 在 Web Worker 執行，TypeScript 先經轉譯 | 題型限制在同步函式和 JSON 資料，沒有完整的瀏覽器或 Node.js 環境 |
-| 留下自己的筆記和進度 | 用 IndexedDB 存在該瀏覽器 | 換網址或裝置需要匯出並帶走備份 |
+| 單元、段落、題目 | repo 裡的 Markdown 與 JSON | build 驗證 ID 和題目格式，由 Next.js 產生靜態頁 |
+| 學員寫的 JS／TS | 瀏覽器的編輯器 | Web Worker 轉譯 TS，以 QuickJS WASM 跑測資並回傳結果 |
+| 草稿、作答、筆記 | Dexie 管理的 IndexedDB | React 工作台讀回同一個瀏覽器的資料，也能匯出 JSON |
+| 跨裝置備份 | 選用的 Neon Auth 與 PostgreSQL | 登入並驗證信箱後，學員主動上傳、合併與取回 |
 
-學習路線列出建議先讀的單元，已經熟悉一個概念的人也可以直接跳去練習。把 Markdown 和題庫拉出 React 元件之外，改例子時只要動內容。也因此單元 ID、段落 ID 與題目版本會影響既有資料：改標題通常可以留著原 ID，換 ID 就可能讓筆記找不到原文。
+為什麼教材用固定 ID？把段落標題改得更清楚，不應讓學員上週寫的註記無處可回；筆記指向 `lessonId + blockId`，便能保留這個關聯。為什麼程式題用 Worker？執行測資需要能取消，學員輸入的同步迴圈不能讓整個編輯器卡住。
 
-接下來先用原有單元跑一次程式和匯出筆記，再加一個自己的單元。前者驗證學習流程，後者驗證這個架構能換教材而不用寫新頁面。
+下一課會從 repo 建立一個自己的 TypeScript 單元，替邊界值補測試，再把成果編譯成靜態檔。第三課為自己的副本串 Neon、部署到 Vercel，驗收本機筆記與雲端備份兩條路。

@@ -2,6 +2,7 @@
 title: '[Guide] 工程師選股網 09：核心架構、技術選型與 Next.js 設計'
 description: 從需求拆解選股網的核心架構與技術選型，詳解 Next.js App Router、RSC、SSR、快取、JSON 快照一致性與 Supabase 權限，附架構圖、讀碼順序及面試追問。
 pubDate: 2026-11-02
+updatedDate: 2026-11-27
 category: "System Design"
 series: engineer-stock
 seriesOrder: 10
@@ -18,8 +19,8 @@ relatedPostIds:
 - engineer-stock-04-nextjs-data
 - engineer-stock-07-rls
 references:
-- title: 網站程式（本文對照版本；Private）
-  url: https://github.com/ntustRay/engineer-stock-web/tree/23b2d914017adb6f6a7029f53314839e6db235be
+- title: 公開的 Next.js 選股練習與測試資料
+  url: https://ntustray.github.io/mr-blog/downloads/stock-fixture-lab.zip
 - title: 資料 Pipeline（本文對照版本）
   url: https://github.com/ntustRay/engineer-stock-data/tree/c1633aeffe68d4ad95e88ea403d1bfbc1585f70e
 - title: Next.js Server and Client Components
@@ -64,11 +65,13 @@ references:
   url: https://echarts.apache.org/handbook/en/best-practices/canvas-vs-svg/
 ---
 
-系列：[1 本機啟動](../engineer-stock-01-local/) · [2 股票 JSON](../engineer-stock-02-json/) · [3 Actions](../engineer-stock-03-actions/) · [4 Next.js 資料流](../engineer-stock-04-nextjs-data/) · [5 篩選與圖表](../engineer-stock-05-screener-charts/) · [6 註冊登入](../engineer-stock-06-auth/) · [7 追蹤與 RLS](../engineer-stock-07-rls/) · [8 Vercel 部署](../engineer-stock-08-vercel/) · [9 核心架構與選型](../engineer-stock-09-architecture/) · [10 Workflow 與 API 來源](../engineer-stock-10-workflow-api-sources/)
-
 這個專案最需要講清楚的，是兩種性質不同的資料：**公開、批次更新的股票快照，以及需要登入、依會員隔離的私人資料**。前者放 GitHub，後者放 Supabase；Next.js 接起查詢、畫面與會員操作。
 
 本文對照現有程式，從需求推到選型，再拆解每一層的原理與代價。先理解資料如何流動，面試時才有辦法從「用了哪些工具」往下講到「為何這樣設計」。
+
+## 先用公開程式走一次兩個入口
+
+[下載公開練習專案](../../downloads/stock-fixture-lab.zip)，在 `package.json` 同層執行 `npm install`、`npm run dev`，分別開 `/?q=9001` 和 `/api/v1/screener?q=9001`。把 `src/lib/stock-fixture.ts` 的「範例電子」改成「架構練習」，重新整理兩個網址，都應顯示新名字。接著把名稱改回。`src/app/page.tsx` 與 `src/app/api/v1/screener/route.ts` 都呼叫同一個 `screenStocks`；下文說明正式版如何接入可驗證快照、分清快取與會員資料。
 
 ## 這篇的重點
 
@@ -463,10 +466,13 @@ if (valuation.per !== null) {
 
 把輸入改為 `{ per: '12' }`，runtime parse 會拒絕字串。資料 Pipeline 的正規化負責把合法來源數字字串轉成 number；網站的契約則要求收到的已經是正規化結果。
 
-可把附件的 `snippets/lesson-contract.ts` 放到 Web Repo 根目錄。在已依 lockfile 安裝依賴、並準備 Bun 1.4.4 的環境中執行：
+另建一個空目錄，下載[公開練習檔 lesson-contract.ts](../../downloads/engineer-stock-series/snippets/lesson-contract.ts) 放到裡面，準備 Node.js 和 Bun，再執行：
 
 ```sh
-./node_modules/.bin/tsc --noEmit --strict --skipLibCheck --target es2022 --module nodenext --moduleResolution nodenext lesson-contract.ts
+npm init -y
+npm install zod@3.25.76
+npm install -D typescript@5.9.3
+npx tsc --noEmit --strict --skipLibCheck --target es2022 --module nodenext --moduleResolution nodenext lesson-contract.ts
 bun lesson-contract.ts
 ```
 
@@ -789,6 +795,6 @@ Biome 把格式與部分 lint 規則集中在同一工具，減少格式爭議�
 
 資料 Repo 使用該 Zod package 的 `zod/v4` 匯出；網站使用 `zod`。本文不是最新版本推薦表。涉及 Next 快取與 Auth Cookie 的行為，升級時要重新對照實際依賴、官方文件及部署驗證。
 
-網站 Repo 目前為 Private，原始碼連結需要本人的讀取權限；下載附件提供文章、圖、教學片段與已執行驗證的範圍，沒有包含完整私有專案或正式會員資料。
+要動手追完整的「畫面 → 資料函式 → API」，可用[下載公開練習專案](../../downloads/stock-fixture-lab.zip)。原系列的驗證紀錄則收在原有附件。
 
 [下載系列程式片段、圖片與驗證紀錄](../../downloads/engineer-stock-series.zip)

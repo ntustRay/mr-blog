@@ -2,6 +2,7 @@
 title: '[Guide] 線上試妝 03：MediaPipe 怎麼找嘴唇？把追蹤放進 Worker'
 description: 從 landmark 與像素座標開始，拆解 Face Landmarker 初始化、IMAGE／VIDEO 模式、ImageBitmap transfer、單一推論排程與過期結果排除。
 pubDate: 2026-11-02
+updatedDate: 2026-11-27
 category: "Frontend"
 series: shade-lab
 seriesOrder: 3
@@ -32,6 +33,22 @@ MediaPipe 回傳的是臉部座標。要試口紅，接著要挑出嘴唇的內�
   <a href="../../images/shade-room-series/03-landmarks.webp"><img src="../../images/shade-room-series/03-landmarks.webp" alt="以實際 Face Landmarker 結果疊出的 Jo 唇部輪廓，外輪廓為黃色、內輪廓為青色。" loading="lazy" decoding="async" /></a>
   <figcaption>診斷圖：使用實際模型偵測範例 Jo，再疊上輪廓線；這個疊圖是本文的檢查工具，產品 UI 沒有顯示定位點。人像來源見第 1 篇。</figcaption>
 </figure>
+
+## 動手做：把模型回覆帶回主執行緒
+
+[下載 Shade Lab 公開練習專案](../../downloads/shade-workshop.zip)。解壓後，從含 `package.json` 的目錄使用 Node.js 24 執行 `npm install`、`npm run dev`，開終端機列出的網址。 若剛解壓，先在另一個終端機執行 `npm run assets` 下載 Google 模型並從已安裝的套件複製相同版本的 WASM。模型僅下載到這個練習資料夾。
+
+1. 開 `face.worker.js`，找 `model.detect(bitmap).faceLandmarks[0]`。模型回傳的是正規化座標。現有程式把第一張臉的點傳給主執行緒，找不到臉就傳空陣列。
+2. 開 `main.js`，在 `current.onmessage` 取得 `data` 後、處理 `data.error` 之前加上以下一行。這段在主頁 Console 輸出模型回傳的結果。
+3. 選一張已取得使用同意的正面人像，應該看到點數大於零，右邊的 Canvas 出現白色嘴唇輪廓。再選一張空白紙的照片，點數應為零，右邊維持黑色。
+
+```js
+if (data.points) console.table({ job: data.id, count: data.points.length });
+```
+
+若收到模型載入錯誤，先在 Network 看 `models/face_landmarker.task` 與 `wasm/` 的 loader、二進位檔有沒有成功，再查 Worker console。此練習刻意用單張圖片與 CPU delegate；下文的 GPU fallback、VIDEO timestamp 和丟棄過時影格屬於連續相機版本。
+
+<figure><a href="../../images/shade-room-series/workshop-face.webp"><img src="../../images/shade-room-series/workshop-face.webp" alt="公開練習載入 Jo 人像後，左側一半顯示著色，右側黑底上出現白色嘴唇輪廓。" loading="lazy" decoding="async" /></a><figcaption>Chromium 實拍。練習版以 CPU 執行 MediaPipe，這張 576 × 720 影像產生了 790 個紅色通道大於 200 的遮罩像素。白色輪廓中間仍留著黑色開口。<a href="https://images.unsplash.com/photo-1524504388940-b1c1722653e1">Jo 範例照片來源</a>。</figcaption></figure>
 
 ## 1. Landmark 是什麼
 

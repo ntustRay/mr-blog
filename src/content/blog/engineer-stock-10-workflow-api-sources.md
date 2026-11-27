@@ -2,6 +2,7 @@
 title: '[Guide] 工程師選股網 10：用 GitHub Actions 定時抓 API，資料來源從哪裡來？'
 description: 從官方 OpenAPI 找到股票資料來源，對照 15 個 endpoint、來源登記、TypeScript 抓取範例與 GitHub Workflow 排程，驗證資料日期、快照與發布結果。
 pubDate: 2026-11-02
+updatedDate: 2026-11-27
 category: "Dev Tools & Quality"
 series: engineer-stock
 seriesOrder: 11
@@ -48,8 +49,6 @@ references:
 - title: 本文固定讀取的 data commit
   url: https://github.com/ntustRay/engineer-stock-data/tree/ac352597ddb64be31db63af46fd4bbfeb489016e
 ---
-
-系列：[1 本機啟動](../engineer-stock-01-local/) · [2 股票 JSON](../engineer-stock-02-json/) · [3 Actions](../engineer-stock-03-actions/) · [4 Next.js 資料流](../engineer-stock-04-nextjs-data/) · [5 篩選與圖表](../engineer-stock-05-screener-charts/) · [6 註冊登入](../engineer-stock-06-auth/) · [7 追蹤與 RLS](../engineer-stock-07-rls/) · [8 Vercel 部署](../engineer-stock-08-vercel/) · [9 核心架構與選型](../engineer-stock-09-architecture/) · [10 Workflow 與 API 來源](../engineer-stock-10-workflow-api-sources/)
 
 有。`engineer-stock-data` 已有定時抓官方 API、驗證資料，再發布 JSON 的 Workflow。目前設定為**週一至週五，台灣時間 19:10、22:10**，不是一週七天都抓。
 

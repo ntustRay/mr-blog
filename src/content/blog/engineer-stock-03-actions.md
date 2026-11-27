@@ -2,6 +2,7 @@
 title: '[Guide] 工程師選股網 03：讓 GitHub Actions 更新股票資料'
 description: 手動操作既有 Workflow，對照 validate、publish、data branch 與資料日期，理解失敗時為何保留前版。
 pubDate: 2026-11-02
+updatedDate: 2026-11-27
 category: "Dev Tools & Quality"
 series: engineer-stock
 seriesOrder: 4
@@ -22,14 +23,35 @@ references:
   url: https://github.com/ntustRay/engineer-stock-data/actions/runs/41200225595
 ---
 
-系列：[1 本機啟動](../engineer-stock-01-local/) · [2 股票 JSON](../engineer-stock-02-json/) · [3 Actions](../engineer-stock-03-actions/) · [4 Next.js 資料流](../engineer-stock-04-nextjs-data/) · [5 篩選與圖表](../engineer-stock-05-screener-charts/) · [6 註冊登入](../engineer-stock-06-auth/) · [7 追蹤與 RLS](../engineer-stock-07-rls/) · [8 Vercel 部署](../engineer-stock-08-vercel/) · [9 核心架構與選型](../engineer-stock-09-architecture/) · [10 Workflow 與 API 來源](../engineer-stock-10-workflow-api-sources/)
-
 完成這篇：看懂一次資料更新，分辨「Workflow 成功」「資料有更新」「資料是哪一天」。
 
 <figure>
   <a href="../../images/engineer-stock-series/03-actions-flow.svg"><img src="../../images/engineer-stock-series/03-actions-flow.svg" alt="資料發布流程示意：驗證與必要來源成功才更新 data；失敗保留前版 SHA。" loading="lazy" decoding="async" /></a>
   <figcaption>資料發布流程示意：驗證與必要來源成功才更新 data；失敗保留前版 SHA。</figcaption>
 </figure>
+
+## 先在自己的 fork 寫一個能手動執行的工作流程
+
+在 [engineer-stock-data](https://github.com/ntustRay/engineer-stock-data) 按 **Fork**。進自己的 fork，在 **Actions** 分頁啟用 workflows。透過 **Add file → Create new file** 新增以下檔案，commit 到自己的預設分支。這個練習只跑 repo 內的固定測資。
+
+```yaml title=".github/workflows/fixture-ci.yml"
+name: Stock fixture test
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  fixture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.4.4"
+      - run: bun install --frozen-lockfile
+      - run: bun test tests
+```
+
+打開 **Actions → Stock fixture test → Run workflow**。選預設分支，打開新 run 的 **fixture** job，展開最後一個 step，應看到 Bun 列出的測試結果。若左側沒出現名稱，先核對檔案位置和 default branch。接下來讀同一 repo 的正式行情 workflow，辨認它從哪一步開始需要寫入權限。
 
 ## 1. 開啟既有 Workflow
 

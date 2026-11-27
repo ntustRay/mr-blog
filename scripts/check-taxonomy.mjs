@@ -1,6 +1,6 @@
-import { readFileSync, readdirSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const blogDir = join(root, 'src/content/blog');
@@ -16,6 +16,19 @@ const seenSeries = new Map();
 const errors = [];
 const counts = new Map();
 
+// The screenshot catalog is the source of the reusable deployment steps. Its
+// relative links are not included in Astro's output or the HTML link check.
+const skillDirectory = join(root, '.agents/skills/series-tutorial');
+for (const document of ['SKILL.md', 'references/deployment.md']) {
+  const path = join(skillDirectory, document);
+  const markdown = readFileSync(path, 'utf8');
+  for (const [, target] of markdown.matchAll(/\]\(([^)\s#]+)\)/gu)) {
+    if (!/^https?:\/\//iu.test(target) && !existsSync(resolve(dirname(path), target))) {
+      errors.push(`${document}: missing shared tutorial resource ${target}`);
+    }
+  }
+}
+
 const projectSeries = new Set();
 for (const project of projects) {
   if (!seriesLimits.has(project.seriesId)) {
@@ -24,12 +37,31 @@ for (const project of projects) {
   if (projectSeries.has(project.seriesId)) {
     errors.push(`${project.id}: project series "${project.seriesId}" is already in use`);
   }
+  if (!project.image?.endsWith('.webp') || !project.alt?.trim() || !existsSync(join(root, 'public', project.image))) {
+    errors.push(`${project.id}: the series card requires a WebP preview and descriptive alt text`);
+  }
   projectSeries.add(project.seriesId);
 }
 
 function readField(frontmatter, key) {
   const match = frontmatter.match(new RegExp(`^${key}:\\s*(.+)$`, 'm'));
   return match?.[1].trim().replace(/^(['"])(.*)\1$/, '$2') ?? null;
+}
+
+function checkProjectLesson(filename, title, body) {
+  if (!title.startsWith('[Guide] ')) {
+    errors.push(`${filename}: a middle chapter of a project series must be a [Guide]`);
+  }
+  const fence = /^(`{3,}|~{3,})[^\n]*\n[\s\S]*?^\1[ \t]*\r?$/gm;
+  const prose = body.replace(fence, '');
+  if (!/^(?:#{1,6}[ \t]+)?(?:步驟[ \t]*)?\d+[.、)）:：\s]|<ol\b/imu.test(prose)) {
+    errors.push(`${filename}: show the implementation as ordered steps`);
+  }
+  const illustration = [...prose.matchAll(/!\[([^\]\n]*)\](?:\(|\[)|<(?:img|Image)\b[^>]*\balt=["']([^"']*)["']/giu)]
+    .some((match) => (match[1] ?? match[2]).trim());
+  if (!illustration && !fence.test(body)) {
+    errors.push(`${filename}: include an instructional screenshot with alt text or a code example for a code/architecture lesson`);
+  }
 }
 
 const filenames = readdirSync(blogDir).filter((name) => /\.mdx?$/.test(name));
@@ -58,6 +90,10 @@ for (const filename of filenames) {
     if (!seriesLimits.has(series)) errors.push(`${filename}: unknown series "${series}"`);
     const order = Number(orderText);
     if (!Number.isInteger(order) || order < 1) errors.push(`${filename}: invalid seriesOrder`);
+    if (readField(fm, 'draft') === 'true') continue;
+    if (projectSeries.has(series) && order > 1 && order < seriesLimits.get(series)) {
+      checkProjectLesson(filename, title, source.slice(frontmatter[0].length));
+    }
     const group = seenSeries.get(series) ?? new Set();
     if (group.has(order)) errors.push(`${filename}: duplicate seriesOrder ${order} in ${series}`);
     group.add(order);

@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "lessonId": "typescript-clamp",
+  "questions": [
+    {
+      "id": "typescript-clamp-choice",
+      "version": 1,
+      "type": "choice",
+      "title": "先判斷結果",
+      "prompt": "將 -3 限制在 0 到 10，結果是多少？",
+      "points": 5,
+      "explanation": "低於下限時回傳下限。",
+      "multiple": false,
+      "options": [
+        { "id": "negative", "text": "-3" },
+        { "id": "zero", "text": "0" },
+        { "id": "ten", "text": "10" }
+      ],
+      "correctIds": ["zero"]
+    },
+    {
+      "id": "typescript-clamp-fill",
+      "version": 1,
+      "type": "fill",
+      "title": "核對上限",
+      "prompt": "將 18 限制在 0 到 10，結果是多少？",
+      "points": 5,
+      "explanation": "高於上限時回傳上限。",
+      "answers": ["10"],
+      "normalization": { "trim": true, "caseSensitive": true, "collapseWhitespace": false }
+    },
+    {
+      "id": "typescript-clamp-short",
+      "version": 1,
+      "type": "short",
+      "title": "解釋區間內的結果",
+      "prompt": "為什麼將 6 限制在 0 到 10 時，結果仍是 6？",
+      "points": 5,
+      "explanation": "6 大於下限且小於上限，兩次比較都保留 6。",
+      "referenceAnswer": "6 位於區間內，保留原值。",
+      "criteria": [
+        {
+          "id": "within-range",
+          "label": "指出 6 位於區間內",
+          "points": 5,
+          "acceptedPhrases": ["位於區間內", "在 0 到 10 之間"],
+          "keywordGroups": [["大於", "高於"], ["下限"], ["小於", "低於"], ["上限"]],
+          "misconceptions": [],
+          "semanticThreshold": null
+        }
+      ]
+    },
+    {
+      "id": "typescript-clamp-code",
+      "version": 1,
+      "type": "code",
+      "title": "限制數字範圍",
+      "prompt": "實作 solve(value, min, max)。只接收有限數字，且 min <= max。",
+      "points": 10,
+      "explanation": "先套用下限，再套用上限。",
+      "entrypoint": "solve",
+      "starters": {
+        "javascript": "function solve(value, min, max) { return value; }",
+        "typescript": "function solve(value: number, min: number, max: number): number { return value; }"
+      },
+      "solutions": {
+        "javascript": "function solve(value, min, max) { return Math.min(max, Math.max(min, value)); }",
+        "typescript": "function solve(value: number, min: number, max: number): number { return Math.min(max, Math.max(min, value)); }"
+      },
+      "comparison": { "kind": "deepEqual" },
+      "limits": { "timeMs": 500, "memoryMb": 32 },
+      "tests": [
+        { "id": "below", "label": "低於下限", "args": [-3, 0, 10], "expected": 0 },
+        { "id": "within", "label": "位於區間內", "args": [6, 0, 10], "expected": 6 },
+        { "id": "above", "label": "高於上限", "args": [18, 0, 10], "expected": 10 }
+      ]
+    }
+  ]
+}

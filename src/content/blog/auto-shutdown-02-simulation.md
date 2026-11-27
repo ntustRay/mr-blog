@@ -1,7 +1,8 @@
 ---
-title: '[Guide] R Auto Shutdown 02｜用模擬模式驗證延後與取消'
-description: 開啟單次三分鐘倒數，從提醒視窗核對延後結果、縮小後的倒數與取消入口。
+title: '[Guide] R Auto Shutdown 02｜用 Rust 與 egui 做出可延後、可取消的倒數'
+description: '從 Cargo 範例接上計時核心，寫出按鈕事件、到期處理與可重現的時間測試，再用真實提醒視窗核對結果。'
 pubDate: 2026-11-26
+updatedDate: 2026-11-27
 category: Dev Tools & Quality
 tags: [Rust, egui, Desktop]
 series: auto-shutdown
@@ -13,43 +14,120 @@ references:
     url: https://github.com/ntustRay/rust-auto-shutdown/actions/runs/45642612323
 ---
 
-用一回 **三分鐘的單次模擬倒數**檢查提醒、延後和取消。三分鐘落在最後五分鐘內，所以按下開始就會出現提醒。以下截圖使用對應公開 commit `e2641a9` 的 Linux x64 CI 執行檔（v0.3.2），全程保留模擬模式。
+這次做一個桌面視窗。按 Start 之後從三分鐘倒數；剩兩分鐘時按 +10 min，畫面應該變成十二分鐘。先在測試裡把時間往前推，再把相同的動作接到 egui。整個練習只會模擬倒數。
 
-## 1. 開啟桌面程式
+[下載 Rust 測試與 egui 範例（ZIP）](../../downloads/series-labs/auto-shutdown.zip)。完成第一步的 `git checkout` 後，在專案根目錄解壓縮，就能分別執行下方的測試和視窗範例。
 
-從 [GitHub Actions](https://github.com/ntustRay/rust-auto-shutdown/actions/runs/45642612323) 的 Artifacts 選平台與架構，下載後解壓縮。Windows 開啟 `r-auto-shutdown.exe`。macOS／Linux 再解開內層的 `.tar.gz`，於已登入的桌面工作階段執行 `./r-auto-shutdown`。macOS 產物尚未公證，遇到系統阻擋時可依專案說明從原始碼建置。
+## 1. 取得程式與建置環境
 
-也可以從原始碼建置。專案標示需要 Rust 1.88 或更新版本和相應平台的建置工具，本系列的 Linux 建置檢查使用 Rust 1.100.0。
+準備 Rust 1.88 以上與 Git，可先執行 `rustc --version` 和 `cargo --version` 確認終端機能找到兩者。Windows 需要 Visual Studio Build Tools 的 **Desktop development with C++**。若使用 Ubuntu 24.04，下面的套件對應[此版本的 Linux CI](https://github.com/ntustRay/rust-auto-shutdown/blob/e2641a9cf74413fa88704fd62061070d2fe134c2/.github/workflows/ci.yml)，另加中文字型供完整版顯示提醒。要開視窗，請在有圖形桌面的環境執行。
+
+```sh
+sudo apt-get update
+sudo apt-get install -y build-essential pkg-config libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev libxkbcommon-dev libssl-dev fontconfig fonts-noto-cjk
+```
+
+各平台準備好工具後，下載相同版本並先跑原有測試：
 
 ```sh
 git clone https://github.com/ntustRay/rust-auto-shutdown.git
 cd rust-auto-shutdown
 git checkout e2641a9cf74413fa88704fd62061070d2fe134c2
-cargo run --release --locked
+cargo test --locked --lib
 ```
 
-Ubuntu 等 Linux 桌面需有 `fontconfig` 和可供應用程式讀取的繁體中文字型。若啟動報 `InvalidFont`，先用 `fc-match --format '%{file}\n' ':lang=zh-tw'` 看 fontconfig 選中了哪個檔案，再確認是支援的 TTF 或 OTF。這次在隔離的 Linux 環境用 Noto Sans CJK TC OTF 截圖。
+看到 `test result: ok` 後，從 `src/lib.rs` 找 `Timer`。它提供 `start`、`extend`、`cancel`、`poll`。視窗只要在對的時機呼叫這四個方法。先寫測試，可以把「延後十分鐘」精確定義成從哪個時間點起算。
 
-## 2. 啟動三分鐘模擬倒數
+## 2. 寫一個不用等待的驗收測試
 
-在「只執行這一次」選「幾分鐘後」，將「倒數分鐘」改成 `3`。確認「模擬模式」仍勾選，然後按「開始倒數」。Windows 若顯示兩種模式頁籤，請選「單次倒數」。此練習透過畫面上的勾選確認執行模式，因為 `--dry-run` 啟動旗標不會覆寫已儲存的設定。
+在專案根目錄建立 `tests/lesson_countdown.rs`（沒有 `tests` 資料夾就新增）：
 
-![R Auto Shutdown 的單次倒數設定畫面。倒數分鐘為三，模擬模式保持勾選。](../../assets/project-series/auto-shutdown/02-simulation-settings.webp)
+```rust
+use rust_auto_shutdown::{Mode, Timer};
+use std::time::{Duration, Instant};
 
-提醒的標題會顯示「關機提醒 · 模擬模式」。在卡片中央記下「預定」時間。右上角是最小化，下方有延後和取消。
+#[test]
+fn postpone_then_cancel() {
+    let start = Instant::now();
+    let mut timer = Timer::default();
+    timer.start(start, Duration::from_secs(180), Mode::Simulation).unwrap();
 
-![R Auto Shutdown 模擬倒數提醒，顯示預定時間與延後、取消控制。](../../assets/project-series/auto-shutdown/02-active-reminder.webp)
+    let clicked = start + Duration::from_secs(60);
+    let remaining = timer.extend(clicked, Duration::from_secs(600)).unwrap();
+    assert_eq!(remaining, Duration::from_secs(720));
+    assert!(timer.cancel());
+    assert_eq!(timer.remaining(clicked), None);
+    assert!(timer.poll(clicked + remaining, || panic!("unexpected action")).is_none());
+}
+```
 
-## 3. 延後十分鐘，再取消
+執行 `cargo test --locked --test lesson_countdown`，應看到 `postpone_then_cancel ... ok`。若把 720 秒誤寫成 780 秒，測試會告訴你差了已經過去的一分鐘。這正是按下延後時不能再用最初時長重算的原因。
 
-1. 按「延後 10 分鐘」。核對提醒上的預定時刻比上一步晚十分鐘，剩餘時間也增加。
-2. 有工作列或 Dock 的桌面，可以按提醒右上角的「最小化」，再從工作列或 Dock 還原。確認時間還在走。部分 Linux 桌面會自行決定是否支援最小化及還原。
-3. 按「取消本次關機」。提醒應關閉，主視窗不再顯示進行中的倒數，並顯示取消訊息。
+## 3. 把按鈕接到 Timer
 
-![延後後的提醒仍顯示模擬模式，預定時間從 10:35:26 變為 10:45:26。](../../assets/project-series/auto-shutdown/02-extended-reminder.webp)
+在根目錄建立 `examples/` 資料夾，新增 `reminder_lab.rs`。`eframe` 與 `egui` 已經包含在專案的依賴內，不必另外建 crate。
 
-![按取消後提醒關閉，主視窗底部顯示「已取消本次倒數」。](../../assets/project-series/auto-shutdown/02-cancelled.webp)
+```rust
+use eframe::egui;
+use rust_auto_shutdown::{Mode, Timer, format_remaining};
+use std::time::{Duration, Instant};
 
-Windows 的系統橫幅受通知和勿擾設定影響。驗本篇流程時，先看程式自己的提醒視窗與主視窗狀態。Windows 橫幅需要另外在 Windows 的桌面工作階段確認。
+#[derive(Default)]
+struct Reminder {
+    timer: Timer,
+    status: String,
+}
 
-[下一篇｜關閉視窗、取消當次與停用排程](../auto-shutdown-03-schedule-boundaries/)
+impl eframe::App for Reminder {
+    fn update(&mut self, ctx: &egui::Context, _: &mut eframe::Frame) {
+        let now = Instant::now();
+        egui::CentralPanel::default().show(ctx, |ui| {
+            if let Some(left) = self.timer.remaining(now) {
+                ui.heading(format_remaining(left));
+                if ui.button("+10 min").clicked() {
+                    if let Err(message) = self.timer.extend(now, Duration::from_secs(600)) {
+                        self.status = message;
+                    }
+                }
+                if ui.button("Cancel").clicked() {
+                    self.timer.cancel();
+                    self.status = "Cancelled".into();
+                }
+            } else if ui.button("Start 3 min").clicked() {
+                self.status = match self.timer.start(now, Duration::from_secs(180), Mode::Simulation) {
+                    Ok(()) => "Running".into(),
+                    Err(message) => message,
+                };
+            }
+            if self.timer.poll(now, || Ok(())).is_some() {
+                self.status = "Finished (simulation)".into();
+            }
+            ui.label(&self.status);
+        });
+        ctx.request_repaint_after(Duration::from_millis(200));
+    }
+}
+
+fn main() -> eframe::Result {
+    eframe::run_native("Reminder lab", eframe::NativeOptions::default(),
+        Box::new(|_| Ok(Box::new(Reminder::default()))))
+}
+```
+
+從專案根目錄執行 `cargo run --locked --example reminder_lab`。按 **Start 3 min**，再按 **+10 min**；接著按 **Cancel**，應回到可以重新開始的畫面。若數字只在滑鼠移動時變化，檢查 `request_repaint_after` 是否放在每次 `update` 都會執行的位置。`poll` 放在按鈕之後，讓同一輪收到的取消或延後先更新狀態。
+
+## 4. 核對完整版的提醒視窗
+
+關掉剛才的 Reminder lab 視窗，讓終端機回到提示字元。執行 `cargo run --release --locked --bin r-auto-shutdown` 開啟 0.3.2 完整版。選單次倒數、輸入 3 分鐘，確認畫面上的「模擬模式」已勾選，再開始。三分鐘落在最後五分鐘內，提醒會立即出現。
+
+![完整版的單次倒數設定，分鐘數為 3，模擬模式已勾選。](../../assets/project-series/auto-shutdown/02-simulation-settings.webp)
+
+點「延後 10 分鐘」，直接核對提醒卡上的**預定時刻**。下圖從 10:35:26 改成 10:45:26，剩餘時間則會隨著視窗刷新。
+
+![Linux CI 建置的完整版延後十分鐘後，預定時刻顯示 10:45:26。](../../assets/project-series/auto-shutdown/02-extended-reminder.webp)
+
+再按「取消本次關機」。主視窗應顯示本次倒數已取消。上面的 Rust 練習只建了一個視窗；完整版把提醒另開一個 viewport，所以關閉提醒視窗和取消計時是兩件需要分開處理的事。
+
+![提醒關閉後，主視窗顯示已取消本次倒數。](../../assets/project-series/auto-shutdown/02-cancelled.webp)
+
+[下一篇：整理每週排程、提醒與真機驗收](../auto-shutdown-03-schedule-boundaries/)

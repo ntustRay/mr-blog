@@ -2,6 +2,7 @@
 title: '[Guide] 線上試妝 04：用 WebGL 做口紅遮罩、混色與質地'
 description: 拆解 Canvas 2D 嘴唇遮罩與 WebGL2 Shader，從 evenodd、Texture、Uniform 到亮度保留、濃度、霧面與光澤，說明近似方法及限制。
 pubDate: 2026-11-02
+updatedDate: 2026-11-27
 category: "Frontend"
 series: shade-lab
 seriesOrder: 4
@@ -32,6 +33,18 @@ references:
   <a href="../../images/shade-room-series/04-materials.webp"><img src="../../images/shade-room-series/04-materials.webp" alt="同一張 Jo 範例的唇部裁切：原圖，以及相同紅色與 80% 濃度下的霧面、緞光、水光。" loading="lazy" decoding="async" /></a>
   <figcaption>實際模型與渲染器輸出後裁切排列。三種妝效都使用 #bd393d、80% 濃度；排版與文字是診斷圖，不是產品介面。</figcaption>
 </figure>
+
+## 動手做：改一次口紅的顏色，確定只有遮罩內改變
+
+[下載 Shade Lab 公開練習專案](../../downloads/shade-workshop.zip)。解壓後，從含 `package.json` 的目錄使用 Node.js 24 執行 `npm install`、`npm run dev`，開終端機列出的網址。 這一節使用預先畫好的兩個橢圓，能直接驗證 shader，不需要攝影機、模型或人像照片。
+
+<figure><a href="../../images/shade-room-series/workshop-mask.webp"><img src="../../images/shade-room-series/workshop-mask.webp" alt="公開練習在 Chromium 的輸出：左側混色結果、右側黑白遮罩與兩條控制桿。" loading="lazy" decoding="async" /></a><figcaption>公開練習的實際畫面。初始影像使用固定幾何，讓每個人都能先核對混色和嘴巴開口。</figcaption></figure>
+
+1. 把「比較線」拉到最左、把「濃度」拉到最大。在 `tint.js` 的 fragment shader 找 `vec3(0.72, 0.08, 0.28)`，改為 `vec3(0.05, 0.32, 0.8)` 再儲存。重新整理後白色環帶應變藍，中央開口與背景應維持原圖。
+2. 回 `main.js` 找 `seed()` 的 `maskCtx.fill(lips, "evenodd")`，暫時把 `"evenodd"` 改成 `"nonzero"`。兩條同方向的封閉輪廓會把中央也填滿，右圖和混色結果會同時改變。核對後改回 `"evenodd"`。
+3. 把濃度拉到 0。無論遮罩與目標顏色為何，左側應只剩原圖。另存 PNG 可以比較輸出像素，而不用從螢幕顏色猜測。
+
+這個練習在 `tint.js` 中將原圖綁在 texture unit 0、黑白遮罩綁在 1，再把兩個 sampler 指到對應 unit。正式版還會平滑輪廓、處理質地與高光；這裡先讓一個 shader 輸出可預期的顏色。
 
 ## 1. 遮罩先回答「這裡能不能畫」
 

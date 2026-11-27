@@ -1,29 +1,32 @@
 ---
-title: '[Insight] MR Financial 為什麼把財金日報放在另一個網站？'
-description: '用技術教學和財金日報不同的閱讀順序，解釋兩站分流、同日雙版與共同導覽的取捨。'
+title: "[Insight] 同一天有兩份財經日報，首頁該怎麼存這個關係？"
+description: "從台灣版與國際版的發布時間差，設計能保留缺版、回溯來源的靜態日報索引。"
 pubDate: 2026-11-26
-category: 'Web Publishing & SEO'
-tags: [Astro, GitHub Pages, Content Architecture]
+updatedDate: 2026-11-27
+category: "Web Publishing & SEO"
+tags: ["Astro","GitHub Pages","Content Architecture"]
 series: mr-financial
 seriesOrder: 1
-draft: false
 references:
-- title: MR Financial 正式站
-  url: https://ntustray.github.io/mr-financial-blog/
-- title: MR Financial 首頁的日期索引實作
-  url: https://github.com/ntustRay/mr-financial-blog/blob/main/src/pages/index.astro
+  - title: "MR Financial 的日報分組與首頁"
+    url: "https://github.com/ntustRay/mr-financial-blog/blob/main/src/pages/index.astro"
+  - title: "MR Financial 的部署流程"
+    url: "https://github.com/ntustRay/mr-financial-blog/blob/main/.github/workflows/deploy.yml"
+  - title: "MR Financial 公開首頁"
+    url: "https://ntustray.github.io/mr-financial-blog/"
 ---
 
-找一篇技術教學時，通常先找主題，再確認舊步驟是否還能用。讀財金日報時，日期得先對上，因為同一天的台灣收盤、海外交易與文章截點可能各有時間。兩種文章共用一份首頁時，日更的日報會往前排，教學系列也因此更難從最近文章找到。
+技術文章通常靠主題或教學順序串起來。財經日報多了一個問題：同一天有台灣版和國際版，兩篇還可能在不同時間刊出。如果首頁只倒著排發布時間，兩篇之間一旦插入其他文章，讀者就得自己找另一版。
 
-MR Financial 把日報放在自己的首頁。右側的 **Daily editions** 依日期並列台灣與國際版。想查比較久以前的文章，可以開 **Archive**。要找房市或生活主題，從 **Topics** 進去。回 MR Coding 的入口保留在相同的網站導覽。
+![MR Financial 的正式首頁在文章旁邊列出 Daily editions。](../../assets/project-series/mr-financial/01-home.webp)
 
-![MR Financial 正式站首頁，左側是 Latest posts，右側有 Topics 和 Daily editions。](../../assets/project-series/mr-financial/01-home.webp)
+MR Financial 在每篇日報的檔名放入**期別日期**與**市場**。例如 `finance-2026-11-25-taiwan.md` 與 `finance-2026-11-25-global.md` 共用日期，市場各有自己的欄。這個日期表示哪一期。文章內「資料截至」則記錄內容實際收錄到什麼時候，兩者可以不同。
 
-## 分站後，日期可以直接拿來找一組文章
+| 讀者看到什麼 | 程式要保存什麼 |
+| --- | --- |
+| 11 月 25 日的一列 | 日期作為分組的 key |
+| 台灣版、國際版兩個連結 | 各自的文章 ID |
+| 同一天只發了台灣版 | 國際版仍可為空 |
+| 房貸或旅遊文章 | 保留原本文章，同時從日報索引略過 |
 
-在首頁實作裡，日報的文章 ID 形式是 `finance-YYYY-MM-DD-taiwan` 或 `finance-YYYY-MM-DD-global`。Astro 建置時從 ID 讀出日期與版別，讓一份日期表可以同時指向兩篇文章。一般文章繼續顯示在最近文章與分類入口。首頁原始碼在[專案的 index.astro](https://github.com/ntustRay/mr-financial-blog/blob/main/src/pages/index.astro)。
-
-另外維護兩站會多一份導覽、部署和連結檢查。若只偶爾發布財金文章，在原站做分類就能提供入口。當台灣與國際版本固定成對出現，獨立首頁可以保留日報需要的日期索引，也讓技術站的首頁繼續以主題與系列為主。
-
-下一篇用正式站一組歷史文章練習，從 Archive 找同一天的兩篇日報，再跟到文內的來源。
+[下一章](../../posts/mr-financial-02-find-daily-editions/)會在正式站的本機副本加一頁 `editions-lab.astro`，從 Markdown 建出這張表。你會自己實作日期分組、測試缺一版的情況，再將結果接回 Astro。文章與索引一起建成靜態 HTML，這個需求用 repository 和 GitHub Pages 就能完成。

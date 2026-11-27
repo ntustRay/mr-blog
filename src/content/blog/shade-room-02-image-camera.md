@@ -2,6 +2,7 @@
 title: '[Guide] 線上試妝 02：把照片與相機畫面送進引擎'
 description: 拆解 File、ImageBitmap、getUserMedia 與來源切換，處理照片方向、縮圖、過期結果、相機關閉及錯誤恢復。
 pubDate: 2026-11-02
+updatedDate: 2026-11-27
 category: "Frontend"
 series: shade-lab
 seriesOrder: 2
@@ -29,9 +30,22 @@ references:
 輸入層要保證「目前使用哪個來源」與「哪些資源還有效」。完成後，連續換圖不會被慢回來的舊照片覆蓋；離開相機模式，也會停止這個頁面取得的串流。
 
 <figure>
-  <a href="../../images/shade-room-series/02-inputs.webp"><img src="../../images/shade-room-series/02-inputs.webp" alt="實際更換人像對話框，提供 Jo、Alex、Sam 三張範例人像。" loading="lazy" decoding="async" /></a>
-  <figcaption>實際操作截圖。範例人像由 Unsplash 提供；公開來源與授權列於第 1 篇及專案 THIRD_PARTY_NOTICES.md。</figcaption>
+  <a href="../../images/shade-room-series/02-inputs.webp"><img src="../../images/shade-room-series/02-inputs.webp" alt="Shade Lab 完整版的更換人像對話框，提供 Jo、Alex、Sam 三張範例人像。" loading="lazy" decoding="async" /></a>
+  <figcaption>這張圖來自 Shade Lab 完整版。下方練習透過本機選檔載入你的照片。範例人像的 Unsplash 來源與授權列於第 1 篇及專案 THIRD_PARTY_NOTICES.md。</figcaption>
 </figure>
+
+## 動手做：讓一張照片進到 Canvas
+
+[下載 Shade Lab 公開練習專案](../../downloads/shade-workshop.zip)。解壓後，從含 `package.json` 的目錄使用 Node.js 24 執行 `npm install`、`npm run dev`，開終端機列出的網址。 在 `main.js` 的 `inspect` 裡，找到 `Math.min(1, 720 / Math.max(bitmap.width, bitmap.height))`，這裡以 720 為長邊上限。改成 `360`，儲存後選一張寬或高超過 720 像素的非敏感測試照。打開 Console：
+
+```js
+const canvas = document.getElementById("input");
+console.log(canvas.width, canvas.height, Math.max(canvas.width, canvas.height));
+```
+
+最後一個數值應該等於 `360`。即使此時還沒下載模型，原圖也應先顯示。改回 720，再裝模型資產：停止 dev server、執行 `npm run assets`，看到 `Ready` 後重開 `npm run dev`。接下來幾篇都用這個資料夾。
+
+有攝影機的裝置可在 localhost 或 HTTPS 按「開相機」並允許影像權限，按「拍一張」將當下畫格交給同一個 `inspect`。試著在 `stopCamera` 的 `getTracks().forEach` 下一行停下 debugger，核對每條 track 的 `readyState` 已是 `ended`。沒有攝影機也能用上傳的照片完成後續課程。
 
 ## 1. 把三種來源收斂成一個入口
 

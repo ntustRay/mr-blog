@@ -31,6 +31,17 @@
 - Never rename an existing post file or change its publication date as a side effect of taxonomy changes. Preserve old Category/Tag URLs or provide an accessible compatibility link.
 - After editing content or taxonomy definitions, run `npm run check:taxonomy` and `npm run build`.
 
+## Product 與 Series
+
+Products 面向想使用作品的人，展示用途、操作和入口。專案 Series 面向想親手開發的人。維護系列時先讀 `.agents/skills/series-tutorial/SKILL.md`，以 `src/data/projects.json` 和實際公開程度決定範圍。
+
+- 第一篇說明要解決什麼、最後會做出什麼、各層用什麼技術，以及讀者要準備的環境。最後一篇把前面做好的東西接起來，走一次驗收，討論取捨、限制和下一步。
+- 每個中間章節都要讓讀者實作或改動一項東西。寫出起點、檔案或 Dashboard 入口、要輸入的程式或設定、如何執行、成功時看到什麼，以及失敗時先查哪裡。只操作公開 Demo、只逛原始碼、只介紹名詞或貼一份檢查清單，都要退回重寫。
+- UI 操作以對應步驟的實際截圖為主，圖說點出位置與完成狀態。架構與關鍵程式碼用文字解釋責任及資料流。封面、架構圖、終端畫面各自標明；產品首頁圖片不能充當主控台或不同步驟的證據。
+- 只教該專案有用到的服務；跟著公開的 manifest、設定、部署檔或獨立教學範例查證。串接資料庫和部署要把服務兩端接通，從設定名稱、使用位置一路驗到 Preview 或公開結果。私有產品只能使用可公開資訊與獨立可重做的範例。
+- Series 卡片及系列頁都要有能辨認該專案的預覽圖。共用平台畫面以一份 WebP 提供給相關章節，步驟不同就另外截圖。交付前逐章照指示驗證、核對圖片和順序，用現有 taxonomy、build、link checks 驗證輸出。
+- 從文章提供的起點重走中間篇的主流程，用實際輸出找出缺少的檔案或設定。可請另一位 agent 照文章重做。若只能完成本機驗證，具體記下需要雲端帳號才能驗證的步驟。CI 負責標題、順序、步驟格式和資產，文章的做法能不能完成，仍以重跑結果為準。
+
 ## Article Types
 
 - For new articles, and existing articles whose titles the user explicitly asks to change, begin the frontmatter `title` with exactly one of `[News]`, `[Insight]`, `[Review]`, or `[Guide]`, followed by a space.

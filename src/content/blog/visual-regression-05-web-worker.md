@@ -1,7 +1,8 @@
 ---
-title: '[Guide] 把圖片比對移到 Web Worker'
-description: 先錄下 Main Thread，再將 pixelmatch 移到 Worker，核對結果與清理行為。
+title: "[Guide] 把 pixelmatch 搬進 Web Worker，保留可取消的比對"
+description: "在主執行緒與 Worker 之間傳像素與回應，對照相同輸入的結果，並用瀏覽器 Performance 核對計算位置。"
 pubDate: 2026-10-25
+updatedDate: 2026-11-27
 category: "Frontend"
 series: visual-regression
 seriesOrder: 6
@@ -24,174 +25,31 @@ relatedPostIds:
 - visual-regression-06-correctness-and-access
 ---
 
-[← 回 Visual Regression Hub 系列目錄](../../series/visual-regression/)
+![Worker 版處理附件內建樣本後，結果仍是 17,760 個不同像素。這張圖用來核對正確性。](../../assets/visual-regression-series/local/07-worker-result.webp)
 
-[下載完整範例與圖片（ZIP）](../../downloads/visual-regression-series.zip) · [程式與驗證範圍](../../downloads/visual-regression-series/README.md)
+## 1. 在改程式前先錄一份
 
-完成畫面：Performance 的 Worker track 裡能找到 pixelmatch，比對數值與修改前相同。
+用前課的專案執行 `bun run dev`，先用內建圖記下 changed、total 和 threshold。要看執行緒，另準備兩張相同尺寸、部分內容相異的 2048 × 2048 PNG；也可在同一繪圖檔畫兩個不同位置的方塊，各存一張。打開 DevTools → Performance，按 Record，回頁面比對大圖，結果出來就 Stop。記下同組大圖的像素數，在 Main track 找對應的 click、compare 或 pixelmatch 呼叫。
 
-先完成前三篇，準備附件 `tools/large-samples.html`、`patches/05-worker/`。本篇只搬移比對計算；讀圖、Canvas 與 React state 仍在 Main Thread。
+## 2. 給 Worker 一個可傳遞的工作
 
+[下載本系列實作附件](../../downloads/visual-regression-series.zip)。把 `patches/05-worker/src/lib/worker-types.ts` 與 `image-diff.worker.ts` 加到專案同名目錄，並用該目錄的 `run-compare.ts` 取代原同步版本。`diff.ts` 保持不動。打開 worker-types，看 job 的 id、a、b、threshold：這些值足以完成運算，沒有 DOM、File input 或 React state。
 
-## 1. 記下修改前版本
-
-在教學專案執行：
-
-```sh
-git status --short
-git rev-parse HEAD
-```
-
-先提交或另存自己的既有修改。保留這個 SHA，才能回到相同基準。
-
-
-## 2. 開啟圖片產生器
-
-用瀏覽器開啟附件 `tools/large-samples.html`。
-
-輸入 `2048`，產生兩張 2048 × 2048 色塊圖，分別下載 Before、After。兩張檔案都保留下來。
-
-
-## 3. 載入這組圖片
-
-```sh
-bun run dev
-```
-
-開啟 `http://localhost:3000`，在 Before、After 選取剛才下載的圖片。
-
-記下容差。修改前後都使用這組圖片與相同容差。
-
-
-## 4. 開啟 Performance
-
-開 Chrome DevTools → Performance。
-
-若有 CPU slowdown 選項，選定一個倍率；沒有則保留預設。記下 Chrome 版本與實際倍率，修改後沿用。
-
-
-## 5. 錄下修改前的比對
-
-點 Record，回教學頁點「開始比對」，結果出現後點 Stop。
-
-
-## 6. 找到 Main Thread 的計算
-
-放大剛才的操作區間，在 Main track 找 `compare`／`pixelmatch`。
-
-記下計算時間、changed pixels 與百分比。若工作太短難以觀察，可改產生 4096 × 4096 圖片後重錄；記憶體不足就停止。
-
-
-有錄到計算，不代表一定有可感知的卡頓。不要把未重現的現象寫成測試結果。
-
-## 7. 停止 dev，放入 Worker 檔案
-
-回終端機按 `Ctrl+C`。
-
-從附件 `patches/05-worker/src/lib/` 複製到專案 `src/lib/`：
-
-```text
-worker-types.ts
-image-diff.worker.ts
-run-compare.ts
-```
-
-前兩個是新增檔；`run-compare.ts` 取代第一篇的同名檔案。其他檔案保留。
-
-
-## 8. 看 Worker 如何建立
-
-開啟 `src/lib/run-compare.ts`，找到：
+Worker 收到工作後執行原來的 `compare(a, b, threshold)`，再把結果送回。下列兩行位於 `image-diff.worker.ts`；沿用同一個演算法可讓前後兩次數值直接比較。
 
 ```ts
-const worker = new Worker(
-  new URL("./image-diff.worker.ts", import.meta.url),
-  { type: "module" },
-);
+const reply: Reply = { id, result };
+self.postMessage(reply, { transfer: [result.rgba.buffer] });
 ```
 
-保留這個字面路徑，讓 bundler 找到 Worker。不要改成從外部輸入組合的 URL。
+## 3. 在頁面啟動、交件、收尾
 
+打開 `run-compare.ts`，找 `new Worker(new URL("./image-diff.worker.ts", import.meta.url), { type: "module" })`。相對路徑讓 bundler 可找到 worker 入口。接著找 `a.rgba.slice()` 與 `b.rgba.slice()`：傳出去的 buffer 會 detach，這裡先複製，讓 viewer 保有用來預覽及重新比對的原資料。成功、錯誤、abort 與逾時都會走 cleanup，呼叫 `worker.terminate()`。
 
-## 9. 看圖片如何傳入 Worker
+以 2048 × 2048 RGBA 計算，每份陣列約 16 MiB。兩個原陣列再加兩份複本就約 64 MiB，尚未含輸出、解碼與 Canvas。畫面能繼續回應是分工帶來的收益，記憶體和整體時間仍要實際量。
 
-在同一檔案找 `.slice()` 與 `postMessage()`。完整附件會先以 `left`、`right` 建立 `job`：
+## 4. 重錄並測一次中途換圖
 
-```ts
-const left = { ...a, rgba: a.rgba.slice() };
-const right = { ...b, rgba: b.rgba.slice() };
-worker.postMessage(job, [left.rgba.buffer, right.rgba.buffer]);
-```
+執行 `bun run check` 再啟動 dev。使用同兩張大圖、容差和相同 CPU 設定重新錄 Performance；展開 Worker track，看比對工作是否移到該處。比對前後 changed、total、Diff 應相同。若輸出忽然歸零，先查傳出去的 buffer 是否已在上一次 transfer 後被清空。
 
-Transfer 後，送出的 buffer 會 detach。先複製，是為了保留原資料供預覽與後續比對。
-
-
-容量試算：4096² RGBA 每份 64 MiB；原圖兩份、複製兩份、Diff 一份共 320 MiB，尚未計 Canvas、解碼與其他配置。這不是實測峰值。
-
-## 10. 確認舊工作會取消
-
-開啟 `src/components/viewer.tsx`，找到原範例已提供的兩道處理：
-
-```ts
-controller.current?.abort();
-const id = ++revision.current;
-// 收到回應後，只接受目前這次請求。
-if (id === revision.current) setResult(next);
-```
-
-換圖或改容差會取消前一份工作；Request ID 防止晚到結果蓋掉新狀態。讀圖另有每側序號。
-
-
-## 11. 確認 Worker 會清理
-
-回 `run-compare.ts`，檢查成功、錯誤、取消與 30 秒逾時的收尾，都會終止 Worker 並移除 listener。
-
-
-## 12. 先檢查程式，再啟動
-
-```sh
-bun run typecheck
-bun run lint
-bun run test
-bun run build
-bun run dev
-```
-
-每項成功才進下一項。打開與步驟 3 相同的頁面，載入同一組圖片與相同容差。
-
-
-## 13. 錄下修改後的比對
-
-沿用步驟 4 的 Chrome 與 CPU 設定。
-
-Record →「開始比對」→ 結果出現 → Stop。展開 Worker track，找到 pixelmatch。
-
-
-## 14. 核對數值
-
-對照步驟 6：changed pixels、百分比與差異圖應相同。
-
-![本機 Worker 版本的實際畫面。範例的兩張小圖比對後，顯示 17,760／134,400 像素有變動。](../../assets/visual-regression-series/local/07-worker-result.webp)
-
-這張圖用「載入範例」內建的小圖擷取。先用它核對數值與差異圖，再用步驟 2 的大圖錄製 Performance，能避免把兩種測試的結果混在一起。
-
-Worker 讓計算離開 Main Thread；啟動與資料複製仍有成本，總耗時可能增加。量測前不寫加速倍數。
-
-
-## 15. 在比對中換圖
-
-開始比對後，立刻換 Before 圖片。舊結果不應出現。
-
-重新比對，應顯示新圖片的結果。再用「比對中改容差」做一次相同驗收。
-
-
-## 16. 檢查重複操作與離開頁面
-
-連續比對數次，觀察 Worker 不會持續累積。離開頁面，確認這個頁面的 Worker 已結束。
-
-再選一次尺寸不同的圖片，應顯示錯誤，換回正確圖片仍能使用。
-
-
-最後停止 dev，執行 `bun run check`。附件 Worker 階段已通過完整 build；效能錄製仍須依上面步驟實際執行，沒有可宣稱的加速倍數。
-
-下一篇：[6 驗收](../visual-regression-06-correctness-and-access/)。
+回內建圖核對上方截圖。換回大圖開始比對，立刻換另一張 Before 或調整容差，舊結果應消失，而且等候中工作不得回頭蓋掉新畫面。`viewer.tsx` 的 AbortController 取消舊工作，revision 編號則擋住晚到結果。完成後接[一像素與兩帳號的驗收](../visual-regression-06-correctness-and-access/)。

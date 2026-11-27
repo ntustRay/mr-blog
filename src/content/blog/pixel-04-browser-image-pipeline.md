@@ -1,7 +1,8 @@
 ---
-title: '[Insight] 從單張貼紙到整批圖片，怎麼安排瀏覽器內的處理流程'
-description: 用預覽驗收、透明度、尺寸與解碼記憶體判斷何時適合單張處理，何時可以整批匯出。
+title: "[Insight] Pixel Workbench 做完後，哪些資料該留、哪些畫完就該放掉"
+description: "用透明角落、ZIP 內實際像素和 Vercel 的靜態檔案回顧整條 pipeline，指出單張與批次各自的記憶體成本。"
 pubDate: 2026-11-26
+updatedDate: 2026-11-27
 category: Frontend
 series: pixel
 seriesOrder: 4
@@ -18,18 +19,19 @@ references:
   url: https://developer.mozilla.org/en-US/docs/Web/API/ImageData/data
 ---
 
-前兩篇分別把植物貼紙做成透明 PNG，再把兩張圖用同一組 WebP 設定打包。從單張切到批次之前，先確定設定真的能共用。全都是網頁預覽圖，可以統一限制長邊。有些是透明貼紙、另一些要用白底 JPEG，就需要分開處理。
+我們可以從 ZIP 開回最初的那個問題。兩張來源都能成功輸出 WebP，並不代表第一張的四個角還透明，也不代表第二張的白邊完整。上一課刻意解碼輸出的 Blob，正是為了把「檔案寫出去了」和「輸出的像素符合要求」分開驗。
 
-![Pixel Workbench 批次結束後，清單仍看得到這次匯出的原圖與貼紙來源](../../assets/project-series/pixel/03-batch-result.webp)
+![練習的原圖與貼紙，各自重新解碼後列出的尺寸和 MIME。](../../assets/project-series/pixel/03-webp-lab.webp)
 
-## 長邊上限和來源尺寸各管一件事
+| 留下什麼 | 什麼時候需要 | 對應程式 |
+| --- | --- | --- |
+| 原始 File 與預覽 URL | 改參數後從頭重算、回到原圖 | src/core/files.ts、src/ui/App.tsx |
+| 當次工作設定 | 確保整批使用同一個 tool、尺寸與格式 | App.tsx 傳給 archiveResults 的 snapshot |
+| 單張圖的像素與工作畫布 | 選工具、畫輪廓、縮圖、輸出 Blob | image.worker.ts、pipeline.ts、features/sticker.ts |
+| 封裝完的 ZIP chunks | 產生最終可下載的 Blob | files.ts 的 archiveResults |
 
-一張 4,000 × 3,000 的圖，若用 8-bit RGBA 解碼，單份像素資料約 48 MB，還不含輸入檔、Canvas、輸出和 ZIP。這是用像素數乘以每像素 4 bytes 的估算。設定長邊 512 px 會減少輸出尺寸，讀取原圖時的開銷仍取決於實作和瀏覽器的解碼方式。
+如果輸入是 4000 × 3000、以 8-bit RGBA 展開，單份像素約 48 MB（4000 × 3000 × 4 bytes）。原圖、輪廓與結果若同時存在，最高占用還會增加。Worker 讓主執行緒可繼續回應，逐張處理控制同時工作的數量；ZIP 最終仍會保留已編碼的內容直到下載。用兩張小圖跑出來的結果，無法推算手機整批大圖的峰值。
 
-對要在瀏覽器處理很多圖片的工具，依序做能降低同時存在的解碼緩衝，但最後建立 ZIP 還會占用裝置資源。用 Worker 可以讓介面主執行緒處理使用者操作，仍要限制同時處理的檔案和可接受的輸入尺寸。
+部署的責任也比較清楚了。Vercel 提供 `dist` 的 JavaScript、模型、WASM；真的圖片處理發生在使用者瀏覽器。當一般貼紙成功、只有人像工具出錯，先查模型資產；若本機與正式站都把透明角落變白，就回 pipeline 查輸出格式和畫布合成。這兩種故障需要的證據不同。
 
-## 先在兩種邊界樣本上檢查設定
-
-透明貼紙挑外框最細的一張，確認 alpha 與輪廓。普通照片挑解析度最高的一張，確認縮小後的細節和畫質。兩張都符合用途，就記下工具、格式、畫質與尺寸，把來源和已處理的檔案放在不同位置，再用同設定匯出整批。
-
-若要繼續裁切或加字，先保留一份透明 PNG 當中間圖，交付時再決定 WebP 或 JPEG。這樣既能回到保留透明的版本，也避免一路用有損格式反覆重存。
+[回 Pixel Workbench 系列](../../series/pixel/)

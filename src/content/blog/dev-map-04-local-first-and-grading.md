@@ -1,32 +1,32 @@
 ---
-title: '[Insight] Dev Map Lab 做完之後，哪些資料該留在本機？'
-description: 回看 IndexedDB、可攜備份、題目規準及程式隔離的取捨，整理可驗收的本機與雲端邊界。
+title: "[Insight] 學習站驗收時，把答對題目、留下筆記、跨裝置還原分開測"
+description: "回看自訂教材、QuickJS 執行、IndexedDB 與 Neon 備份四個邊界，判斷下一次修改應從哪一層開始。"
 pubDate: 2026-11-26
+updatedDate: 2026-11-27
 category: System Design
 series: dev-map
 seriesOrder: 4
 tags: [IndexedDB, Web Worker, PostgreSQL, Testing]
 references:
-  - title: Dev Map Lab 架構與各層責任
+  - title: "Dev Map Lab 架構與資料流"
     url: https://github.com/ntustRay/dev-map-lab/blob/main/docs/ARCHITECTURE.md
-  - title: Dev Map Lab 會員與備份
+  - title: "會員、Neon 服務設定與 migrations"
     url: https://github.com/ntustRay/dev-map-lab/blob/main/docs/MEMBERSHIP.md
-  - title: Dev Map Lab 評分規則
+  - title: "執行與評分規則"
     url: https://github.com/ntustRay/dev-map-lab/blob/main/docs/GRADING.md
 ---
 
-跑完一題後重新整理，段落筆記和作答仍在。這表示同一個瀏覽器能讀回資料。把同一個網址開在另一台電腦時，該裝置沒有這份 IndexedDB，得用 JSON 匯入才能接著做。這兩種情境用不同驗收方式，才能知道哪一層需要改。
+把題目寫完、重新整理看到剛才的筆記、在另一台電腦讀到備份，是三個不同的結果。前兩個可以在沒有帳號的瀏覽器完成，第三個才會動到 Neon。
 
-## 自學先求能回到當下卡住的例子
+![本機段落筆記保存後的實際畫面，可以重新整理核對定位是否還在。](../../assets/project-series/dev-map/note.webp)
 
-筆記和程式草稿預設放本機，所以沒有帳號也能使用教材。這個做法把帳號與寄信故障隔離在會員功能，代價是瀏覽器清資料、換裝置或從 `localhost` 移到正式網域前，需要先匯出備份。平常要把理解記到 Obsidian，可以匯出單元 Markdown；打算把進度、草稿及作答一併移動，就存 JSON，並在另一個瀏覽器設定檔實際還原一次。
+| 想知道什麼 | 怎麼驗 | 失敗先往哪裡找 |
+| --- | --- | --- |
+| 教材是否被打包 | 在部署網址直接進自訂單元並重整 | catalog、單元 ID、靜態輸出的路徑 |
+| 程式測資是否有意義 | 跑只回傳輸入的初始解答，再跑 clamp 的完整解答 | 題庫的 args、expected 及 Worker 執行結果 |
+| 本機筆記是否可還原 | 同一瀏覽器重整，打開同一段落 | IndexedDB 的 origin、使用者範圍與 block ID |
+| 雲端是否可備份 | 已驗證帳號上傳後，從第二個瀏覽器取回 | endpoint、Auth session、RLS、備份 revision |
 
-會員支援手動雲端備份。依公開會員文件，若已有雲端資料，先合併再上傳，備份 revision 可擋住舊版本直接覆蓋。一個合理的雙裝置驗收，是用 A 裝置上傳新筆記，再由持有舊資料的 B 裝置嘗試備份，看它是否先提示合併。正式信箱驗證、不同帳號的資料權限、同題草稿衝突，都要各自確認。
+教材跟著 Git 版控，修錯字可以保留單元和段落 ID。若把測資的輸入規格或批改方式改了，應一併考慮題目版本，才知道哪次作答用了舊規則。公開的測資適合自學；若要用成績決定是否錄取，還需要受控的評測環境。
 
-## 測資與規準回答不同的問題
-
-程式題可比對輸入、實際輸出和預期輸出。以加總正數為例，付出最少就能補上的測資，是你真的曾寫錯的情況。測資可在前端查看，因此適合練習和規格說明；要正式評分時，需要另設受控執行與測資供應方式。
-
-簡答題靠得分點、詞組和常見錯誤規則給參考分數。正確答案換個說法，可能漏掉分數。若要評估一個本機語意模型，先挑同一題的正確改寫、部分正確與帶關鍵詞的錯誤敘述，對照人工判斷再看誤判。否則只是把看不到的規則換成看不到的分數。
-
-QuickJS WASM 放在 Worker，讓練習程式的運算可以離開主執行緒，並提供每筆時間、記憶體限制與取消。這套契約適合接受同步 `solve(...)` 與 JSON 值的題目。要支援 DOM、網路或任意 npm 套件，執行環境與風險一併改變。回顧這個專案時，可以先問下一個單元是否真的需要那些能力。只為多一道 TypeScript 純函式題，增加測資就足夠。
+本機筆記則有自己的生命週期。換網域或瀏覽器會看到另一個 IndexedDB，訪客可以先匯出 JSON。會員的雲端備份是一份帶 revision 的快照，兩個裝置同時上傳時需要檢查版本。若下一個需求只是多上一堂課，改教材和測資即可；等到要解決兩台裝置同時編輯同一則筆記，才值得設計同步與衝突處理。

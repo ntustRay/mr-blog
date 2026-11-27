@@ -1,7 +1,8 @@
 ---
-title: '[Insight] Framecheck 為什麼先把截圖比對做成一個工具？'
-description: 從審查截圖改動的問題出發，拆開像素比對、互動檢視、私人儲存與結果交付的責任。
+title: "[Insight] Framecheck 開發課：先算對一對截圖，再接上登入與私有儲存"
+description: "從兩張有差異的色塊圖認識整個練習。先看瀏覽器如何比對像素，再決定何時需要 Next.js、Vercel 和 Supabase。"
 pubDate: 2026-11-26
+updatedDate: 2026-11-27
 category: 'Dev Tools & Quality'
 series: visual-regression
 seriesOrder: 1
@@ -16,18 +17,25 @@ references:
     url: https://github.com/mapbox/pixelmatch
 ---
 
-兩張截圖都能打開，還是常看不出哪裡變了。像素比對先標出差異，審核者才有辦法放大，看這是預期變更、字型渲染差異，還是意外改到了其他區塊。Framecheck 想解決的是從找到差異到審完結果的過程。
+看下面兩張色塊，只靠前後切換，很容易漏看藍色方塊的位置變了多少。多放一張 Diff，就能圈出要審的位置。整套課從這個功能開始，到最後你會有自己的網址，可以登入、存圖，並驗證另一個帳號讀不到同一筆紀錄。
 
-![本機教學實際比對畫面，並列 Before、After、差異圖與變動像素數。](../../assets/visual-regression-series/local/03-comparison-result.webp)
+![教學版實際比對畫面。右側差異圖標出變更，下面的比例使用整張圖的像素數當分母。](../../assets/visual-regression-series/local/03-comparison-result.webp)
 
-## 為什麼先做本機版
+## 沿著一張圖片找程式的邊界
 
-一組圖加上一個已知會變動的區塊，就能檢查 Before、After 與 Diff 是否對得起來。如果圖片尺寸不同，工具要指出讀入條件有誤。如果兩邊是同一張，差異應回到零。這些條件在瀏覽器內就能測，前面不用先接帳號、資料庫和部署。
+選圖時，React 只拿到 File。瀏覽器解碼它，Canvas 才能讀出每個像素的紅、綠、藍及透明度。兩張圖尺寸相同，pixelmatch 才能比較相同座標的顏色。這條路徑都在使用者的分頁內，第一個版本不需要帳號。
 
-比對結果要回來看或交給別人審，才會需要辨識誰有權讀圖、怎麼保存，以及連結什麼時候失效。把這些責任後移，能讓教學先穩住正確性，再處理跨帳號、儲存和效能問題。
+重新整理後還想看上次那一組，資料才需要離開分頁。練習用 Supabase Auth 記住是誰，私有 Storage 保存兩張圖，Postgres 記錄檔案路徑、容差、像素數。Next.js 負責 OAuth 回程與頁面，Vercel 提供可分享的部署網址。後面再用 Web Worker 把長時間的像素迴圈移出主執行緒。
 
-## 教學做哪一段
+## 你會自己做出哪些東西
 
-[正式站的 Demo](https://visual-regression-hub.vercel.app/demo)可以先看同步縮放與不同檢視模式。本系列用可下載的獨立練習專案，從單組圖片開始做，再接 Vercel、Supabase、CI 和 Web Worker。正式產品的多人審核、可撤銷分享，以及舊資料清理，有另外的服務流程與驗收條件。
+| 做到這裡 | 手上可以驗收的東西 |
+| --- | --- |
+| [用 Next.js 接好比對器](../visual-regression-01-nextjs-bun-biome/) | 本機可選圖，內建樣本得到 17,760 個差異像素 |
+| [從 GitHub 部署到 Vercel](../visual-regression-02-vercel-deploy/) | 別台電腦可開啟的 Production URL |
+| [接 Supabase](../visual-regression-03-supabase-private-storage/) | OAuth 返回自己的頁面，重新整理可讀回個人紀錄 |
+| [接 GitHub Actions](../visual-regression-04-ci-cd/) | 一次可辨識的失敗測試及修正後的綠燈 |
+| [搬進 Worker](../visual-regression-05-web-worker/) | Diff 不變，Performance 可分辨工作在哪個執行緒 |
+| [測正確性與存取範圍](../visual-regression-06-correctness-and-access/) | 固定輸入、預期輸出與兩個測試帳號的檢查結果 |
 
-先到[本機原型](../visual-regression-01-nextjs-bun-biome/)用 Bun 和 Next.js 跑起第一個比對，或看[完整系列目錄](../../series/visual-regression/)。
+教學使用獨立的 `image-review`，附件附上三個階段的完整程式與鎖定檔。正式 Framecheck 的同步縮放、審核與分享等設計，另見[產品公開架構](https://visual-regression-hub.vercel.app/source)。[下載本系列實作附件](../../downloads/visual-regression-series.zip)。

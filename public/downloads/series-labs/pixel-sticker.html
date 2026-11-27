@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-Hant">
+<meta charset="utf-8">
+<meta name="description" content="用三個 Canvas 觀察透明遮罩、白色外框和 WebP 批次輸出的獨立課程練習。">
+<meta name="robots" content="noindex,follow">
+<link rel="canonical" href="https://ntustray.github.io/mr-blog/downloads/series-labs/pixel-sticker.html">
+<meta property="og:url" content="https://ntustray.github.io/mr-blog/downloads/series-labs/pixel-sticker.html">
+<meta property="og:locale" content="zh_TW">
+<script type="application/ld+json">[{"@context":"https://schema.org","@type":"WebSite","@id":"https://ntustray.github.io/mr-blog/#website","name":"MR Coding","description":"全端工程、TypeScript、React、Next.js、DuckDB、Canvas 與效能實作筆記。","url":"https://ntustray.github.io/mr-blog/","inLanguage":"zh-Hant","publisher":{"@id":"https://ntustray.github.io/mr-blog/about/#person"}},{"@context":"https://schema.org","@type":"Person","@id":"https://ntustray.github.io/mr-blog/about/#person","name":"MingRay","jobTitle":"Full-Stack Engineer","url":"https://ntustray.github.io/mr-blog/about/","sameAs":["https://github.com/ntustRay"]}]</script>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>貼紙外框練習</title>
+<style>
+*{box-sizing:border-box}body{margin:0;padding:30px;background:#f7f5f0;color:#242929;font:16px system-ui,sans-serif}h1{font-size:30px;margin:0 0 5px}p{margin:0 0 16px;color:#4c5d5b}main{display:flex;gap:16px}figure{margin:0;flex:1;border:1px solid #c1ccca;border-radius:10px;padding:12px;background:white}canvas{width:100%;height:175px;object-fit:contain;background-color:#c3cecc;background-image:conic-gradient(#e9efee 25%,transparent 0 50%,#e9efee 0 75%,transparent 0);background-size:16px 16px}figcaption{padding-top:8px;font-weight:600}label{display:inline-flex;align-items:center;gap:12px;margin:17px 24px 14px 0}output{color:#165f50;font-weight:700}footer{border-top:1px solid #c1ccca;padding-top:13px}a{color:#185e52}h2{font-size:20px}button{padding:6px 13px}table{border-collapse:collapse;width:100%;background:white}th,td{padding:9px 12px;border:1px solid #ced8d5;text-align:left}@media(max-width:540px){main{display:block}figure{margin-bottom:8px}canvas{height:120px}}
+</style>
+<h1>透明貼紙的外框從哪裡來？</h1>
+<p>同一份透明像素先上色，再沿圓周移動輪廓，最後把原圖疊回來。</p>
+<main><figure><canvas id="original"></canvas><figcaption>1　原圖</figcaption></figure><figure><canvas id="shape"></canvas><figcaption>2　單色輪廓</figcaption></figure><figure><canvas id="sticker"></canvas><figcaption>3　疊回原圖</figcaption></figure></main>
+<label>外框半徑 <input id="radius" type="range" min="0" max="16" value="8"><output id="value"></output></label>
+<footer><a id="png" download="sticker.png">下載透明 PNG</a></footer>
+<section id="batch" hidden><h2>批次輸出檢查</h2><p>把原圖和貼紙依序編碼成 WebP，再解碼輸出以核對實際尺寸。</p><table><thead><tr><th>檔案</th><th>尺寸</th><th>實際格式</th></tr></thead><tbody id="results"></tbody></table></section>
+<script>
+const byId = (id) => document.getElementById(id);
+function draw(radius) {
+  const original=byId("original"),mask=byId("shape"),sticker=byId("sticker");
+  original.width=160;original.height=120;
+  const ctx=original.getContext("2d");
+  ctx.fillStyle="#17685b";ctx.beginPath();ctx.ellipse(70,53,36,18,-.7,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle="#3f9977";ctx.beginPath();ctx.ellipse(99,67,23,13,.55,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle="#214f47";ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(64,93);ctx.lineTo(87,43);ctx.stroke();
+  mask.width=160;mask.height=120;
+  const ink=mask.getContext("2d");ink.drawImage(original,0,0);ink.globalCompositeOperation="source-in";ink.fillStyle="#fff";ink.fillRect(0,0,160,120);
+  sticker.width=160+radius*2;sticker.height=120+radius*2;
+  const out=sticker.getContext("2d"),steps=Math.min(64,Math.max(16,Math.ceil(radius*Math.PI)));
+  for(let i=0;i<steps;i++){const a=i/steps*Math.PI*2;out.drawImage(mask,radius+Math.cos(a)*radius,radius+Math.sin(a)*radius)}
+  out.drawImage(original,radius,radius);
+  byId("value").textContent=radius+" px";byId("png").href=sticker.toDataURL("image/png");
+}
+async function batch() {
+  byId("batch").hidden=false;
+  const body=byId("results");body.replaceChildren();
+  for(const [index,id] of ["original","sticker"].entries()){
+    const input=byId(id),scale=Math.min(1,96/Math.max(input.width,input.height));
+    const canvas=document.createElement("canvas");canvas.width=Math.max(1,Math.round(input.width*scale));canvas.height=Math.max(1,Math.round(input.height*scale));
+    canvas.getContext("2d").drawImage(input,0,0,canvas.width,canvas.height);
+    const blob=await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error("編碼失敗")),"image/webp",.85));
+    const decoded=await createImageBitmap(blob),row=body.insertRow();
+    const link=document.createElement("a");link.href=URL.createObjectURL(blob);link.download=(index+1)+"-"+id+"."+(blob.type==="image/webp"?"webp":"png");link.textContent=link.download;
+    row.insertCell().append(link);row.insertCell().textContent=decoded.width+" × "+decoded.height;row.insertCell().textContent=blob.type;decoded.close();
+  }
+}
+const batchMode=new URLSearchParams(location.search).has("batch");
+function render(){draw(Number(byId("radius").value));if(batchMode){for(const link of byId("results").querySelectorAll("a")) URL.revokeObjectURL(link.href);batch().catch(error=>{byId("results").textContent=error.message})}}
+byId("radius").addEventListener("change",render);render();
+</script>
+</html>

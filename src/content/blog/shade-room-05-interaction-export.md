@@ -2,6 +2,7 @@
 title: '[Guide] 線上試妝 05：完成比較、縮放、收藏與下載'
 description: 拆解 Zustand 與引擎的狀態邊界、比較線座標轉換、CSS 縮放拖曳、妝容持久化與 Canvas PNG 匯出，避免預覽與下載混用尺寸。
 pubDate: 2026-11-02
+updatedDate: 2026-11-27
 category: "Frontend"
 series: shade-lab
 seriesOrder: 5
@@ -28,8 +29,23 @@ references:
 
 <figure>
   <a href="../../images/shade-room-series/05-compare.webp"><img src="../../images/shade-room-series/05-compare.webp" alt="Shade Room 實際比較模式，左側原圖、右側試妝，中央有可拖動分界。" loading="lazy" decoding="async" /></a>
-  <figcaption>實際比較模式截圖。畫面分界是 UI 元素，左右是否套用妝效則由 Shader 決定。</figcaption>
+  <figcaption>Shade Lab 完整版的比較模式。畫面分界是 UI 元素，左右是否套用妝效則由 Shader 決定。下方練習改用固定圖形核對混色與遮罩。</figcaption>
 </figure>
+
+## 動手做：讓比較線只裁切預覽，下載仍然是完整影像
+
+[下載 Shade Lab 公開練習專案](../../downloads/shade-workshop.zip)。解壓後，從含 `package.json` 的目錄使用 Node.js 24 執行 `npm install`、`npm run dev`，開終端機列出的網址。 找 `main.js` 的 `clip`。把它的內容改寫成以下兩行，儲存後將「比較線」拉到最右，左側會露出整張原圖：
+
+```js
+const percent = get("split").valueAsNumber;
+result.style.clipPath = "inset(0 0 0 " + percent + "%)";
+```
+
+保持濃度大於 0 並下載 PNG。把下載的圖另外開啟，中央應有紅色環帶；比較線只裁切 CSS 顯示範圍。再將濃度調成 0 下載一次，兩張 PNG 尺寸應相同，著色區域的像素應不同。固定幾何圖尺寸是 360 × 220，換上照片就以縮放後的 Canvas 尺寸為準。
+
+<figure><a href="../../images/shade-room-series/workshop-strength-zero.webp"><img src="../../images/shade-room-series/workshop-strength-zero.webp" alt="Jo 人像的濃度滑桿已拉到零，右側仍可看到同一張嘴唇遮罩，左側人像維持原色。" loading="lazy" decoding="async" /></a><figcaption>上傳照片後，把濃度拉到零再下載。右側仍看得到模型找出的嘴唇位置，方便確認這次改動的是混色強度。</figcaption></figure>
+
+練習用兩張疊放的 Canvas 與 CSS 裁切，`toBlob` 就能取回完整輸出。正式版在 shader 裡畫比較線，匯出時才需要先關閉比較設定、重畫、複製成獨立快照，然後恢復原畫面。下面保留兩個實作的座標與生命週期差異。
 
 ## 1. 狀態放在哪裡
 

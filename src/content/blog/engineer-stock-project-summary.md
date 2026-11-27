@@ -2,6 +2,7 @@
 title: '[Insight] 工程師選股網做完後，怎麼確認資料和權限都可信？'
 description: 用行情日期、快照版本與跨帳號測試驗收選股網，說明靜態快照的適用條件與下一個擴充時機。
 pubDate: 2026-11-26
+updatedDate: 2026-11-27
 category: 'System Design'
 series: engineer-stock
 seriesOrder: 13

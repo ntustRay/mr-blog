@@ -1,70 +1,111 @@
 ---
-title: '[Guide] 在 Dev Map Lab 跑第一題 JS／TS 測資，留下能找回的筆記'
-description: 從本機啟動、對照失敗測資到修好函式，最後確認筆記可重載並匯出 Markdown 和 JSON。
+title: "[Guide] 替 Dev Map Lab 做一堂 TypeScript 課，讓題目、測資和筆記連起來"
+description: "在 repo 新增可運作的 clamp 教材與四類題目，從失敗的邊界測試一路驗到靜態輸出。"
 pubDate: 2026-11-26
+updatedDate: 2026-11-27
 category: Programming & Algorithms
 series: dev-map
 seriesOrder: 2
 tags: [JavaScript, TypeScript, IndexedDB, Bun]
 references:
-  - title: Dev Map Lab 本機執行說明
-    url: https://github.com/ntustRay/dev-map-lab#本機執行
-  - title: 值、參照與不修改輸入的題庫
-    url: https://github.com/ntustRay/dev-map-lab/blob/8abcf431ce400a7b04b2a7086dafffeafbd0ff60/content/lessons/javascript-values/questions.json
+  - title: "教材格式與驗證規則"
+    url: https://github.com/ntustRay/dev-map-lab/blob/main/docs/CONTENT.md
+  - title: "內容與段落定位測試"
+    url: https://github.com/ntustRay/dev-map-lab/blob/main/tests/content-and-anchors.test.ts
+  - title: "Dev Map Lab 架構與資料流"
+    url: https://github.com/ntustRay/dev-map-lab/blob/main/docs/ARCHITECTURE.md
 ---
 
-這次跑「加總正數」的五筆測資，然後把其中一個邊界條件存成段落筆記。準備 Node.js 24、Bun 1.4.4 和一個 Chromium 系瀏覽器。練習與筆記可以在訪客模式完成。
+這一課要在自己的開發環境做出下面的單元。下載的教材檔和題庫可以直接改；完成條件是你的新課出現在路線中，失敗的起始程式能經過修改通過三筆測試。
 
-## 1. 在本機開啟工作台
+![新增 clamp 教材後，頁面有單元標題與低於下限、在區間內、高於上限三個例子。](../../assets/project-series/dev-map/clamp-content.webp)
+
+## 1. 建立新單元，給段落一個穩定的 ID
+
+準備 Node.js 24 和 Bun 1.4.4。從公開 repo 開始，若下一堂要部署，可先在 GitHub Fork，將 clone 網址換成自己的 fork。
 
 ```sh
-node --version
-bun --version
 git clone https://github.com/ntustRay/dev-map-lab.git
 cd dev-map-lab
 bun install --frozen-lockfile
+bun run content:check
+```
+
+在 `content/lessons/` 新建 `typescript-clamp/`。將下列兩個檔案另存到該資料夾，檔名保留為 `lesson.md`、`questions.json`。[下載教材 lesson.md](../../downloads/dev-map-series/typescript-clamp/lesson.md) · [下載完整題庫 questions.json](../../downloads/dev-map-series/typescript-clamp/questions.json)
+
+打開 `lesson.md`。專案用 frontmatter 的 `id: typescript-clamp` 串路線和題庫；正文裡的下列註解是段落筆記的定位點。把段落標題改成自己更好懂的說法，保留註解中的 ID。
+
+```markdown
+<!-- block: clamp-cases -->
+
+## 先寫出三種結果
+```
+
+## 2. 設計測資，讓錯誤答案只通過一筆
+
+打開 `questions.json`，搜尋 `"id": "typescript-clamp-code"`。同一檔還有選擇、填空、簡答，這個專案的內容測試會確認每個單元包含四種題型。程式題的 `args` 按位置交給 `solve(value, min, max)`。若預期答案只寫在說明文字，測試不會替你檢查。
+
+```json
+[
+  {
+    "id": "below",
+    "label": "低於下限",
+    "args": [
+      -3,
+      0,
+      10
+    ],
+    "expected": 0
+  },
+  {
+    "id": "within",
+    "label": "位於區間內",
+    "args": [
+      6,
+      0,
+      10
+    ],
+    "expected": 6
+  },
+  {
+    "id": "above",
+    "label": "高於上限",
+    "args": [
+      18,
+      0,
+      10
+    ],
+    "expected": 10
+  }
+]
+```
+
+起始解答直接回傳 `value`，三筆只有 `6` 原本就在區間內。先保留這個錯誤版本，等一下可以看清楚執行器是否真的有抓到兩端的錯。
+
+## 3. 加進路線，檢查內容關聯
+
+打開 `content/catalog.json`，找到 `language-foundations`。在它自己的 `lessonIds` 內，把 `"typescript-clamp"` 加在 `"typescript-narrowing"` 後面，保留其他單元。回到根目錄執行：
+
+```sh
+bun run content:check
+bun run test
 bun run dev
 ```
 
-打開終端機顯示的網址。從「語言與資料」路線進入「值、參照與不修改輸入」，切到「練習」，再點「實作題」。如果編輯器還在載入，等到出現 `function solve(values)` 再執行。
+![加入示例教材之後，內容驗證與段落定位測試的實際輸出。](../../assets/project-series/dev-map/clamp-validation.webp)
 
-## 2. 先跑起始碼，找出差在哪一筆
+這是原示例版本的數量。你 clone 的版本可能已有更多單元；看新增前後多一個單元、四道題，並確認沒有 ID 重複或缺少先修。頁面找不到新課時，重啟開發伺服器，檢查 catalog 名稱、目錄名稱、題庫 `lessonId` 和教材 `id` 四處一致。
 
-按「執行全部測資」，展開「正負數與零」。這一筆的輸入參數顯示 `[[1,-2,0,3]]`，外層陣列是函式參數列，裡面那一份陣列才是 `values`。起始碼只回傳 0；這筆期望 4，因此會標「輸出不同」。空陣列和全部負數剛好期望 0，會通過。
+## 4. 修正解答，驗證學員真的能完成這題
 
-![起始碼回傳 0，正負數與零的測資顯示預期 4、實際 0，空陣列與全部負數兩筆通過。](../../assets/project-series/dev-map/run-failed.webp)
-
-## 3. 保留輸入，修好 JS 和 TS 兩份草稿
-
-在 JavaScript 編輯器貼上這段，重跑測資。
-
-```js
-function solve(values) {
-  return values.filter(value => value > 0)
-    .reduce((sum, value) => sum + value, 0);
-}
-```
-
-`filter` 建立一份只含正數的新陣列，`reduce` 由 0 開始加總。空陣列跑到最後仍會回傳 0，原始陣列也會保留。切到「TypeScript」時會看到另一份草稿，在該語言的編輯器貼上以下版本，再跑一次。
+開本機網址，進「語言與資料」裡的新單元，開啟實作題，切 TypeScript，先跑起始程式。低於下限、高於上限應失敗。接著在題目的編輯器寫入：
 
 ```ts
-function solve(values: number[]): number {
-  return values.filter(value => value > 0)
-    .reduce((sum, value) => sum + value, 0);
+function solve(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value));
 }
 ```
 
-![TypeScript 草稿已提交，執行結果的五筆案例全部標示通過。](../../assets/project-series/dev-map/run-passed.webp)
+![三筆 TypeScript 測試都通過。展開最下方的「高於上限」，輸入 18，預期值與實際值都是 10。](../../assets/project-series/dev-map/clamp-verified.webp)
 
-五筆都通過後，這題的執行流程就驗證完成。頁面會轉譯 TS 再執行，若要檢查大型範例的靜態型別，另外使用 `tsc`。
-
-## 4. 留下筆記，再把它帶走
-
-1. 切回「教材」，在「用輸入與輸出描述資料處理」的段落旁按「＋」。
-2. 寫下「空陣列回傳 0，正負混合時只加大於 0 的值」，按「儲存筆記」。
-3. 重新整理，在同一單元切到「段落筆記」，核對原文連結和筆記還在。「匯出本單元 Markdown 筆記」會下載 `javascript-values-notes.md`，用文字編輯器核對剛寫的句子。
-4. 若要保存作答和程式草稿，從側欄開「我的筆記」，按「匯出全部資料」，保留下載的 JSON。Markdown 適合閱讀，JSON 用於把整份學習紀錄匯回工具。
-
-![段落筆記面板顯示空陣列回傳 0 的測試筆記，並保留定位原文的操作。](../../assets/project-series/dev-map/note.webp)
-
-畫面是在本機瀏覽器執行公開 commit `8abcf43` 的建置產物時擷取。筆記內容為教學測試資料。
+替「先寫出三種結果」存一則段落筆記，重新整理確認筆記仍屬於該段落。最後停止 dev server，執行 `bun run build`。根目錄 `out/` 應出現靜態檔；下一篇從這份產物接到自己的網址。

@@ -1,7 +1,8 @@
 ---
-title: '[Insight] Web Authentication Component 03｜認證與資料授權要分開驗收'
-description: 從共用 session 的操作結果，回頭驗證真實回呼、登出與兩個帳號間的資料隔離。
+title: "[Insight] 共用登入頁接好後，如何驗收 session 和資料權限"
+description: "用登入、重新整理、登出與帳號切換，定位 OAuth、React 狀態或後端授權是哪一層出問題。"
 pubDate: 2026-11-26
+updatedDate: 2026-11-27
 category: Full-stack
 tags: [React, Authentication, Authorization]
 series: web-auth
@@ -13,19 +14,22 @@ references:
     url: https://github.com/ntustRay/web-authentication-component/blob/e5d66fb9154c6c8aaa5bdb13982acd8429ce079f/docs/MIGRATION.md
 ---
 
-前一篇驗到兩個元件會跟著同一份 session 更新。接進產品後，還要答一個不同的問題。假如測試帳號 A 能看到自己的私人資料，帳號 B 能不能取得同一筆？這個結果由 API／Server Action 或資料庫的 Row-Level Security 決定，與登入按鈕是否顯示無關。
+回頭看會員練習站，程式碼很短，是因為工作分得清楚。GitHub 確認帳號，Supabase 接收回呼並建立 session，React 的兩個元件從同一個 controller 讀結果。Vercel 供應編譯完成的網頁，沒有持有 GitHub Client secret。
 
-## 把驗收拆成兩組
+![套件 Playground 的模擬登入畫面：面板及共用會員狀態顯示同一位使用者。](../../assets/project-series/web-auth/02-simulated-session.webp)
 
-| 驗收位置 | 可以怎麼確認 |
+## 把哪一段壞掉說清楚
+
+| 實際結果 | 優先核對 |
 | --- | --- |
-| React 介面 | 登入後導覽與面板一致。取消 OAuth 後能重試，登出後畫面回到未登入。 |
-| 認證服務 | 測試 GitHub 回呼與回到產品的目的地，重整後仍能讀到有效 session。 |
-| 資料授權 | B 無法用自己登入後的產品操作讀取 A 的私人資料，未登入的訪客也無法讀取。 |
-| 帳號切換 | 同一個分頁從 A 登出後用 B 登入，確認 A 的舊資料不留在共用 store 或快取。 |
+| 按登入就報 provider 未啟用 | 登入按鈕、adapter、Supabase 後台是否都選 GitHub。 |
+| GitHub 完成授權，卻回到錯誤網站 | GitHub 登記的是 Supabase callback；Supabase allowlist 和 React callback 選的是正確產品網域。 |
+| 回站會登入，重新整理又顯示未登入 | 是否在原來的 origin 與瀏覽器完成登入、重新整理後的 client 是否連同一個專案。 |
+| 面板顯示會員、導覽列仍是訪客 | 兩者是否在同一個 `AuthProvider` 下，使用同一個 controller。 |
+| 從 A 換成 B，畫面還留著 A 的資料 | 產品端是否清掉使用者專屬查詢快取，資料 API 是否驗證當下的身份。 |
 
-共用元件的收益在於各站可以用同樣的方式處理 loading、錯誤回饋、語系和 session 顯示。保留各站身份服務的代價，是每個產品還要單獨驗收回呼與資料權限。這一層本來就受該產品的資料模型和存取條件影響，適合放在產品本身的整合測試。
+## 共用元件能驗到哪裡
 
-既有產品若已經有帳號，先用測試環境對照遷移前後的 user ID 與資料歸屬，再換登入介面。若密碼政策也要改，另外驗舊帳號登入、新帳號註冊和密碼重設。套件預設的新密碼規則不會在一般登入時改寫輸入，但後端如何接受既有密碼，仍取決於產品使用的認證服務。
+第二篇的練習沒有私人資料表，所以它能驗收 OAuth 往返與 session 顯示。等產品要顯示「我的文件」，再加入一個屬於帳號 A 的測試文件。用 A 登入時應看得到，從同一分頁登出再以 B 登入，清單不得出現 A 的文件；API 或資料庫也必須依當下的使用者授權。只把按鈕隱藏，無法提供這項保證。
 
-使用這個套件時，可以保留兩份驗收紀錄。一份確認共用 UI 如何處理正常與錯誤狀態，另一份記下每個產品的回呼、session 和資料授權。新增產品時能沿用前一份，再用自己的測試帳號補跑後一份。
+改用另一個認證服務時，可以保留 `AuthPanel`、`AuthStatus` 與這張驗收表。需要重做的是 adapter 配置、provider 的設定與回呼，以及產品真正依賴的資料權限。套件 Playground 中的成功和錯誤畫面適合檢查介面狀態，完整回呼仍要在自己的測試站跑一次。

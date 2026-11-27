@@ -1,34 +1,32 @@
 ---
-title: "[Insight] GitHub Kanban 移到 Verify 後，怎麼知道能進 Formal"
-description: "用交付證據定義欄位，回顧 GitHub 唯讀、獨立狀態、同步與寫入衝突的取捨。"
+title: "[Insight] 一張卡存回來以後，怎麼驗收排序、同步和版本衝突？"
+description: "從一次拖曳看懂 optimistic UI、獨立資料表與 version，比對兩個視窗同時修改的結果。"
 pubDate: 2026-11-26
+updatedDate: 2026-11-27
 category: Dev Tools & Quality
 tags: ["GitHub", "Kanban", "PostgreSQL"]
 series: kanban
 seriesOrder: 4
 references:
-  - title: GitHub Kanban 的同步與儲存實作
-    url: https://github.com/ntustRay/github-kanban/blob/c69e5fa98efebae090f52199a2c8bb7166706ca7/src/lib/board.ts
-  - title: GitHub Kanban 的權限與驗證說明
-    url: https://github.com/ntustRay/github-kanban#readme
+  - title: "GitHub Kanban 專案與 GitHub App 設定"
+    url: https://github.com/ntustRay/github-kanban
+  - title: "看板同步、版本與資料庫交易"
+    url: https://github.com/ntustRay/github-kanban/blob/main/src/lib/board.ts
+  - title: "移動單張卡片的排序程式"
+    url: https://github.com/ntustRay/github-kanban/blob/main/src/lib/card-order.ts
 ---
 
-在 Demo 把 `my-project` 從 In progress 移到 Verify，再留下一條備註，得到的是一個待驗收專案。要進 Formal，先在備註旁放一個能重查的結果。部署站是否還指向舊版，打開正式連結才能知道；套件是否發版，查 registry 上的版本比較快；功能修正則要有對應的 PR 和驗收方式。
+拖曳成功會先在瀏覽器看到新的順序，但正式看板還有兩個條件要滿足：重整能讀回相同狀態，下次 GitHub 同步也不能洗掉你排好的順序。
 
-| 要交付什麼 | Verify 裡寫的動作 | 移到 Formal 前留下的證據 |
+![示範看板的 Verify 欄已接到移動的卡片。資料庫驗收必須回到登入後的正式路徑。](../../assets/project-series/kanban/02-after.webp)
+
+| 你要驗收哪條路 | 操作 | 可觀察結果 |
 | --- | --- | --- |
-| 網站 | 從公開入口走完主要操作 | 正式 URL、對應部署與本次檢查的頁面 |
-| npm 套件 | 以指定版本裝到乾淨的專案 | registry 版本、安裝和最小 import 結果 |
-| 功能修正 | 重跑原本會失敗的流程 | 合併的 PR 與重現步驟或測試結果 |
+| React 到 Postgres | 在登入後的看板替測試卡新增備註，重整 | 同張卡還能讀回內容 |
+| GitHub 到看板 | 修改狀態後按 repo 同步 | repo metadata 更新，手動狀態與備註仍在 |
+| 兩個同時開啟的頁面 | 先開 A、B 兩個分頁，A 儲存後讓尚未重整的 B 改同一張卡 | 若 B 送的是舊 version，Network 回 409；重新讀取可見 A 的修改 |
+| 個人看板隔離 | 兩個測試帳號各授權同一個 repo，各寫不同備註 | 各自登入後只看到自己的備註 |
 
-## 為什麼 repo 和看板要分開存
+排序只傳一張卡的新位置，減少拖曳時的寫入範圍。代價是不同卡片可能碰巧取到相同中點，現有 comparator 會再以 `fullName` 決定順序。同一張卡的衝突則由 server 鎖住資料列、比對 `version`，通過時在同一筆交易寫入卡片和 activity。把條件寫在 server，關掉某個舊分頁也不會改變資料庫規則。
 
-正式看板經 GitHub App 讀取可存取的 repository。每位使用者的卡片用 `user_id` 和 `repo_id` 識別，於是兩個人能拿同一個 repo 做不同安排。資料分開存的代價是兩邊沒有共同的更新時鐘。專案改名或權限撤銷，必須另外同步。同步抓取 repo 清單後，既有卡片只更新名稱、metadata 與可見性，手動改過的欄位與備註會留下。
-
-一次拖曳只改一張卡，正式站仍要處理兩個瀏覽器視窗同時寫入。伺服器會重新確認 repo 存取權、鎖定卡片資料列，並比對客戶端帶來的 `version`。舊版本回傳 `409`，使用者要重讀才知道對方改了什麼。寫入通過時，卡片更新和 activity 記錄在同一筆交易完成。Demo 能驗證看板操作，上述寫入與權限行為要在帶有測試帳號和資料庫的環境分開驗收。
-
-## 先把狀態定清楚，再考慮自動化
-
-第一次整理自己的專案，先挑三張卡片，讓每張 Verify 都有一個具體動作。下次再打開，如果光看備註就知道要去哪裡確認，就保留這套欄位。如果需要多人追同一組 Issues、跨 repo 分派工作，工作項目的共用狀態應放到團隊原本追 Issue 和 PR 的地方。個人看板留著回答今天該回哪一個專案。
-
-若把 Agent 接進來，較適合先讓它讀狀態、回報待驗證項目。要允許它推進欄位，再決定哪些證據可以由程式核實，哪些要有人的驗收結果。
+看完這條路，三種故障各有入口。卡片落點不對，重跑 `tests/card-order.test.ts`。重新整理就消失，檢查看板寫入的回應與 Neon 連線。清單缺特定 repo，先回 GitHub App installation 看授權。這三種問題長得都像「看板有錯」，修的位置卻完全不同。

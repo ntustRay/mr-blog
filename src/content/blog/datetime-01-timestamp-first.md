@@ -1,7 +1,8 @@
 ---
-title: "[Insight] 為什麼 DateTime Range Picker 用毫秒當輸入輸出"
-description: "從跨時區的 Log 查詢出發，區分 epoch 毫秒、畫面時區，以及使用者按 Apply 的時機。"
+title: "[Insight] 做一個圖表時間篩選器，先決定 Apply 要送什麼"
+description: "用三筆 Log 設計 React 時間篩選器，把畫面時間、草稿和真正生效的查詢拆開。"
 pubDate: 2026-11-26
+updatedDate: 2026-11-27
 category: Frontend
 tags: ["React", "TypeScript", "Timezone"]
 series: datetime
@@ -13,16 +14,20 @@ references:
     url: https://ntustray.github.io/react-datetime-range-picker/
 ---
 
-台北的工程師選今天 16:00 到 17:00 查 Log，UTC 的同事要重查相同區間，畫面可以顯示 08:00 到 09:00。兩邊給 API 的查詢參數應代表同一段時間。如果區間只留下 `16:00` 和 `17:00`，伺服器還要知道那是誰的時區，才知道要查哪兩個瞬間。
+假設圖表一開始列出 UTC 12:30、13:00 和 13:15 三筆 Log。使用者把結束時間從 13:30 往前改到 13:00，什麼時候該更新圖表？本系列選擇在按下 Apply 後才查詢，並用一個容易驗證的結果貫穿四篇：三筆應該變成一筆。
 
-React DateTime Range Picker 的值是兩個 Unix epoch 毫秒。IANA timezone，例如 `Asia/Taipei`，用於顯示和解析使用者輸入。切換顯示時區後，畫面上的時刻可以改變，epoch 毫秒維持原值。這讓前端能換輸入語境，API 仍可以使用一致的整數單位。
+![按下 Apply 後，篩選結果只剩 UTC 12:30。](../../assets/project-series/datetime/02-events.webp)
 
-## 一個元件有兩種時間值
+## 先看會寫出哪些東西
 
-使用者先改開始，再調結束，可能還要把輸入修正一次。如果每次 `onChange` 都重查圖表，每次中間值都會產生查詢。Picker 把這些草稿事件交給 `onChange`，等合法且完整的區間按下 Apply 才觸發 `onCommit`。頁面可以在草稿變動時更新提示，查資料則留在 commit。
+| 位置 | 會寫的程式 | 為什麼需要 |
+| --- | --- | --- |
+| React 頁面 | 一份 `draft`、一份 `committed` | 編輯欄位時保留原本的圖表，按 Apply 才套用。 |
+| 查詢函式 | 以 epoch 毫秒比較三筆資料 | 切換到台北時區之後，圖上仍是同一批事件。 |
+| 瀏覽器測試 | 重現紐約春季缺口與秋季重複時刻 | 保障使用者輸入的當地時間能對到明確的一個瞬間。 |
 
-這個拆法特別適合查 Log、事件或圖表這種「使用者挑完範圍才往下查」的介面。如果只是跳到某一天看日曆，介面可保留日期字串，並在應用決定怎麼處理日界線。要保存每天本地 09:00 開始的週期排程，還需要保留當地時刻、時區和重複規則。單一 timestamp 只能表示一次發生的瞬間。
+試想使用者看到台北 20:00，跟倫敦同事約定用 UTC 12:00 查同一份 Log。API 可以直接收同一個整數。若只傳 `20:00`，少了日期、時區，後端就無法判斷是哪一天的事件。Picker 用時區解讀和顯示輸入，對外用 Unix epoch 毫秒交付起訖點。
 
-## 從畫面一路查到資料邊界
+這組設計適用於已經發生的事件。若要排「每個工作日紐約時間 09:00」的班表，還要另存當地時刻、時區與重複規則；用第一次發生的 timestamp 無法描述之後的夏令時間。
 
-下一篇在 Playground 改結束時間、看 Draft 和 Committed 分開，再把同樣的資料流接到 React。之後用實際的紐約夏令時間案例檢查不存在和重複的本地時刻。最後回到查詢條件，驗證剛好落在區間端點的事件應該去哪一側。
+[第二篇從空的 React 專案開始，接上 Picker 與三筆 Log。](../datetime-02-draft-and-apply/)

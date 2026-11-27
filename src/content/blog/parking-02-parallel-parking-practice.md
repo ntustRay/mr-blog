@@ -1,7 +1,8 @@
 ---
-title: '[Guide] 慢慢停路邊停車：同一個位置切換後視鏡和俯視'
-description: 用低速模式跑一輪右側停車，逐段暫停示範，對照第一人稱與正上方，再自己提交結果。
+title: "[Guide] 寫慢慢停的第一個模擬迴圈，畫出 D 與 R 的蠕行距離"
+description: "在原專案根目錄新增 Node.js 程式，固定每步 1/120 秒，記下相對起點的距離並畫出兩條軌跡。"
 pubDate: 2026-11-26
+updatedDate: 2026-11-27
 category: Game Development
 series: parking
 seriesOrder: 2
@@ -16,31 +17,50 @@ references:
   url: https://github.com/ntustRay/parallel-parking-lab#操作
 ---
 
-用鍵盤做一輪右側停車。先在示範裡找出回正的時機，接著從同一個起點自己操作。需要開啟 [慢慢停](https://ntustray.github.io/parallel-parking-lab/) 和支援 WebGL 2 的桌面瀏覽器。
+![本課程式執行後的距離圖。五秒時 D 往正 z 方向 1.39 m，R 往負 z 方向 1.39 m。](../../assets/project-series/parking/02-creep-trace.webp)
 
-## 1. 固定條件
+圖中兩條線是同一台車，只換排檔，沒有踩油門。先自己寫出資料，再用附件畫出和上圖相同的結果。
 
-練習項目選「路邊停車」，車位大小用「標準」，方向選右側。練習方式保留「練習」，觀察視角選第一人稱，勾選低速練習，再按「開始練習」。
+## 1. 讓遊戲與終端機共用物理模組
 
-![慢慢停的練習設定，已選路邊停車、標準車位與右側方向](../../assets/project-series/parking/02-setup.webp)
+準備 Git、Node.js 22 以上，在新的工作目錄執行：
 
-## 2. 在示範裡停在回正前後
+```sh
+git clone https://github.com/ntustRay/parallel-parking-lab.git
+cd parallel-parking-lab
+npm start
+```
 
-1. 若左側教練沒出現，按 `T` 展開。勾「每步暫停觀察」，按「入位示範」。
-2. 用「繼續示範」逐段前進。每次停下來先看左側的教練提示，再按提示看相應後視鏡。右鏡可核對路緣，斜退回正前也要留意道路側的左鏡。找不到格線時，可以點鏡面放大。
-3. 到斜退入格的步驟，按 `3` 切「正上方」。看車尾是否已跨入格線，以及車頭和前車還有多少空間。按 `1` 切回第一人稱，車仍停在同一個位置。
+打開 `http://127.0.0.1:4173`，這是 Three.js 練習場。保持伺服器開著，另開終端機進同一個資料夾。專案的 `physics.js` 不依賴 DOM，下面的迴圈直接載入同一份程式。
 
-![駕駛座畫面同時顯示左、中、右三面後視鏡，右鏡可觀察靠路緣的一側](../../assets/project-series/parking/02-cockpit.webp)
+![原專案的場景選擇頁。Node.js 練習對應標準車格、右側路邊停車。](../../assets/project-series/parking/02-setup.webp)
 
-示範裡的角度是這個車格和車身模型的參考值。下一輪先用教練提示找同一個位置，切俯視只用來確認自己有沒有看對。
+## 2. 新增自己的五秒模擬
 
-## 3. 自己做一次並送出
+在 `physics.js` 旁建立 `creep.mjs`。將初始狀態留在 scene，每次更新自己的 state，第二個檔位才能回到同一個起點。
 
-1. 按 `Backspace` 重新練習。按住 `S` 或空白鍵煞車，按 `R` 排倒檔。放開煞車，讓車先靠蠕行移動。需要停住觀察時再踩煞車。
-2. 依教練提示依序做定位、斜退和回正直退。第三段在教練提示回正時先煞停，按 `X`，確認方向盤回正才繼續。需要保持打滿時，用 `V` 固定向右或 `Z` 固定向左。
-3. 照提示反打並微調。用 `3` 檢查車身各角都在格內、車身和長邊平行。踩煞車到速度顯示 `0.0`，按 `P`，再按 `E` 提交。
-4. 展開結果，先記下沒達標的條件。若車頭還跨線，下一輪回到斜退、回正的分界，觀察從哪一步開始偏離。
+```js
+import { scenario, step } from "./physics.js";
 
-設定畫面取自本機啟動的公開原始碼，駕駛座畫面取自 [慢慢停的公開圖庫](https://ntustray.github.io/parallel-parking-lab/screenshots/)。
+const scene = scenario("normal", 1, "parallel");
+for (const gear of ["D", "R"]) {
+  let state = { ...scene.start, gear };
+  for (let tick = 0; tick < 600; tick++) {
+    state = step(state, { slow: true }, 1 / 120);
+    if ((tick + 1) % 120 === 0) {
+      const meters = state.z - scene.start.z;
+      console.log(gear, (tick + 1) / 120, meters.toFixed(2));
+    }
+  }
+}
+```
 
-[下一篇：把低速操作和入格判定寫成測試](../parking-03-test-vehicle-state/)
+執行 `node creep.mjs`。每個檔位各印五行，三欄依序是檔位、秒數、相對距離。核對最後一行各為 1.39 與 -1.39（m）。此練習使用 slow 模式，D 與 R 的精準蠕行目標相同；若移除 slow，兩種檔位使用各自的目標速度。
+
+## 3. 在圖上找出早一秒踩煞車的差別
+
+先把[繪圖程式 parking-report.mjs](../../downloads/series-labs/parking-report.mjs)另存到 `physics.js` 旁，執行 `node parking-report.mjs`。打開新產生的 `creep-report.html` 對照頁首。這個檔讀取 step 的回傳值，每 30 步記錄一次，用這些點連成線。
+
+在 `parking-report.mjs` 把 `step(state, {slow:true}, 1/120)` 的 input 換成 `{slow:true, brake: tick >= 480}`，存檔、重跑、重新整理 HTML。兩條線應在第 4 秒後逐漸水平。這時看的是距離；煞停後距離保持，速度才會歸零。若曲線一直貼著零，先確認起點的 P 已被替換成 D 或 R，再檢查每次 step 是否接回 state。
+
+下一篇接著在同一套資料上[實作入格的通過與失敗案例](../parking-03-test-vehicle-state/)。

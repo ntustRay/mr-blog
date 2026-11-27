@@ -1,7 +1,8 @@
 ---
-title: '[Insight] Markdown 看得到新內容，怎麼確認原檔真的有存回？'
-description: '用重開、取消、捨棄與寫入失敗四條路徑驗證單檔編輯器，區分 UI 與 Android 文件提供者的責任。'
+title: '[Insight] Ray Markdown Reader 03｜從預覽到原檔，收尾時要驗證什麼？'
+description: '整理 UI、文件服務與原生儲存各自能證明的結果，透過拒絕寫入、修改中存檔與重開原檔檢查單檔編輯器。'
 pubDate: 2026-11-26
+updatedDate: 2026-11-27
 category: 'Dev Tools & Quality'
 tags: [Android, Tauri, Testing]
 series: markdown-reader
@@ -14,21 +15,23 @@ references:
   url: https://github.com/ntustRay/markdown-file-reader/blob/master/docs/GOOGLE_PLAY_RELEASE_HANDOFF.md
 ---
 
-把 `demo.md` 改完再按 **Preview**，看見新增的列表，代表前端能渲染手上的草稿。要驗證 **Save**，得再透過選檔器讀回同一份文件，逐行確認預期內容。否則就算寫入失敗，只看著記憶體裡的預覽也會以為成功。
+上一回把 `saveDocument` 接到真正的 I/O 邊界。Preview 已經顯示新內容，只能說 Markdown 渲染器收到了草稿；要確認使用者關掉 App 還能找回剛改的字，得重新從原來的文件提供者讀一次。
 
-單檔介面有一個好處，驗收只需要跟著目前開啟的文件和一份草稿走。要區分的狀態有三個，檔案原本的文字、畫面裡未保存的文字，以及寫入成功後可以重開讀到的文字。
+![Chromium 前端模擬寫入失敗後，顯示錯誤，原本的文字仍留在編輯器中。](../../assets/project-series/markdown-reader/03-save-failure.webp)
 
-| 操作 | 畫面應該看到什麼 | 重開原檔核對什麼 |
+## 現在有三個地方能驗收
+
+| 想確認什麼 | 如何重現 | 成功的判斷 |
 | --- | --- | --- |
-| 修改 → Save → 重開 | 未保存圓點消失 | 修改的那行仍在 |
-| 修改 → 嘗試開別檔 → Cancel | 留在原本的編輯畫面，草稿仍在 | 原檔還是前一次保存的版本 |
-| 修改 → 嘗試開別檔 → Discard → 選取成功 | 切換到另一份文件 | 原檔保留前一次保存的版本 |
-| 修改 → Save → 寫入失敗 | 顯示錯誤，草稿可繼續編輯 | 原內容可完整讀回，或依提供者行為確認實際寫入狀態 |
+| 文字進出後保持格式 | 在 `tests/unit/Document.test.ts` 使用帶 BOM、CRLF 的 UTF-8 文件 | 讀進來可以編輯，序列化後還原原有格式 |
+| 點 Save 後仍可繼續打字 | 執行 `document-workflow.spec.ts` 中 typing while saving 案例 | 已寫成功的版本和目前草稿分開，後打的字仍顯示未存 |
+| 寫入失敗是否丟掉草稿 | 在第二篇的測試中讓第一次 `writeFile` 拒絕，再重試 | 第一次保留文字與未存標記，第二次成功後才清除 |
+| 寫回相同 Android 文件 | 在真機透過系統選檔器開一份可覆寫的測試檔，寫入帶日期的一行、Save、離開，從原提供者再選同一份檔案 | 重開能讀到該行；也可用第二個編輯器獨立讀回 |
 
-![Chromium 中的本機測試回傳唯讀寫入錯誤，Ray Markdown Reader 仍保留文字草稿。](../../assets/project-series/markdown-reader/03-save-failure.webp)
+## 交付 Android 要多驗哪一步？
 
-*測試畫面由 v1.1.0 的前端產生，原生寫入回傳唯讀錯誤。不同 Android 文件提供者的錯誤與部分寫入行為，需用實機和可丟棄的檔案確認。*
+依專案的 Android 建置說明準備 Android Studio、SDK、NDK 與 Rust target，取得測試版；連接測試機後確認系統選檔器能選取檔案。相同 URI 的寫入行為取決於文件提供者與取得的權限，因此用 Downloads 的可覆寫測試檔完成一次，再依實際支援範圍重做雲端提供者或唯讀情境。瀏覽器截圖無法證明這幾條原生路徑。
 
-專案的 [E2E fixture](https://github.com/ntustRay/markdown-file-reader/blob/master/tests/e2e/document-workflow.spec.ts) 模擬讀寫與取消，可以重複測 UI 分支。拿到實機後，再加上取消系統選檔器、唯讀文件、UTF-8 BOM 與 CRLF 原樣保存等[驗收項目](https://github.com/ntustRay/markdown-file-reader/blob/master/docs/GOOGLE_PLAY_RELEASE_HANDOFF.md)。
+如果重開少了一行，先找 `savedContent` 是否在寫入完成前被更新，再查 `FileService` 傳給原生端的 URI 與 bytes，最後比對原提供者保存的檔案。從這個順序查，就能把預覽渲染、非同步狀態與文件權限分開。
 
-這個工具適合臨時預覽和修改一份 Markdown。需要歷史版本或多裝置同步時，先由既有的檔案工具留副本，再在 App 選取要修改的那份。這樣也能在實機測試時清楚知道應該回到哪個位置驗證。
+[回到實作：把 Save 接到 Tauri](../markdown-reader-02-edit-save-reopen/)

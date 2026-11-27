@@ -1,30 +1,32 @@
 ---
-title: "[Insight] GitHub Kanban 為什麼拿 Repository 當卡片"
-description: "從跨專案排程的問題出發，拆解 GitHub 專案資料與個人看板狀態各自負責什麼。"
+title: "[Insight] 做一個以 repo 為卡片的看板，先分清楚誰能改哪份資料"
+description: "用一次拖曳拆開 React、GitHub App、Better Auth 和 Neon 的責任，安排後面兩堂實作。"
 pubDate: 2026-11-26
+updatedDate: 2026-11-27
 category: Dev Tools & Quality
 tags: ["GitHub", "Kanban", "PostgreSQL"]
 series: kanban
 seriesOrder: 1
 references:
-  - title: GitHub Kanban 專案說明
+  - title: "GitHub Kanban 專案與 GitHub App 設定"
     url: https://github.com/ntustRay/github-kanban
-  - title: GitHub Kanban 免登入 Demo
-    url: https://github-kanban-ntustray.vercel.app/demo
+  - title: "看板同步、版本與資料庫交易"
+    url: https://github.com/ntustRay/github-kanban/blob/main/src/lib/board.ts
+  - title: "Better Auth 與 GitHub provider 的設定"
+    url: https://github.com/ntustRay/github-kanban/blob/main/src/lib/auth.ts
 ---
 
-打開六個 GitHub tabs，可以看到每個 repo 最後一次 push。光靠這個日期，很難想起哪個網站還差手機驗收，哪個 npm 套件等 CI 跑完就能發版。有兩種資訊要同時看：GitHub 上改了什麼，以及自己接下來要做什麼。
+在看板把一張 repo 卡片移到 Verify，重新登入還應該留在 Verify。這個動作要保存的是你對專案的安排。另一位能讀同一個 repo 的人，應該能把自己的卡片留在 Backlog。
 
-GitHub Kanban 用 repository 當卡片。一張卡對應一個專案，點進去可以讀 `TODO.md`、`README.md`、`AGENTS.md`。狀態、備註和排序則存到看板資料庫。把專案拖進 Verify，不需要為這次拖曳在原始 repo 加 commit。
+![示範看板將 my-project 從開發移入 Verify；本系列要實作與保存的就是這筆變動。](../../assets/project-series/kanban/02-after.webp)
 
-## 先決定拿什麼當卡片
+| 資料 | 由誰提供 | 哪一端負責 |
+| --- | --- | --- |
+| repo ID、名稱、是否封存，以及 TODO 文件 | GitHub App 可讀的 repository | Next.js server 呼叫 GitHub API |
+| 使用者身分與 session | GitHub 登入與 Better Auth | server 確認請求屬於哪位使用者 |
+| 狀態、欄內位置、備註 | 個人的看板 | Neon Postgres 依使用者與 repo ID 保存 |
+| 拖曳預覽 | 瀏覽器 | React 和 dnd-kit 先讓卡片跟著操作更新 |
 
-如果今天要拆一個 PR 的工作，卡片應該用 Issue。把手機驗收、修 bug、補文件各開一張，就能個別完成。GitHub Kanban 處理的是另一層決策：今天在十個並行專案裡，要先回去哪一個？一個 repo 放一張卡，就能用一條備註留下下一個動作；細節還是回原專案看。
+兩個人各自有一張卡，所以表裡的識別條件要包含 `user_id`、`repo_id`。另外，卡片不是 GitHub Issue；調整欄位和排序時程式只需寫自己的資料庫。這讓 GitHub App 的 repository 權限能維持唯讀。
 
-GitHub 的 archived、最近 push 和網站連結會影響初次分類。新 repo 可能先在 Backlog，近期有 push 的 repo 可能在 In progress。有網站連結也只表示有地方可以看。要移到 Formal，得由使用者確認交付狀態。同步既有卡片時會更新 repo metadata 和可見性，已保存的狀態、備註、排序則繼續使用同一筆記錄。
-
-## 看板要有一個能接手的理由
-
-「快做完了」留不下可接手的動作。改成「用手機開正式網址，確認日期範圍可套用」，下一次開卡就知道該去哪裡、看到什麼代表通過。圖表篩選若已上線，貼部署網址；npm 套件等新版本，貼 registry；有 PR 就留 PR 和驗證步驟。這些證據各有來源，看板只保存指向它們的下一步。
-
-系列下一篇會用公開 Demo 把 `my-project` 移到 Verify 並寫入驗收備註。之後拆到排序實作，看看只移動一張卡，怎麼保留其他卡片的位置。
+第二篇先在本機寫排序，跑測試覆蓋「兩張卡中間還有被篩選藏起來的卡」。第三篇把同一套程式接上自己的 GitHub App、Neon 與 Vercel。存完重新整理，再從資料庫核對改的是哪一列。

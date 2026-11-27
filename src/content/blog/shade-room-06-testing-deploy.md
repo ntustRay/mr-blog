@@ -2,6 +2,7 @@
 title: '[Guide] 線上試妝 06：怎麼證明妝效有作用？測試與部署'
 description: 用 Vitest、Playwright 與像素差驗證試妝結果，拆解模擬相機、PNG 匯出、GitHub Actions、模型資產準備及 Vite 部署路徑。
 pubDate: 2026-11-02
+updatedDate: 2026-11-27
 category: "Dev Tools & Quality"
 series: shade-lab
 seriesOrder: 6
@@ -10,8 +11,8 @@ coverImage: /images/shade-room-series/06-mobile.webp
 relatedPostIds: [shade-room-03-face-worker, shade-room-04-webgl-lipstick, shade-room-05-interaction-export]
 draft: false
 references:
-  - title: 本文對照的 CI run（Private，需讀取權限）
-    url: https://github.com/ntustRay/shade-room/actions/runs/41449353697
+  - title: Shade Lab 公開練習原始檔
+    url: https://ntustray.github.io/mr-blog/downloads/shade-workshop.zip
   - title: Playwright CI
     url: https://playwright.dev/docs/ci
   - title: Playwright webServer
@@ -32,6 +33,29 @@ references:
   <a href="../../images/shade-room-series/06-ci-evidence.svg"><img src="../../images/shade-room-series/06-ci-evidence.svg" alt="已核對的 CI 紀錄：commit 879fff3 在 Ubuntu runner 完成資產準備、5 項單元測試、production build 與 11 項 Chromium E2E。" loading="lazy" decoding="async" /></a>
   <figcaption>依 GitHub Actions run 41449353697 的實際 job 與 log 製作的驗證紀錄圖，非 GitHub 介面截圖。對照日期為 2026-11-02，原始 run 需 Repo 權限。</figcaption>
 </figure>
+
+## 動手做：把自己的版本部署到 Vercel
+
+[下載 Shade Lab 公開練習專案](../../downloads/shade-workshop.zip)。解壓後，從含 `package.json` 的目錄使用 Node.js 24 執行 `npm install`、`npm run dev`，開終端機列出的網址。 現在用另一個終端機建置完整靜態檔案：
+
+```sh
+npm run assets
+npm run build
+npm run preview
+```
+
+開 preview 列出的網址，先看固定圖，再選一張照片，核對 Network 中的模型與 WASM 請求。把解壓出的專案提交到自己的 GitHub repo（包含 `package-lock.json`）；模型和 WASM 由部署時的指令準備，不必提交產物。
+
+1. Vercel Dashboard 選 **Add New → Project → Import**，選剛建立的 repo。Root Directory 指向有 `package.json` 的資料夾。
+
+<figure><a href="../../downloads/visual-regression-series/images/official/vercel-import-repository.webp"><img src="../../downloads/visual-regression-series/images/official/vercel-import-repository.webp" alt="Vercel 官方介面的匯入步驟，選自己的 Shade 練習 repo。" loading="lazy" decoding="async" /></a><figcaption>Vercel 官方介面的匯入步驟，選自己的 Shade 練習 repo。</figcaption></figure>
+
+2. Framework Preset 選 **Vite**，Build Command 填 `npm run assets && npm run build`，Output Directory 填 `dist`。本練習不需環境變數，按 **Deploy**。公開的 [Shade Lab](https://shade-room.vercel.app/) 也是 Vite 靜態站；正式專案使用 Bun，對應建置指令是 `bun run assets && bun run build`。
+3. 到 **Deployments** 點開本次網址，先選照片再看 Network。首頁正常但 `face_landmarker.task` 回 404 時，先看 Build Logs 的 `npm run assets` 是否執行，再確認部署輸出的 `models/` 與 `wasm/`。僅打開首頁不會觸發人臉模型載入。
+
+<figure><a href="../../downloads/visual-regression-series/images/official/vercel-project-overview.webp"><img src="../../downloads/visual-regression-series/images/official/vercel-project-overview.webp" alt="Vercel 官方專案總覽示例。打開此次部署的網址實際載入照片與模型。" loading="lazy" decoding="async" /></a><figcaption>Vercel 官方專案總覽示例。打開此次部署的網址實際載入照片與模型。</figcaption></figure>
+
+公開練習的 production build 已在桌面 Chromium 用 Face Landmarker 載入 Jo 範例人像，確認能產生唇部遮罩、換上無臉圖片會清空結果，也確認模擬相機停止後 track 進入 `ended`。你部署的版本仍要從 HTTPS 網址重做一次，這能抓出只在遠端發生的資產路徑和權限問題。下面的 CI 與 GitHub Pages 子路徑說明來自完整產品的另一條建置流程。
 
 ## 1. 先把驗收條件寫成可觀察的結果
 
@@ -86,7 +110,7 @@ if (difference > 3) changed++;
 
 <figure>
   <a href="../../images/shade-room-series/06-mobile.webp"><img src="../../images/shade-room-series/06-mobile.webp" alt="Shade Room 在 390 CSS 像素 viewport 的實際瀏覽器畫面，包含試妝鏡與下方色票。" loading="lazy" decoding="async" /></a>
-  <figcaption>390 × 844 CSS 像素 viewport 的全頁截圖，使用桌面 Chromium。這是響應式版面證據，沒有用來宣稱實體手機相機或行動 Safari 已驗證。</figcaption>
+  <figcaption>Shade Lab 完整版在桌面 Chromium、390 × 844 CSS 像素 viewport 的全頁截圖。這次擷取可核對響應式排版；實體手機的相機與行動 Safari 需要另行驗證。</figcaption>
 </figure>
 
 ## 5. CI 要從缺少模型的環境開始
@@ -124,7 +148,7 @@ worker: { format: 'es' },
 
 目前 Pages workflow 在 build 時設定 `VITE_BASE: /${{ github.event.repository.name }}/`；引擎再以 `import.meta.env.BASE_URL` 建立模型與 WASM URL。完整部署步驟可對照 [Vite 文件](https://vite.dev/guide/static-deploy.html)。
 
-這份 workflow 以 `workflow_dispatch` 手動觸發，不是每次 push 都會自動部署。Repo 目前為 Private，Pages 可用性還取決於帳號方案與設定；不能只因為 YAML 存在，就宣稱已經上線。
+這份 GitHub Pages workflow 以 `workflow_dispatch` 手動觸發。Vercel 使用本節開頭的根路徑部署設定。
 
 ## 7. 發布後照這個順序檢查
 

@@ -2,6 +2,7 @@
 title: '[Guide] 工程師選股網 11：GitHub Actions 跨午夜抓錯資料日期的除錯紀錄'
 description: 從兩筆失敗的 Actions logs，定位執行日期與行情日期混用的問題。修正自動日期判定、加入有限重試，再以 53 個 unit tests、CI 與正式快照確認結果。
 pubDate: 2026-11-03
+updatedDate: 2026-11-27
 category: 'Dev Tools & Quality'
 series: engineer-stock
 seriesOrder: 12
