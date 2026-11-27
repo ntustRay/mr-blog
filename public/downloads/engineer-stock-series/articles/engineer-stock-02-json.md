@@ -1,30 +1,10 @@
----
-title: '[Guide] 工程師選股網 02：把股票 API 變成 JSON'
-description: 讀取官方回應樣本，處理日期、字串數字與缺值，再產生並驗證本機快照。
-pubDate: 2026-11-02
-category: Web Development
-tags:
-- TypeScript
-- Bun
-draft: false
-relatedPostIds:
-- engineer-stock-01-local
-- engineer-stock-03-actions
-references:
-- title: 資料 Pipeline（本文對照版本）
-  url: https://github.com/ntustRay/engineer-stock-data/tree/c1633aeffe68d4ad95e88ea403d1bfbc1585f70e
-- title: TWSE 行情 API
-  url: https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL
----
+# [Guide] 工程師選股網 02：把股票 API 變成 JSON
 
-系列：[1 本機啟動](./engineer-stock-01-local.md) · [2 股票 JSON](./engineer-stock-02-json.md) · [3 Actions](./engineer-stock-03-actions.md) · [4 Next.js 資料流](./engineer-stock-04-nextjs-data.md) · [5 篩選與圖表](./engineer-stock-05-screener-charts.md) · [6 註冊登入](./engineer-stock-06-auth.md) · [7 追蹤與 RLS](./engineer-stock-07-rls.md) · [8 Vercel 部署](./engineer-stock-08-vercel.md) · [9 核心架構與選型](./engineer-stock-09-architecture.md) · [10 Workflow 與 API 來源](./engineer-stock-10-workflow-api-sources.md)
+[查看線上最新版](https://ntustray.github.io/mr-blog/posts/engineer-stock-02-json/) · [離線目錄](../README.md)
 
 完成這篇：把一筆來源回應轉成有型別的資料，再產生可驗證的 JSON 快照。先用 Repo 內保存的樣本，讓結果可重現。
 
-<figure>
-  <a href="../images/02-normalize-flow.svg"><img src="../images/02-normalize-flow.svg" alt="處理流程示意：先驗證來源欄位，再轉換日期與數字；不合法的資料停止處理。" loading="lazy" decoding="async" /></a>
-  <figcaption>處理流程示意：先驗證來源欄位，再轉換日期與數字；不合法的資料停止處理。</figcaption>
-</figure>
+![處理流程示意：先驗證來源欄位，再轉換日期與數字；不合法的資料停止處理。](../images/02-normalize-flow.svg)
 
 ## 1. 下載資料專案
 
@@ -81,10 +61,9 @@ bun lesson-normalize.ts
 
 本次執行結果（保存樣本的數值）：
 
-<figure>
-  <a href="../images/02-normalize-result.svg"><img src="../images/02-normalize-result.svg" alt="本機轉換結果對照圖，依實際 JSON 輸出製作；非終端截圖。" loading="lazy" decoding="async" /></a>
-  <figcaption>本機轉換結果對照圖，依實際 JSON 輸出製作；非終端截圖。</figcaption>
-</figure>
+![依實際 Bun 終端輸出呈現的畫面：轉換第一筆行情後，產生並驗證 18 個快照檔案。](../images/02-normalize-output.webp)
+
+本機實際跑出的終端輸出，排版後截取。最後兩個指令對應下方建立與驗證快照的步驟。
 
 ## 4. 對照三個轉換規則
 
@@ -123,4 +102,11 @@ bun test tests/providers.test.ts tests/normalize.test.ts
 
 實際抓官方資料的指令是 `bun run build`；它會讀來源、交易日曆與前版資料，完成後寫入 staging。只有 `publish` 會更新遠端 `data` branch；下一篇追這條路徑。
 
+[下載系列程式片段、圖片與驗證紀錄](../README.md)
 
+## 參考資料
+
+- [資料 Pipeline（本文對照版本）](https://github.com/ntustRay/engineer-stock-data/tree/c1633aeffe68d4ad95e88ea403d1bfbc1585f70e)
+- [TWSE 行情 API](https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL)
+
+[回離線目錄](../README.md) · [上一章](./engineer-stock-01-local.md) · [下一章](./engineer-stock-03-actions.md)

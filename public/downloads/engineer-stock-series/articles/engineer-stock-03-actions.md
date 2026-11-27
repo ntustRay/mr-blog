@@ -1,42 +1,39 @@
----
-title: '[Guide] 工程師選股網 03：讓 GitHub Actions 更新股票資料'
-description: 手動操作既有 Workflow，對照 validate、publish、data branch 與資料日期，理解失敗時為何保留前版。
-pubDate: 2026-11-02
-category: Web Development
-tags:
-- GitHub Actions
-- Bun
-- TypeScript
-draft: false
-relatedPostIds:
-- engineer-stock-02-json
-- engineer-stock-04-nextjs-data
-references:
-- title: 資料 Pipeline（本文對照版本）
-  url: https://github.com/ntustRay/engineer-stock-data/tree/c1633aeffe68d4ad95e88ea403d1bfbc1585f70e
-- title: GitHub Workflow events
-  url: https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows
-- title: 已核對的 Publish data run
-  url: https://github.com/ntustRay/engineer-stock-data/actions/runs/41200225595
----
+# [Guide] 工程師選股網 03：讓 GitHub Actions 更新股票資料
 
-系列：[1 本機啟動](./engineer-stock-01-local.md) · [2 股票 JSON](./engineer-stock-02-json.md) · [3 Actions](./engineer-stock-03-actions.md) · [4 Next.js 資料流](./engineer-stock-04-nextjs-data.md) · [5 篩選與圖表](./engineer-stock-05-screener-charts.md) · [6 註冊登入](./engineer-stock-06-auth.md) · [7 追蹤與 RLS](./engineer-stock-07-rls.md) · [8 Vercel 部署](./engineer-stock-08-vercel.md) · [9 核心架構與選型](./engineer-stock-09-architecture.md) · [10 Workflow 與 API 來源](./engineer-stock-10-workflow-api-sources.md)
+[查看線上最新版](https://ntustray.github.io/mr-blog/posts/engineer-stock-03-actions/) · [離線目錄](../README.md)
 
 完成這篇：看懂一次資料更新，分辨「Workflow 成功」「資料有更新」「資料是哪一天」。
 
-<figure>
-  <a href="../images/03-actions-flow.svg"><img src="../images/03-actions-flow.svg" alt="資料發布流程示意：驗證與必要來源成功才更新 data；失敗保留前版 SHA。" loading="lazy" decoding="async" /></a>
-  <figcaption>資料發布流程示意：驗證與必要來源成功才更新 data；失敗保留前版 SHA。</figcaption>
-</figure>
+![資料發布流程示意：驗證與必要來源成功才更新 data；失敗保留前版 SHA。](../images/03-actions-flow.svg)
+
+## 先在自己的 fork 寫一個能手動執行的工作流程
+
+在 [engineer-stock-data](https://github.com/ntustRay/engineer-stock-data) 按 **Fork**。進自己的 fork，在 **Actions** 分頁啟用 workflows。透過 **Add file → Create new file** 新增以下檔案，commit 到自己的預設分支。這個練習只跑 repo 內的固定測資。
+
+```yaml title=".github/workflows/fixture-ci.yml"
+name: Stock fixture test
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  fixture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.4.4"
+      - run: bun install --frozen-lockfile
+      - run: bun test tests
+```
+
+打開 **Actions → Stock fixture test → Run workflow**。選預設分支，打開新 run 的 **fixture** job，展開最後一個 step，應看到 Bun 列出的測試結果。若左側沒出現名稱，先核對檔案位置和 default branch。接下來讀同一 repo 的正式行情 workflow，辨認它從哪一步開始需要寫入權限。
 
 ## 1. 開啟既有 Workflow
 
 進入資料 Repo 的 **Actions → Publish data**。對照 `.github/workflows/publish-data.yml`。
 
-<figure>
-  <a href="../images/03-actions.webp"><img src="../images/03-actions.webp" alt="GitHub Actions 實拍；這是既有執行紀錄，非本次重新觸發發布。" loading="lazy" decoding="async" /></a>
-  <figcaption>GitHub Actions 實拍；這是既有執行紀錄，非本次重新觸發發布。</figcaption>
-</figure>
+![GitHub Actions 實拍；這是既有執行紀錄，非本次重新觸發發布。](../images/03-actions.webp)
 
 有寫入權限時，點 **Run workflow**，branch 選 `main`。`targetDate` 先留空、`forceRefresh` 保持 false，再送出。本文沒有代你觸發股票更新；這一步留給自己操作。
 
@@ -99,4 +96,12 @@ schedule:
 
 確認失敗時 `data` 的 SHA 沒有被換掉，再修正原因。完整資料檢查在 `verify-data.yml`；它與「抓新資料」是不同任務。
 
+[下載系列程式片段、圖片與驗證紀錄](../README.md)
 
+## 參考資料
+
+- [資料 Pipeline（本文對照版本）](https://github.com/ntustRay/engineer-stock-data/tree/c1633aeffe68d4ad95e88ea403d1bfbc1585f70e)
+- [GitHub Workflow events](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows)
+- [已核對的 Publish data run](https://github.com/ntustRay/engineer-stock-data/actions/runs/41200225595)
+
+[回離線目錄](../README.md) · [上一章](./engineer-stock-02-json.md) · [下一章](./engineer-stock-04-nextjs-data.md)

@@ -31,8 +31,8 @@
 - 原圖：[supabase/supabase](https://github.com/supabase/supabase/blob/7e866ef83e89e35cdda45a6c98abd069d5fa1b2f/apps/www/public/images/blog/lwx-supabase-branching/vercel-env-var-settings--light.png)
 - 文件日期：2023-12-13
 - 授權：Apache-2.0
-- 圖片內容：Vercel Environment Variables environment selector
-- 適用限制：Shows masked values and old integration variable names; teach scope selection only, not copying its variable names.
+- 圖片內容：Vercel Environment Variables 列表的 Filter by 篩選選單
+- 適用限制：此圖示範檢查已儲存的 Production／Preview 變數。新增或編輯變數時再在表單選擇作用環境。
 
 ## supabase-create-project.webp
 

@@ -1,106 +1,71 @@
----
-title: '[Guide] 工程師選股網 04：Next.js 怎麼把 JSON 顯示成網頁'
-description: 從 Server Component 追到 GitHub SHA、快照驗證與快取，並用 API 回應核對資料模式。
-pubDate: 2026-11-02
-category: Web Development
-tags:
-- Next.js
-- TypeScript
-draft: false
-relatedPostIds:
-- engineer-stock-03-actions
-- engineer-stock-05-screener-charts
-references:
-- title: 網站程式（本文對照版本）
-  url: https://github.com/ntustRay/engineer-stock-web/tree/23b2d914017adb6f6a7029f53314839e6db235be
-- title: Next.js Server and Client Components
-  url: https://nextjs.org/docs/app/getting-started/server-and-client-components
-- title: Next.js unstable_cache
-  url: https://nextjs.org/docs/app/api-reference/functions/unstable_cache
----
+# [Guide] 工程師選股網 04：在 Next.js 接公開行情，讓網頁與 API 共用同一份 manifest
 
-系列：[1 本機啟動](./engineer-stock-01-local.md) · [2 股票 JSON](./engineer-stock-02-json.md) · [3 Actions](./engineer-stock-03-actions.md) · [4 Next.js 資料流](./engineer-stock-04-nextjs-data.md) · [5 篩選與圖表](./engineer-stock-05-screener-charts.md) · [6 註冊登入](./engineer-stock-06-auth.md) · [7 追蹤與 RLS](./engineer-stock-07-rls.md) · [8 Vercel 部署](./engineer-stock-08-vercel.md) · [9 核心架構與選型](./engineer-stock-09-architecture.md) · [10 Workflow 與 API 來源](./engineer-stock-10-workflow-api-sources.md)
+[查看線上最新版](https://ntustray.github.io/mr-blog/posts/engineer-stock-04-nextjs-data/) · [離線目錄](../README.md)
 
-完成這篇：從首頁追到 JSON，知道哪些程式在 Server 執行，哪些回應能證明資料來源。
+從[第一課的公開練習專案](../stock-fixture-lab.zip)開始。首頁與 `/api/v1/screener` 已能讀同一份 fixture。這次新增兩個入口，讓網頁與 JSON API 都能回答「這批行情是哪一天」。你只需要 Node.js 24 和可連上 GitHub 的網路。
 
-<figure>
-  <a href="../images/04-nextjs-flow.svg"><img src="../images/04-nextjs-flow.svg" alt="Next.js 資料流示意：首頁與 API 共用讀取模組；同次讀取固定在一個 SHA，驗證後才使用。" loading="lazy" decoding="async" /></a>
-  <figcaption>Next.js 資料流示意：首頁與 API 共用讀取模組；同次讀取固定在一個 SHA，驗證後才使用。</figcaption>
-</figure>
+## 1. 在 Server 讀一份公開快照
 
-## 1. 先找首頁的 await
+從[公開的 data branch](https://github.com/ntustRay/engineer-stock-data/tree/data)打開根目錄的 `manifest.json`，找 `latestTradingDate` 和 `snapshotId`。分別記下日期和批次識別值。新增下面的檔案。
 
-回到網站 Repo，開 `src/app/page.tsx`：
-
-```tsx title="src/app/page.tsx（節錄）"
-const snapshot = await getSnapshot();
-const rows = await getRows(snapshot);
-```
-
-這是 Server Component。`getSnapshot` 在 Server 執行，首頁不需要先呼叫自己的 `/api/v1/stocks`。API 是另一個入口，共用同一組資料函式。
-
-## 2. 用固定資料看 API 結構
-
-保留第 1 篇的 fixture 設定、執行 `npm run dev`。另開終端機：
-
-```sh
-curl -s 'http://localhost:3000/api/v1/stocks?q=9001'
-```
-
-對照這三個位置：
-
-```json
-{
-  "data": { "total": 1 },
-  "meta": { "source": "fixture", "fixture": true },
-  "error": null
+```ts title="src/lib/latest-market.ts"
+export async function readLatestMarket() {
+  const origin = "https://raw.githubusercontent.com/ntustRay/engineer-stock-data";
+  const response = await fetch(origin + "/data/manifest.json", { cache: "no-store" });
+  if (!response.ok) throw new Error("行情來源回傳 " + response.status);
+  const data: unknown = await response.json();
+  if (!data || typeof data !== "object" ||
+      !("latestTradingDate" in data) || typeof data.latestTradingDate !== "string" ||
+      !("snapshotId" in data) || typeof data.snapshotId !== "string") {
+    throw new Error("manifest 缺少日期或版本");
+  }
+  return { date: data.latestTradingDate, snapshot: data.snapshotId };
 }
 ```
 
-這是回應節錄，完整 `data` 還有 `rows`、`page`、`pageSize`。`source: fixture` 才能確認這次是測試資料；首頁有資料不能證明讀到正式來源。
+`cache: "no-store"` 方便比對這次讀到哪批。這個練習只讀一個檔。正式站一次讀索引和多個個股檔時，先解析 commit SHA，後續讀取固定在同一個 SHA，才能避開發布期間兩個檔案來自不同批次的情況。
 
-## 3. 切到 GitHub 股票快照
+## 2. 用同一支函式接網頁和 API
 
-停止 dev server。在根目錄 `.env.local` 改這些值，同名欄位直接改值：
+新增頁面。它是 Server Component，Server 可以直接等資料，不需要先呼叫自己的 API。
 
-```dotenv title=".env.local（股票資料設定）"
-STOCK_DATA_MODE=
-STOCK_DATA_OWNER=ntustRay
-STOCK_DATA_REPO=engineer-stock-data
-STOCK_DATA_BRANCH=data
-STOCK_DATA_REF_TTL_SECONDS=900
+```tsx title="src/app/market/page.tsx"
+import { readLatestMarket } from "@/lib/latest-market";
+
+export default async function Market() {
+  const { date, snapshot } = await readLatestMarket();
+  return <main><h1>行情快照</h1><p>交易日 {date}</p><p>批次 {snapshot}</p></main>;
+}
 ```
 
-重新 `npm run dev`，搜尋正式資料內的公司，再查 `/api/v1/manifest`。可用時，meta 應為 `source: verified_snapshot`、`fixture: false`。需要能連上 GitHub；連線或驗證失敗時，頁面會顯示資料狀態。
+再新增一個 Route Handler，給想拿 JSON 的呼叫端。公開來源讀取失敗時回傳 502，讓呼叫端有明確的錯誤狀態。
 
-本次已驗證 fixture 的 API；正式站實拍使用的是公開快照，畫面會顯示其資料日期。
+```ts title="src/app/api/market/route.ts"
+import { readLatestMarket } from "@/lib/latest-market";
 
-<figure>
-  <a href="../images/04-production-search.webp"><img src="../images/04-production-search.webp" alt="正式站搜尋實拍；顯示日期與舊資料提示，不能把有回應解讀成當日資料。" loading="lazy" decoding="async" /></a>
-  <figcaption>正式站搜尋實拍；顯示日期與舊資料提示，不能把有回應解讀成當日資料。</figcaption>
-</figure>
-
-## 4. 追讀取與快取
-
-在 `src/lib/stock-data/client.ts` 搜尋：
-
-| 名稱 | 讀什麼／做什麼 |
-| --- | --- |
-| `freshSnapshot` | 先解析 `data` branch 的 SHA，再讀該 SHA 的 manifest 與 screener |
-| `verifyDataset` | 檢查 bytes、SHA-256、Schema、snapshotId |
-| `unstable_cache` | 保存已驗證的快照；SHA 重新解析的設定上限 900 秒 |
-| `readConsistently` | 舊版本檔案 404 時，整批改用新 SHA 重讀一次 |
-
-commit SHA 是版本位置，SHA-256 是檔案完整性檢查；用途不同。快取可能被平台逐出，不保證永久保有備份。
-
-## 5. 讓測試證明版本不會混用
-
-```sh
-npm test -- tests/reader.test.ts
+export async function GET() {
+  try {
+    return Response.json(await readLatestMarket());
+  } catch {
+    return Response.json({ error: "無法讀取行情快照" }, { status: 502 });
+  }
+}
 ```
 
-開 `tests/reader.test.ts`，找 `discards a partially read revision`。測試先讀舊版再遇到 404，應丟棄部分結果，重新讀新版 screener 與 stock；不能把舊資料列配上新個股資料。
+## 3. 比對兩個入口，再故意讀錯路徑
 
-再看 hash mismatch 的案例：完整性錯誤直接失敗，不當成 404 無限重試。本次這組測試包含在 21 個通過的 Web unit tests 中。
+執行 `npm run dev`，先開 `http://localhost:3000/market`，再開 `http://localhost:3000/api/market`。把畫面的「交易日」和「批次」對照 API 的 `date` 和 `snapshot`。在同一批資料發布期間，兩者應一致。圖中是正式程式讀取資料的路徑，練習先接通左邊的 Server 分工。
 
+![正式網站的畫面與 API 各自呼叫共同讀取層，正式快照再由固定版本讀取。](../images/04-nextjs-flow.svg)
 
+將 `/data/manifest.json` 暫時改成 `/data/does-not-exist.json`，重新整理 API，在 DevTools 的 Network 確認 HTTP 502。首頁的虛構股票仍能查，因為它使用本機 fixture。把檔名改回去，再確認 API 恢復 200。正式站如果頁面正常但標出舊行情，也要先看資料日期和來源。
+
+![正式站股票搜尋的日期與資料狀態，供核對實際網站如何揭露舊行情。](../images/04-production-search.webp)
+
+## 參考資料
+
+- [公開的 Next.js 選股練習與測試資料](../stock-fixture-lab.zip)
+- [Next.js Server and Client Components](https://nextjs.org/docs/app/getting-started/server-and-client-components)
+- [Next.js unstable_cache](https://nextjs.org/docs/app/api-reference/functions/unstable_cache)
+
+[回離線目錄](../README.md) · [上一章](./engineer-stock-03-actions.md) · [下一章](./engineer-stock-05-screener-charts.md)

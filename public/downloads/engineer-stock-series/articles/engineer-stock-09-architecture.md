@@ -1,72 +1,14 @@
----
-title: '[Guide] 工程師選股網 09：核心架構、技術選型與 Next.js 設計'
-description: 從需求拆解選股網的核心架構與技術選型，詳解 Next.js App Router、RSC、SSR、快取、JSON 快照一致性與 Supabase 權限，附架構圖、讀碼順序及面試追問。
-pubDate: 2026-11-02
-category: Web Development
-tags:
-- Next.js
-- React
-- TypeScript
-- Supabase
-- PostgreSQL
-draft: false
-relatedPostIds:
-- engineer-stock-10-workflow-api-sources
-- engineer-stock-08-vercel
-- engineer-stock-04-nextjs-data
-- engineer-stock-07-rls
-references:
-- title: 網站程式（本文對照版本；Private）
-  url: https://github.com/ntustRay/engineer-stock-web/tree/23b2d914017adb6f6a7029f53314839e6db235be
-- title: 資料 Pipeline（本文對照版本）
-  url: https://github.com/ntustRay/engineer-stock-data/tree/c1633aeffe68d4ad95e88ea403d1bfbc1585f70e
-- title: Next.js Server and Client Components
-  url: https://nextjs.org/docs/app/getting-started/server-and-client-components
-- title: React Server Components
-  url: https://react.dev/reference/rsc/server-components
-- title: React hydrateRoot
-  url: https://react.dev/reference/react-dom/client/hydrateRoot
-- title: Next.js Route Handlers
-  url: https://nextjs.org/docs/app/getting-started/route-handlers
-- title: Next.js Mutating Data / Server Functions
-  url: https://nextjs.org/docs/app/getting-started/mutating-data
-- title: Next.js loading convention
-  url: https://nextjs.org/docs/app/api-reference/file-conventions/loading
-- title: Next.js unstable_cache
-  url: https://nextjs.org/docs/app/api-reference/functions/unstable_cache
-- title: React cache
-  url: https://react.dev/reference/react/cache
-- title: Next.js self-hosting
-  url: https://nextjs.org/docs/app/guides/self-hosting
-- title: TypeScript Generics
-  url: https://www.typescriptlang.org/docs/handbook/2/generics.html
-- title: TypeScript Narrowing
-  url: https://www.typescriptlang.org/docs/handbook/2/narrowing.html
-- title: Zod basics
-  url: https://zod.dev/basics
-- title: Supabase SSR advanced guide
-  url: https://supabase.com/docs/guides/auth/server-side/advanced-guide
-- title: Supabase getUser
-  url: https://supabase.com/docs/reference/javascript/auth-getuser
-- title: Supabase getClaims
-  url: https://supabase.com/docs/reference/javascript/auth-getclaims
-- title: Supabase RLS
-  url: https://supabase.com/docs/guides/database/postgres/row-level-security
-- title: PostgreSQL Constraints
-  url: https://www.postgresql.org/docs/current/ddl-constraints.html
-- title: Node.js introduction
-  url: https://nodejs.org/en/about
-- title: Bun runtime
-  url: https://bun.sh/docs/runtime
-- title: ECharts Canvas vs. SVG
-  url: https://echarts.apache.org/handbook/en/best-practices/canvas-vs-svg/
----
+# [Guide] 工程師選股網 09：核心架構、技術選型與 Next.js 設計
 
-系列：[1 本機啟動](./engineer-stock-01-local.md) · [2 股票 JSON](./engineer-stock-02-json.md) · [3 Actions](./engineer-stock-03-actions.md) · [4 Next.js 資料流](./engineer-stock-04-nextjs-data.md) · [5 篩選與圖表](./engineer-stock-05-screener-charts.md) · [6 註冊登入](./engineer-stock-06-auth.md) · [7 追蹤與 RLS](./engineer-stock-07-rls.md) · [8 Vercel 部署](./engineer-stock-08-vercel.md) · [9 核心架構與選型](./engineer-stock-09-architecture.md) · [10 Workflow 與 API 來源](./engineer-stock-10-workflow-api-sources.md)
+[查看線上最新版](https://ntustray.github.io/mr-blog/posts/engineer-stock-09-architecture/) · [離線目錄](../README.md)
 
 這個專案最需要講清楚的，是兩種性質不同的資料：**公開、批次更新的股票快照，以及需要登入、依會員隔離的私人資料**。前者放 GitHub，後者放 Supabase；Next.js 接起查詢、畫面與會員操作。
 
 本文對照現有程式，從需求推到選型，再拆解每一層的原理與代價。先理解資料如何流動，面試時才有辦法從「用了哪些工具」往下講到「為何這樣設計」。
+
+## 先用公開程式走一次兩個入口
+
+[下載公開練習專案](../stock-fixture-lab.zip)，在 `package.json` 同層執行 `npm install`、`npm run dev`，分別開 `/?q=9001` 和 `/api/v1/screener?q=9001`。把 `src/lib/stock-fixture.ts` 的「範例電子」改成「架構練習」，重新整理兩個網址，都應顯示新名字。接著把名稱改回。`src/app/page.tsx` 與 `src/app/api/v1/screener/route.ts` 都呼叫同一個 `screenStocks`；下文說明正式版如何接入可驗證快照、分清快取與會員資料。
 
 ## 這篇的重點
 
@@ -75,6 +17,18 @@ references:
 - RSC、SSR、hydration、資料快取是不同概念，不能混成「都在 Server 跑」。
 - SHA 固定資料版本，Schema 驗證結構，RLS 限制資料所有權；三者解決不同問題。
 - 文末提供面試講法、追問與讀碼順序。已驗證範圍與尚待完成事項分開列出。
+
+## 動手追一次查股請求
+
+先從公開頁面辨認誰負責畫面，再回來對照這篇的 Server 與 Client 分工。這段練習可直接用瀏覽器完成。
+
+1. 打開[正式站](https://engineer-stock-web.vercel.app/)，進入股票查詢並搜尋 `2330`。確認網址包含 `q=2330`，表格列出該代號。
+2. 開啟 DevTools 的 Network，清空紀錄後重新整理。在 Doc 篩選中選取股票查詢的請求，核對 URL 裡的 `q`。因為條件在網址，複製網址到新視窗也能重新得到同樣的查詢。
+3. 點結果列進個股頁，打開圖表。若手上有網站 Repo 權限，將這兩個畫面對應到 `src/app/` 內的路由，再找下文的 `getSnapshot` 與 Chart 元件。這條路徑會經過 Server 取資料，也會在 Browser 執行圖表互動。
+
+![選股網實際搜尋 2330 的結果畫面，網址帶查詢參數，表格顯示一筆結果。](../images/04-production-search.webp)
+
+正式站查股實拍。用同一份網址重開，可確認查詢條件能跨重整保留。
 
 ## 1. 先用需求限制選型
 
@@ -95,10 +49,9 @@ references:
 
 ## 2. 整體架構：兩個 Repo、兩種資料路徑
 
-<figure>
-  <a href="../images/09-system-architecture.svg"><img src="../images/09-system-architecture.svg" alt="整體架構：Actions 產生公開 JSON 快照，Next.js Server 讀取並回應瀏覽器；會員操作由 Server 連接 Supabase Auth 與受 RLS 保護的 PostgreSQL。" loading="lazy" decoding="async" /></a>
-  <figcaption>架構示意。公開股票與私人會員資料分開保存；瀏覽器送來的參數都需要在 Server 驗證。</figcaption>
-</figure>
+![整體架構：Actions 產生公開 JSON 快照，Next.js Server 讀取並回應瀏覽器；會員操作由 Server 連接 Supabase Auth 與受 RLS 保護的 PostgreSQL。](../images/09-system-architecture.svg)
+
+架構示意。公開股票與私人會員資料分開保存；瀏覽器送來的參數都需要在 Server 驗證。
 
 ### 公開資料路徑
 
@@ -199,10 +152,9 @@ App Router 以資料夾表達路由。`page.tsx` 代表頁面，`route.ts` 代�
 
 [React 的 Server Components 可以在 build 時或請求時執行](https://react.dev/reference/rsc/server-components)。因此「Server Component」描述的是執行邊界，不等於「每次請求都 SSR」。
 
-<figure>
-  <a href="../images/09-render-boundaries.svg"><img src="../images/09-render-boundaries.svg" alt="Next.js 初次載入的執行邊界：Server 資料與元件產生 RSC 結果及 HTML；瀏覽器顯示內容並對 Client 元件 hydration，圖表套件另在 Client 初始化。" loading="lazy" decoding="async" /></a>
-  <figcaption>初次載入示意。RSC 是元件邊界，HTML 是顯示輸出；框架接續的 client navigation 也可能使用 RSC payload 更新畫面。</figcaption>
-</figure>
+![Next.js 初次載入的執行邊界：Server 資料與元件產生 RSC 結果及 HTML；瀏覽器顯示內容並對 Client 元件 hydration，圖表套件另在 Client 初始化。](../images/09-render-boundaries.svg)
+
+初次載入示意。RSC 是元件邊界，HTML 是顯示輸出；框架接續的 client navigation 也可能使用 RSC payload 更新畫面。
 
 ### 初次開頁面時發生什麼
 
@@ -365,10 +317,9 @@ const encoded = await unstable_cache(
 
 `schemaVersion` 再負責格式相容性。它也不能取代日期、單位與資料語意的檢查。
 
-<figure>
-  <a href="../images/09-snapshot-sequence.svg"><img src="../images/09-snapshot-sequence.svg" alt="跨版本讀取示意：解析 branch 到版本 A，依 A 讀 manifest 與索引；舊個股檔 404 時丟棄整批部分結果，解析 B 並整批重讀一次。" loading="lazy" decoding="async" /></a>
-  <figcaption>這張圖示範舊 SHA 的檔案不可取得時的補救。hash 錯誤不會套用相同重試策略，也不保證舊 Git objects 永久可取。</figcaption>
-</figure>
+![跨版本讀取示意：解析 branch 到版本 A，依 A 讀 manifest 與索引；舊個股檔 404 時丟棄整批部分結果，解析 B 並整批重讀一次。](../images/09-snapshot-sequence.svg)
+
+這張圖示範舊 SHA 的檔案不可取得時的補救。hash 錯誤不會套用相同重試策略，也不保證舊 Git objects 永久可取。
 
 ### 為什麼不一路使用 data branch 的 URL
 
@@ -448,10 +399,13 @@ if (valuation.per !== null) {
 
 把輸入改為 `{ per: '12' }`，runtime parse 會拒絕字串。資料 Pipeline 的正規化負責把合法來源數字字串轉成 number；網站的契約則要求收到的已經是正規化結果。
 
-可把附件的 `snippets/lesson-contract.ts` 放到 Web Repo 根目錄。在已依 lockfile 安裝依賴、並準備 Bun 1.4.4 的環境中執行：
+另建一個空目錄，下載[公開練習檔 lesson-contract.ts](../snippets/lesson-contract.ts) 放到裡面，準備 Node.js 和 Bun，再執行：
 
 ```sh
-./node_modules/.bin/tsc --noEmit --strict --skipLibCheck --target es2022 --module nodenext --moduleResolution nodenext lesson-contract.ts
+npm init -y
+npm install zod@3.25.76
+npm install -D typescript@5.9.3
+npx tsc --noEmit --strict --skipLibCheck --target es2022 --module nodenext --moduleResolution nodenext lesson-contract.ts
 bun lesson-contract.ts
 ```
 
@@ -492,10 +446,9 @@ Rejected string input: per must be a finite number or null
 
 Supabase 在這裡提供兩組能力：Auth 處理登入與 session；PostgreSQL／Data API 處理會員資料。使用託管服務可以減少自行維護這些基礎設施的工作，但授權規則、輸入驗證與產品流程仍是應用程式的責任。
 
-<figure>
-  <a href="../images/09-member-security.svg"><img src="../images/09-member-security.svg" alt="會員寫入的信任邊界：瀏覽器提供股票參數；Server 驗證 session 與參數，從使用者身分填入 user_id；資料庫再用角色、RLS 與約束控制讀寫。" loading="lazy" decoding="async" /></a>
-  <figcaption>身分、業務輸入、資料列授權與資料約束分層處理；沒有單一一個 middleware 可以代替全部責任。</figcaption>
-</figure>
+![會員寫入的信任邊界：瀏覽器提供股票參數；Server 驗證 session 與參數，從使用者身分填入 user_id；資料庫再用角色、RLS 與約束控制讀寫。](../images/09-member-security.svg)
+
+身分、業務輸入、資料列授權與資料約束分層處理；沒有單一一個 middleware 可以代替全部責任。
 
 ### Cookie、JWT、session 分別是什麼
 
@@ -653,10 +606,9 @@ React wrapper 負責將元件生命週期接到圖表實例，包括更新、res
 
 財報圖明示單季、年初至當季累計與年度；單位、資料日期與數值表也跟著保留。圖表是同一份資料的視覺表示，不應另寫一套含義不同的指標計算。
 
-<figure>
-  <a href="../images/05-stock.webp"><img src="../images/05-stock.webp" alt="個股頁正式站實拍，顯示財報期間、財務指標與數值表。" loading="lazy" decoding="async" /></a>
-  <figcaption>前面系列拍攝的個股頁：財報圖與數值表並列。這張是財務資料區域，不是 K 線截圖，也不是效能測試。</figcaption>
-</figure>
+![個股頁正式站實拍，顯示財報期間、財務指標與數值表。](../images/05-stock.webp)
+
+前面系列拍攝的個股頁：財報圖與數值表並列。這張是財務資料區域，不是 K 線截圖，也不是效能測試。
 
 ### 目前的樣式組成
 
@@ -774,6 +726,33 @@ Biome 把格式與部分 lint 規則集中在同一工具，減少格式爭議�
 
 資料 Repo 使用該 Zod package 的 `zod/v4` 匯出；網站使用 `zod`。本文不是最新版本推薦表。涉及 Next 快取與 Auth Cookie 的行為，升級時要重新對照實際依賴、官方文件及部署驗證。
 
-網站 Repo 目前為 Private，原始碼連結需要本人的讀取權限；下載附件提供文章、圖、教學片段與已執行驗證的範圍，沒有包含完整私有專案或正式會員資料。
+要動手追完整的「畫面 → 資料函式 → API」，可用[下載公開練習專案](../stock-fixture-lab.zip)。原系列的驗證紀錄則收在原有附件。
 
+[下載系列程式片段、圖片與驗證紀錄](../README.md)
 
+## 參考資料
+
+- [公開的 Next.js 選股練習與測試資料](../stock-fixture-lab.zip)
+- [資料 Pipeline（本文對照版本）](https://github.com/ntustRay/engineer-stock-data/tree/c1633aeffe68d4ad95e88ea403d1bfbc1585f70e)
+- [Next.js Server and Client Components](https://nextjs.org/docs/app/getting-started/server-and-client-components)
+- [React Server Components](https://react.dev/reference/rsc/server-components)
+- [React hydrateRoot](https://react.dev/reference/react-dom/client/hydrateRoot)
+- [Next.js Route Handlers](https://nextjs.org/docs/app/getting-started/route-handlers)
+- [Next.js Mutating Data / Server Functions](https://nextjs.org/docs/app/getting-started/mutating-data)
+- [Next.js loading convention](https://nextjs.org/docs/app/api-reference/file-conventions/loading)
+- [Next.js unstable_cache](https://nextjs.org/docs/app/api-reference/functions/unstable_cache)
+- [React cache](https://react.dev/reference/react/cache)
+- [Next.js self-hosting](https://nextjs.org/docs/app/guides/self-hosting)
+- [TypeScript Generics](https://www.typescriptlang.org/docs/handbook/2/generics.html)
+- [TypeScript Narrowing](https://www.typescriptlang.org/docs/handbook/2/narrowing.html)
+- [Zod basics](https://zod.dev/basics)
+- [Supabase SSR advanced guide](https://supabase.com/docs/guides/auth/server-side/advanced-guide)
+- [Supabase getUser](https://supabase.com/docs/reference/javascript/auth-getuser)
+- [Supabase getClaims](https://supabase.com/docs/reference/javascript/auth-getclaims)
+- [Supabase RLS](https://supabase.com/docs/guides/database/postgres/row-level-security)
+- [PostgreSQL Constraints](https://www.postgresql.org/docs/current/ddl-constraints.html)
+- [Node.js introduction](https://nodejs.org/en/about)
+- [Bun runtime](https://bun.sh/docs/runtime)
+- [ECharts Canvas vs. SVG](https://echarts.apache.org/handbook/en/best-practices/canvas-vs-svg/)
+
+[回離線目錄](../README.md) · [上一章](./engineer-stock-08-vercel.md) · [下一章](./engineer-stock-10-workflow-api-sources.md)

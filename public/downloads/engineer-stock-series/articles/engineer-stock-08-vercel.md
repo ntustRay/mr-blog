@@ -1,107 +1,82 @@
----
-title: '[Guide] 工程師選股網 08：部署到 Vercel，從錯誤找到原因'
-description: 核對既有 Vercel 專案、Production 環境變數與部署版本，再用 API、資料日期與登入流程逐層驗收。
-pubDate: 2026-11-02
-category: Web Development
-tags:
-- Vercel
-- Next.js
-- GitHub Actions
-draft: false
-relatedPostIds:
-- engineer-stock-07-rls
-- engineer-stock-09-architecture
-references:
-- title: 網站程式（本文對照版本）
-  url: https://github.com/ntustRay/engineer-stock-web/tree/23b2d914017adb6f6a7029f53314839e6db235be
-- title: Vercel Deployments
-  url: https://vercel.com/docs/deployments
-- title: Vercel Environment Variables
-  url: https://vercel.com/docs/environment-variables
-- title: Vercel Deployment Checks
-  url: https://vercel.com/docs/deployment-checks
----
+# [Guide] 工程師選股網 08：部署自己的 Next.js 選股練習到 Vercel
 
-系列：[1 本機啟動](./engineer-stock-01-local.md) · [2 股票 JSON](./engineer-stock-02-json.md) · [3 Actions](./engineer-stock-03-actions.md) · [4 Next.js 資料流](./engineer-stock-04-nextjs-data.md) · [5 篩選與圖表](./engineer-stock-05-screener-charts.md) · [6 註冊登入](./engineer-stock-06-auth.md) · [7 追蹤與 RLS](./engineer-stock-07-rls.md) · [8 Vercel 部署](./engineer-stock-08-vercel.md) · [9 核心架構與選型](./engineer-stock-09-architecture.md) · [10 Workflow 與 API 來源](./engineer-stock-10-workflow-api-sources.md)
+[查看線上最新版](https://ntustray.github.io/mr-blog/posts/engineer-stock-08-vercel/) · [離線目錄](../README.md)
 
-完成這篇：找到目前部署、核對版本與環境，並能分開判斷 Build、資料與登入錯誤。
+這次部署[第一課的公開 Next.js 練習專案](../stock-fixture-lab.zip)。做到哪一課就能部署到哪一課：只有首頁也能上線，已經完成會員與追蹤清單的版本再加 Supabase 設定。你會有自己的 Production 網址，能從別的裝置檢查程式版本、API 和登入。
 
-<figure>
-  <a href="../images/08-deploy-flow.svg"><img src="../images/08-deploy-flow.svg" alt="部署流程示意：GitHub CI 與 Vercel Git builds 可並行；Vercel Production READY 後仍需驗收資料與登入。" loading="lazy" decoding="async" /></a>
-  <figcaption>部署流程示意：GitHub CI 與 Vercel Git builds 可並行；Vercel Production READY 後仍需驗收資料與登入。</figcaption>
-</figure>
+## 1. 把可建置的程式放到自己的 GitHub
 
-## 1. 打開既有專案
-
-在 Vercel 選 `engineer-stock-web`。到 Settings 確認連接的 GitHub Repo、production branch 與 Node.js 版本。此專案以 Next.js 部署，Node.js 設定為 24.x。
-
-進 Deployments，選 Production 那筆，核對 Source 的 branch、commit 與狀態。本文核對到的最新 Production 狀態是 `READY`；Build logs 未取得，所以不提供虛構的 Build log 截圖。
-
-## 2. 核對 Production 環境變數
-
-使用第 6 篇的 Vercel Environment Variables 設定方式，股票與會員分別核對：
-
-| 名稱 | 正式設定 |
-| --- | --- |
-| `STOCK_DATA_OWNER` | `ntustRay` |
-| `STOCK_DATA_REPO` | `engineer-stock-data` |
-| `STOCK_DATA_BRANCH` | `data` |
-| `STOCK_DATA_REF_TTL_SECONDS` | `900` |
-| `NEXT_PUBLIC_SITE_URL` | `https://engineer-stock-web.vercel.app` |
-| `NEXT_PUBLIC_SUPABASE_URL` | 正式會員專案的 URL |
-| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | 同專案的 publishable key |
-
-`STOCK_DATA_MODE` 留空；production 程式也會拒絕 fixture 模式。Preview 若要測會員，使用獨立測試專案，不複製正式會員環境。
-
-修改環境變數後，需要[重新部署](https://vercel.com/docs/environment-variables)才會套用到新的部署。可選的 HMAC cache 通知未設定時，網站使用目前的 TTL 重新解析來源。
-
-## 3. 本機先跑檢查
-
-在網站 Repo：
+在有 `package.json` 的目錄執行。若只有原始 ZIP，先安裝一次產生 `package-lock.json`。
 
 ```sh
-npm run check
-npm run typecheck
+npm install
 npm test
-npm run test:rls
 npm run build
+git init
+git add .
+git status --short
 ```
 
-本系列已實際執行 Web 的 21 個 unit tests 與隔離 RLS 測試；發布驗證記錄附在下載檔。沒有新增 E2E，也未把 Build 通過當作登入通過。
+確認清單只有原始碼、設定與 lockfile。`.env.local`、`node_modules` 和 `.next` 應被附件內的 `.gitignore` 排除。在 GitHub 建立空 repository，把它的 HTTPS 網址填入 `YOUR_REPO_URL`：
 
-## 4. 追一次自己的程式部署
+```sh
+git commit -m "Build stock query lab"
+git branch -M main
+git remote add origin YOUR_REPO_URL
+git push -u origin main
+```
 
-用分支與 PR 提交需要的程式修改，檢查 Preview。合併至 production branch 後，到 Deployments 看這個 commit 的 Production build。
+已經有 Git remote 的讀者，先用 `git remote -v` 核對自己的 repo，直接提交、推送目前的變更即可。
 
-若只是要套用新的環境變數，可在該 Production deployment 的選單執行 Redeploy，完成後重新核對環境與公開網域。這裡操作的是網站程式部署；資料 Repo 更新 `data` branch 通常不需要重新部署網站。
+## 2. 從 Git 匯入 Vercel
 
-目前 GitHub CI 與 Vercel Git integration 各自啟動；是否阻擋發布，取決於是否配置必要檢查與 Deployment Checks。不要只因 GitHub 有 workflow，就假設 Vercel 一定等它通過。
+在 Vercel Dashboard 選 **Add New → Project**，連結自己的 GitHub 帳號。搜尋剛推上去的 repo，選 **Import**。下圖是官方示例，找左側 Git 清單。
 
-## 5. 用三個入口驗收
+![Vercel 的 Import Git Repository 清單，在目標 repo 旁選 Import。](../images/official/vercel-import-repository.webp)
 
-| 入口 | 確認內容 |
+| 設定 | 公開練習要填的值 |
 | --- | --- |
-| 首頁 | 有資料、來源日期與狀態提示 |
-| `/api/v1/stocks?q=2330` | 回應結構、meta.source、實際筆數 |
-| 未登入開 `/api/v1/watchlist` | 401，會員資料不進共享快取 |
+| Framework Preset | Next.js |
+| Root Directory | 放 `package.json` 的根目錄 |
+| Node.js Version | 24.x，和本機及 `engines` 相同 |
+| Install／Build／Output | 保留 Next.js preset；commit 內含 npm lockfile |
+| Environment Variables | 只有股票首頁、API 和圖表時可留空 |
 
-再依第 6 篇完成收信、登入、重整與登出驗收。這段仍需真實帳號與 SMTP 配置。
+按 **Deploy**，等當次部署成為 **Ready**，從 Project Overview 複製 Production domain。先把網址貼入無痕視窗，查詢 `9001`，再開 `/api/v1/screener?q=9001`。兩邊都應只回範例電子；這個專案的行情資料刻意標為 fixture。
 
-<figure>
-  <a href="../images/01-production-home.webp"><img src="../images/01-production-home.webp" alt="正式站實拍：網頁可用，同時顯示舊資料提示；這兩件事可以同時成立。" loading="lazy" decoding="async" /></a>
-  <figcaption>正式站實拍：網頁可用，同時顯示舊資料提示；這兩件事可以同時成立。</figcaption>
-</figure>
+![Vercel 官方示例的 Project Overview，部署卡片可開啟站點及查看部署狀態。](../images/official/vercel-project-overview.webp)
 
-## 6. 從第一個壞掉的邊界往下查
+## 3. 若已實作會員頁，接上 Production 的 Supabase
 
-| 現象 | 下一個檢查 |
+在 Vercel 專案的 **Settings → Environment Variables** 加入下列三個欄位並選擇 **Production**。使用自己的 Supabase 練習專案，沿用第 6、7 課的使用者與資料表。Preview 要測登入時另用測試專案，以免預覽寫入相同的資料。
+
+![Vercel 已儲存的環境變數列表，依 Production 或 Preview 篩選來核對設定。](../images/official/vercel-environment-scope.webp)
+
+| 變數 | 來源 |
 | --- | --- |
-| Build 失敗 | Deployments → 該筆 → Build Logs，先看第一個錯誤 |
-| 網頁可開但沒股票 | env 的 owner／repo／branch、來源回應、hash 與 Schema 驗證 |
-| API 200 但顯示舊資料 | manifest 的行情日期、驗證時間、Actions 是否 skip／失敗 |
-| 只有會員失敗 | 會員 env、Cookie、Auth logs、SMTP 與 RLS |
-| 某次修改後整站出錯 | 對照部署 commit，確認前一個可用版本，再決定修復或 rollback |
+| `NEXT_PUBLIC_SITE_URL` | 這次取得的穩定 Production origin，如 `https://你的專案.vercel.app` |
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase 專案的 Project URL |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | 同一專案的 publishable key |
 
-自己完成一次判讀：看到「使用舊資料」時，先去資料 Repo 查執行紀錄與 manifest 日期；不要直接把 Vercel Redeploy 當成資料修復。
+到 Supabase 的 **Authentication → URL Configuration**，Site URL 填穩定的 Production origin，Redirect URLs 加入 **你的 Production origin + `/email-lab/confirm`**。保留仍在用的 localhost callback。回 Vercel 的 Deployments 選擇 **Redeploy** 使新變數進入 build。註冊與收信步驟沿用[第 6 課](./engineer-stock-06-auth.md)。
 
+## 4. 確認部署版本，再測三個入口
 
+到 Deployments 點進剛完成的紀錄，比對 Source commit 和本機 `git rev-parse --short HEAD`。若部署失敗，先在 Build Logs 找第一個錯誤。找不到 `package.json` 就檢查 Root Directory，TypeScript 錯誤則回本機執行相同 build。
+
+| Production 路徑 | 驗收 |
+| --- | --- |
+| `/?q=9001` 與 `/api/v1/screener?q=9001` | 畫面與 JSON 都只剩 9001 |
+| 已做第 4 篇的 `/market` | 頁面與 `/api/market` 傳回同一批快照的交易日 |
+| 已做第 6、7 篇的 `/watch-lab` | 未登入會跳到登入頁；登入、加入一筆、重整後仍存在；另一帳號看不到 |
+
+如果只有登入失敗，先檢查 Production 的三個變數和 Supabase callback 的完整網址。如果行情 API 回 502，回到上一列的 Source 版本與公開 manifest 確認。這兩條連線可以各自測試。[Vercel 環境變數](https://vercel.com/docs/environment-variables)。
+
+## 參考資料
+
+- [公開的 Next.js 選股練習與測試資料](../stock-fixture-lab.zip)
+- [Vercel Deployments](https://vercel.com/docs/deployments)
+- [Vercel Environment Variables](https://vercel.com/docs/environment-variables)
+- [Vercel Deployment Checks](https://vercel.com/docs/deployment-checks)
+
+[回離線目錄](../README.md) · [上一章](./engineer-stock-07-rls.md) · [下一章](./engineer-stock-09-architecture.md)

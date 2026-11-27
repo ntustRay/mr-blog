@@ -1,65 +1,150 @@
----
-title: '[Guide] 工程師選股網 06：設定 Supabase 註冊、登入與寄信'
-description: 核對環境變數、SMTP、Email 驗證與 PKCE callback，用收信及登入狀態驗收會員流程。
-pubDate: 2026-11-02
-category: Web Development
-tags:
-- Supabase
-- Next.js
-draft: false
-relatedPostIds:
-- engineer-stock-05-screener-charts
-- engineer-stock-07-rls
-references:
-- title: 網站程式（本文對照版本）
-  url: https://github.com/ntustRay/engineer-stock-web/tree/23b2d914017adb6f6a7029f53314839e6db235be
-- title: Supabase SSR client
-  url: https://supabase.com/docs/guides/auth/server-side/creating-a-client?queryGroups=framework&framework=nextjs
-- title: Supabase Custom SMTP
-  url: https://supabase.com/docs/guides/auth/auth-smtp
-- title: Google App Passwords
-  url: https://support.google.com/accounts/answer/185833
-- title: Gmail SMTP 設定
-  url: https://support.google.com/mail/answer/7104828?hl=en
----
+# [Guide] 工程師選股網 06：設定 Supabase 註冊、登入與寄信
 
-系列：[1 本機啟動](./engineer-stock-01-local.md) · [2 股票 JSON](./engineer-stock-02-json.md) · [3 Actions](./engineer-stock-03-actions.md) · [4 Next.js 資料流](./engineer-stock-04-nextjs-data.md) · [5 篩選與圖表](./engineer-stock-05-screener-charts.md) · [6 註冊登入](./engineer-stock-06-auth.md) · [7 追蹤與 RLS](./engineer-stock-07-rls.md) · [8 Vercel 部署](./engineer-stock-08-vercel.md) · [9 核心架構與選型](./engineer-stock-09-architecture.md) · [10 Workflow 與 API 來源](./engineer-stock-10-workflow-api-sources.md)
+[查看線上最新版](https://ntustray.github.io/mr-blog/posts/engineer-stock-06-auth/) · [離線目錄](../README.md)
 
-這篇的完成條件：收到驗證信、完成 callback、登入後可進追蹤清單，再確認登出與重設密碼。
+這次要在自己的 Next.js 專案新增會員頁。完成註冊、收信與 callback 後，重新整理仍可讀到同一個使用者，登出後回到表單。追蹤清單留給下一課。
 
-截至本次核對，專案仍待完成 SMTP 與真實收信驗收。以下是完整設定與驗收步驟；實拍只證明表單可顯示，沒有宣稱寄信或登入已成功。
+這次練習把 SMTP 收信和登入分開驗證。下面的正式站截圖拍到表單；信件有沒有寄到、callback 是否換到 session，要用自己的測試信箱走完流程才能知道。
 
-<figure>
-  <a href="../images/06-auth-flow.svg"><img src="../images/06-auth-flow.svg" alt="Auth 流程示意：註冊經 SMTP 寄信；有效 code 在 callback 換成 Cookie session，無效或過期則回登入頁。" loading="lazy" decoding="async" /></a>
-  <figcaption>Auth 流程示意：註冊經 SMTP 寄信；有效 code 在 callback 換成 Cookie session，無效或過期則回登入頁。</figcaption>
-</figure>
+![Auth 流程示意：註冊經 SMTP 寄信；有效 code 在 callback 換成 Cookie session，無效或過期則回登入頁。](../images/06-auth-flow.svg)
 
 ## 1. 先對上環境
 
-在 Vercel 的網站專案開 **Settings → Environment Variables**，核對 Production：
+在 Supabase Dashboard 按 **New project**，選自己的 organization、填專案名與資料庫密碼、選擇 region。等新專案可以開啟後，從 **Connect** 找 Project URL、從 **Settings → API Keys** 找 publishable key。先寫下以下三項本機設定。
+
+![Supabase 官方建立專案畫面，先選 organization，再填資料庫設定。](../images/official/supabase-create-project.webp)
 
 | 名稱 | 填什麼 |
 | --- | --- |
-| `NEXT_PUBLIC_SITE_URL` | `https://engineer-stock-web.vercel.app` |
+| `NEXT_PUBLIC_SITE_URL` | `http://localhost:3000` |
 | `NEXT_PUBLIC_SUPABASE_URL` | 這個會員專案的 API URL |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | 同一專案的 publishable key |
 
-值要來自同一個 Supabase 專案；變更後重新部署。`NEXT_PUBLIC_` 會暴露給瀏覽器，這裡使用 publishable key；`service_role` 或 secret key 不能放進這些欄位。
+Project URL 和 publishable key 要來自同一個 Supabase 專案。`NEXT_PUBLIC_` 可被瀏覽器讀到，這裡只使用 publishable key；把資料庫密碼與 secret key 留在這個練習之外。
+
+![Supabase 官方設定畫面，上半部的 Publishable key 可提供前端使用。](../images/official/supabase-api-keys.webp)
+
+圖中只要看 **Publishable key**。下方 **Secret keys** 不需要複製。
 
 需要在本機測試 Auth 時，使用獨立測試專案與本機 URL。第 1 篇的 fixture 設定只處理股票資料，不會建立登入 session。
 
-## 2. 設定驗證網址
+## 2. 自己接一條 Email → Cookie 的路徑
 
-到 Supabase **Authentication → URL Configuration**：
+使用第 1 篇的[選股網公開練習專案](../stock-fixture-lab.zip)。解壓後在 `package.json` 旁建立 `.env.local`，填自己測試專案的 URL 和 publishable key。使用 Node.js 24。
 
-| 欄位 | 正式站設定 |
+```dotenv title=".env.local"
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=YOUR_PUBLISHABLE_KEY
+```
+
+這份範例已有 `src/lib/supabase/server.ts`。它的 `serverClient()` 將 Supabase SDK 接到 Next.js 的 Cookie store，所以 Server Action 可以把登入結果存回瀏覽器。先新增一個 Email 登入頁，讓首頁繼續展示公開行情，登入狀態由另一條路由處理。
+
+```tsx title="src/app/email-lab/page.tsx"
+import { redirect } from "next/navigation";
+import { serverClient } from "@/lib/supabase/server";
+
+export default async function EmailLab({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string }>;
+}) {
+  async function login(form: FormData) {
+    "use server";
+    const auth = await serverClient();
+    const { error } = await auth.auth.signInWithPassword({
+      email: String(form.get("email") ?? "").trim(),
+      password: String(form.get("password") ?? ""),
+    });
+    redirect(error ? "/email-lab?status=failed" : "/email-lab");
+  }
+
+  async function logout() {
+    "use server";
+    const auth = await serverClient();
+    const { error } = await auth.auth.signOut({ scope: "local" });
+    redirect(error ? "/email-lab?status=failed" : "/email-lab");
+  }
+
+  const auth = await serverClient();
+  const { data: { user } } = await auth.auth.getUser();
+  const { status } = await searchParams;
+  return <main>
+    <h1>會員連線練習</h1>
+    {status === "failed" && <p role="alert">操作失敗，請檢查帳號與服務設定。</p>}
+    {user ? <form action={logout}>
+      <p>已登入：{user.email}</p><button>登出</button>
+    </form> : <form action={login}>
+      <label>Email <input name="email" type="email" required /></label>
+      <label>密碼 <input name="password" type="password" required /></label>
+      <button>登入</button>
+    </form>}
+  </main>;
+}
+```
+
+1. 打開 `src/proxy.ts`，在原本 `matcher` 陣列加上 `"/email-lab/:path*"`，保留原有的 `/auth/:path*`。這樣這頁也會經過範例的 session 更新流程。
+2. 在 Supabase 測試專案 **Authentication → Users → Add user → Create new user** 建立自己控制的測試帳號，勾選 **Auto Confirm User**。這一步讓你先驗證 Cookie，實際收信留到下段。
+3. 在練習專案根目錄執行 `npm install`、`npm run dev`，開啟 `http://localhost:3000/email-lab`。先輸入錯誤密碼，看見錯誤訊息，再用正確密碼登入。
+4. 重新整理時應該還看得到測試帳號的 Email。另開無痕視窗應顯示登入表單；回原視窗登出再重整，也應恢復表單。這兩次重整驗的是 Server 從 Cookie 重新取得的身分。
+
+## 3. 設定驗證網址
+
+到 Supabase **Authentication → URL Configuration**。本課先回到自己電腦上的登入頁，第 8 篇再新增 Production 網址。
+
+| 欄位 | 本機測試值 |
 | --- | --- |
-| Site URL | `https://engineer-stock-web.vercel.app` |
-| Redirect URLs | `https://engineer-stock-web.vercel.app/auth/callback**` |
+| Site URL | `http://localhost:3000` |
+| Redirect URLs | `http://localhost:3000/email-lab/confirm` |
 
-在 Email provider 設定確認允許 Email 註冊，並開啟 Confirm email。既有專案已記錄完成網址設定；實際儲存值仍以後台為準。
+![官方設定範例，在 Redirect URLs 清單使用 Add URL 新增回到網站的網址。](../images/official/supabase-redirect-urls.webp)
 
-## 3. 接上 SMTP
+圖中的 Flutter 網址是官方範例。你的 callback 要使用上表的 `/email-lab/confirm`，和接下來新增的 Route Handler 對齊。
+
+到 **Authentication → Sign In / Providers → Email** 確認已啟用 Email，並啟用 **Confirm email**；回到 URL Configuration 檢查剛才新增的本機網址。
+
+### 在練習站加入註冊與 callback
+
+在 `EmailLab` 裡、`login` 旁新增這個 Server Action。用固定的站台網址產生 callback，部署到 Preview 時填自己的 Preview 網域。
+
+```tsx title="src/app/email-lab/page.tsx"
+async function register(form: FormData) {
+  "use server";
+  const site = process.env.NEXT_PUBLIC_SITE_URL;
+  if (!site) throw new Error("請設定 NEXT_PUBLIC_SITE_URL");
+  const auth = await serverClient();
+  const { error } = await auth.auth.signUp({
+    email: String(form.get("email") ?? "").trim(),
+    password: String(form.get("password") ?? ""),
+    options: { emailRedirectTo: new URL("/email-lab/confirm", site).href },
+  });
+  redirect(error ? "/email-lab?status=failed" : "/email-lab?status=mail");
+}
+```
+
+在原本登入按鈕後面加上 `<button formAction={register}>建立帳號</button>`。在錯誤訊息下方加上 `{status === "mail" && <p>請查收驗證信，並在同一個瀏覽器開啟。</p>}`。
+
+新增下列 Route Handler，到 **Redirect URLs** 加入 `http://localhost:3000/email-lab/confirm`。Email template 可使用 Supabase 預設的確認連結 `{{ .ConfirmationURL }}`；若你自行改為 token hash 模板，需採用相應的 `verifyOtp` 流程。
+
+```ts title="src/app/email-lab/confirm/route.ts"
+import { NextResponse } from "next/server";
+import { serverClient } from "@/lib/supabase/server";
+
+export async function GET(request: Request) {
+  const url = new URL(request.url);
+  const code = url.searchParams.get("code");
+  const auth = await serverClient();
+  const result = code ? await auth.auth.exchangeCodeForSession(code) : null;
+  const path = result && !result.error ? "/email-lab" : "/email-lab?status=failed";
+  const response = NextResponse.redirect(new URL(path, url.origin));
+  response.headers.set("Cache-Control", "private, no-store");
+  return response;
+}
+```
+
+先直接開 `/email-lab/confirm`。沒有 code 時應回到顯示錯誤的登入頁。接好下方的寄信設定後，用另一個尚未註冊的測試信箱按「建立帳號」，點信件裡的連結。回到頁面時應看見該帳號的 Email；重新整理後仍能看到，才表示 callback 和 Cookie 都接通。
+
+## 4. 接上 SMTP
 
 開 **Authentication → Emails → SMTP Settings**，啟用自訂 SMTP。以本專案先前選定的 Gmail SMTP 為例：
 
@@ -76,46 +161,11 @@ references:
 
 [Supabase 預設郵件服務有限制](https://supabase.com/docs/guides/auth/auth-smtp)，不能把表單存在視為公開註冊可用。Gmail 的寄信限制也需另外考量，這裡先完成一次實際收信驗收。
 
-## 4. 走一次註冊與驗證
+## 5. 跑一次完整回程
 
-<figure>
-  <a href="../images/06-register.webp"><img src="../images/06-register.webp" alt="正式站註冊表單實拍；欄位保持空白，未送出註冊。" loading="lazy" decoding="async" /></a>
-  <figcaption>正式站註冊表單實拍；欄位保持空白，未送出註冊。</figcaption>
-</figure>
+登出第 2 步的帳號，先以尚未註冊的測試信箱在 `/email-lab` 建立帳號。回到同一瀏覽器開啟驗證信，在 Network 查看 `/email-lab/confirm` 是否導回會員頁。畫面應顯示信箱；重整一次，再按登出，應恢復登入表單。圖中是正式產品的登入畫面，你自己寫的教學表單外觀會不同。
 
-用自己的測試信箱註冊，密碼至少 8 個字元。保持同一個瀏覽器與網站環境，開啟驗證信中的連結。
-
-對照程式：
-
-| 檔案 | 檢查什麼 |
-| --- | --- |
-| `src/app/auth/actions.ts` → `register` | `signUp` 的 `emailRedirectTo` |
-| `src/app/auth/callback/route.ts` | `exchangeCodeForSession(code)` |
-| `src/lib/supabase/server.ts` | 用 Cookie adapter 讀寫 session |
-| `src/lib/auth-redirect.ts` | 限制 callback 完成後可導向的路徑 |
-
-這是專案既有的 PKCE code 流程。驗證信的 redirect、code 與發起流程時保存的 verifier 要配合；連結過期或換了瀏覽器，應重新發起，不要把網址中的 code 當成登入憑證保存。
-
-## 5. 驗證登入、登出、重設
-
-<figure>
-  <a href="../images/06-login.webp"><img src="../images/06-login.webp" alt="正式站登入表單實拍；沒有登入成功的宣稱。" loading="lazy" decoding="async" /></a>
-  <figcaption>正式站登入表單實拍；沒有登入成功的宣稱。</figcaption>
-</figure>
-
-| 操作 | 成功條件 |
-| --- | --- |
-| 用已驗證帳號登入 | 進入 `/watchlist`，重整後仍可存取 |
-| 到個人帳號按登出 | 再開 `/watchlist` 會要求登入 |
-| 點忘記密碼、送出信箱 | 實際收到信，開連結後可設定新密碼 |
-| 用新密碼登入 | 新密碼可用，舊密碼不能再登入 |
-
-<figure>
-  <a href="../images/06-reset.webp"><img src="../images/06-reset.webp" alt="正式站重設密碼表單實拍；未送出郵件。" loading="lazy" decoding="async" /></a>
-  <figcaption>正式站重設密碼表單實拍；未送出郵件。</figcaption>
-</figure>
-
-重設頁為避免洩漏帳號是否存在，回覆不會直接確認此信箱有沒有註冊。畫面提示「將收到指示」不能證明郵件送達。
+![正式站的 Email 登入表單，用來對照教學版所需欄位。](../images/06-login.webp)
 
 ## 6. 按卡住的位置查
 
@@ -126,6 +176,17 @@ references:
 | 登入後重整失效 | Cookie adapter、`src/proxy.ts` 的 refresh、Server 的 `getUser` |
 | Preview 可看股票但不能登入 | 該環境是否刻意未配置會員專案 |
 
-完成標準以步驟 5 的實際結果為準；本次發布教學沒有變更正式 SMTP、代收驗證信或建立會員。
+完成後前往[追蹤清單與 RLS](./engineer-stock-07-rls.md)，讓這個身分連到實際資料列。
 
+[下載系列程式片段、圖片與驗證紀錄](../README.md)
 
+## 參考資料
+
+- [Supabase PKCE 與授權碼交換](https://supabase.com/docs/guides/auth/sessions/pkce-flow)
+- [Supabase Email 驗證信模板](https://supabase.com/docs/guides/auth/auth-email-templates)
+- [Supabase SSR client](https://supabase.com/docs/guides/auth/server-side/creating-a-client?queryGroups=framework&framework=nextjs)
+- [Supabase Custom SMTP](https://supabase.com/docs/guides/auth/auth-smtp)
+- [Google App Passwords](https://support.google.com/accounts/answer/185833)
+- [Gmail SMTP 設定](https://support.google.com/mail/answer/7104828?hl=en)
+
+[回離線目錄](../README.md) · [上一章](./engineer-stock-05-screener-charts.md) · [下一章](./engineer-stock-07-rls.md)

@@ -1,21 +1,34 @@
-# 工程師選股網：10 篇自學系列
+# 工程師選股網開發教學
 
-先從 articles/engineer-stock-01-local.md 開始，各篇已互相連結。images/ 的 SVG 是流程或結果示意，WebP 是正式站／GitHub 實拍。
+先解開附件內的[公開 Next.js 練習專案](./stock-fixture-lab.zip)。在練習資料夾打開有 `package.json` 的資料夾，使用 Node.js 24 依序執行 `npm install`、`npm test`、`npm run dev`。終端機顯示兩個測試通過，開啟 Local 網址後應看見兩家虛構公司。[第一堂實作](./articles/engineer-stock-01-local.md)帶你改第三筆資料，比對畫面和 API 的結果。後面的股票篩選、Supabase 登入與 Vercel 部署都能從這個公開專案繼續。
 
-## 練習程式
+文章與圖片可離線閱讀。初次安裝 npm 套件、查詢即時行情與串接 Supabase、Vercel 時需要網路。
 
-把 snippets/lesson-normalize.ts 複製到 engineer-stock-data 的根目錄，安裝 Bun 1.4.4 並依 lockfile 安裝後，執行 bun lesson-normalize.ts。它使用 Repo 保存的來源樣本，不會發布行情。
+## 系列目錄
 
-第 9 篇另外提供 snippets/lesson-contract.ts。放到 engineer-stock-web 根目錄並 npm ci 後，依文章指令執行 strict TypeScript 檢查與 Bun 執行，觀察 number 通過、字串被 Zod 拒絕。它不呼叫 API、不寫資料庫。
+1. [工程師選股網為什麼把公開行情與個人追蹤分開？](./articles/engineer-stock-project-intro.md)
+2. [工程師選股網 01：本機啟動與資料流](./articles/engineer-stock-01-local.md)
+3. [工程師選股網 02：把股票 API 變成 JSON](./articles/engineer-stock-02-json.md)
+4. [工程師選股網 03：讓 GitHub Actions 更新股票資料](./articles/engineer-stock-03-actions.md)
+5. [工程師選股網 04：在 Next.js 接公開行情，讓網頁與 API 共用同一份 manifest](./articles/engineer-stock-04-nextjs-data.md)
+6. [工程師選股網 05：將篩選後的股票畫成價格長條圖](./articles/engineer-stock-05-screener-charts.md)
+7. [工程師選股網 06：設定 Supabase 註冊、登入與寄信](./articles/engineer-stock-06-auth.md)
+8. [工程師選股網 07：在 Supabase 建立個人追蹤清單，實作三條 RLS policy](./articles/engineer-stock-07-rls.md)
+9. [工程師選股網 08：部署自己的 Next.js 選股練習到 Vercel](./articles/engineer-stock-08-vercel.md)
+10. [工程師選股網 09：核心架構、技術選型與 Next.js 設計](./articles/engineer-stock-09-architecture.md)
+11. [工程師選股網 10：用 GitHub Actions 定時抓 API，資料來源從哪裡來？](./articles/engineer-stock-10-workflow-api-sources.md)
+12. [工程師選股網 11：GitHub Actions 跨午夜抓錯資料日期的除錯紀錄](./articles/engineer-stock-11-actions-date-debug.md)
+13. [工程師選股網做完後，怎麼確認資料和權限都可信？](./articles/engineer-stock-project-summary.md)
 
-## 驗證依據
+[開啟有預覽圖的線上目錄](https://ntustray.github.io/mr-blog/series/engineer-stock/)。
 
-evidence/verification.json 記錄版本與範圍；另附 42 個資料 unit tests、21 個 Web unit tests、本機隔離 PostgreSQL 的 RLS 測試、型別／格式／Build 結果與 fixture HTTP 回應檢查。
+## 解壓後的檔案
 
-原始網站 Repo 目前為 Private，需本人讀取權限。這個附件僅含教學片段、文章、圖片與去除工作目錄前綴的紀錄，不包含完整私有原始碼、環境變數檔、金鑰、Cookie 或正式會員資料。
-
-Auth 章節提供設定與驗收步驟；正式 SMTP 收信、完整登入驗收及正式自刪帳號仍待完成，沒有將它們寫成已成功。本機 SQL 模擬不能代替正式 Auth 整合驗收。
-
-文章拍攝時股票資料日期為 2026-10-30，網站顯示舊資料提示；不代表拍攝當日行情。圖片中的時間與測試耗時不是效能 benchmark。
-
-第 10 篇提供 snippets/lesson-fetch-api.ts。放到資料 Repo 根目錄後，bun lesson-fetch-api.ts 讀樣本；加 --live 才送官方 API 請求。兩者都只印出結果、不執行 publish。evidence/article-10-* 保留本次來源觀察、範例與資料檢查結果。
+| 檔案 | 用法 |
+| --- | --- |
+| `articles/` | 13 篇完整 Markdown，含教學圖片、可複製的程式碼與驗收步驟。每篇開頭附有線上最新版。 |
+| `snippets/lesson-normalize.ts` | 依股票 JSON 課程，放入[公開資料 Pipeline](https://github.com/ntustRay/engineer-stock-data)根目錄，使用 Bun 1.4.4 安裝 lockfile 套件後執行 `bun lesson-normalize.ts`。 |
+| `snippets/lesson-contract.ts` | 核心架構篇在空目錄安裝 TypeScript、Zod，驗證數字及字串輸入的差別。 |
+| `snippets/lesson-fetch-api.ts` | 放入公開資料 Pipeline 根目錄，使用 `bun lesson-fetch-api.ts` 讀固定樣本，加上 `--live` 才向官方 API 取資料。 |
+| `images/` | 正式站、練習程式與雲端設定的教學截圖、資料流程圖。官方操作畫面的版本與授權見[圖片來源](./images/official/SOURCES.md)。行情和時間保留拍攝當下的值。 |
+| `evidence/` | 記錄原專案與資料 Pipeline 當時的版本、測試、建置和 fixture 回應。每份紀錄的日期和測試條件以該檔為準，讀者的部署、收信和帳號隔離需在自己的環境驗收。 |

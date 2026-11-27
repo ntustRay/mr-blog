@@ -1,53 +1,6 @@
----
-title: '[Guide] 工程師選股網 10：用 GitHub Actions 定時抓 API，資料來源從哪裡來？'
-description: 從官方 OpenAPI 找到股票資料來源，對照 15 個 endpoint、來源登記、TypeScript 抓取範例與 GitHub Workflow 排程，驗證資料日期、快照與發布結果。
-pubDate: 2026-11-02
-category: Web Development
-tags:
-- GitHub Actions
-- TypeScript
-- Bun
-draft: false
-relatedPostIds:
-- engineer-stock-03-actions
-- engineer-stock-02-json
-- engineer-stock-09-architecture
-references:
-- title: 資料 Repo（本文對照版本）
-  url: https://github.com/ntustRay/engineer-stock-data/tree/c1633aeffe68d4ad95e88ea403d1bfbc1585f70e
-- title: 來源登記 sources.yml
-  url: https://github.com/ntustRay/engineer-stock-data/blob/c1633aeffe68d4ad95e88ea403d1bfbc1585f70e/config/sources.yml
-- title: 現有 Publish data Workflow
-  url: https://github.com/ntustRay/engineer-stock-data/blob/c1633aeffe68d4ad95e88ea403d1bfbc1585f70e/.github/workflows/publish-data.yml
-- title: TWSE OpenAPI
-  url: https://openapi.twse.com.tw/
-- title: TWSE Swagger specification
-  url: https://openapi.twse.com.tw/v1/swagger.json
-- title: TPEx OpenAPI
-  url: https://www.tpex.org.tw/openapi/
-- title: TPEx OpenAPI specification
-  url: https://www.tpex.org.tw/openapi/swagger.json
-- title: TDCC OpenAPI
-  url: https://openapi.tdcc.com.tw/
-- title: TDCC 股權分散表說明
-  url: https://www.tdcc.com.tw/portal/zh/smWeb/qryStock
-- title: 上市日成交資料集
-  url: https://data.gov.tw/dataset/11549
-- title: 上櫃行情資料集
-  url: https://data.gov.tw/dataset/11370
-- title: 集保戶股權分散資料集
-  url: https://data.gov.tw/dataset/11452
-- title: GitHub schedule events
-  url: https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule
-- title: 已核對的 Publish data push run
-  url: https://github.com/ntustRay/engineer-stock-data/actions/runs/41200225595
-- title: 已核對的每週驗證 schedule run
-  url: https://github.com/ntustRay/engineer-stock-data/actions/runs/41291592723
-- title: 本文固定讀取的 data commit
-  url: https://github.com/ntustRay/engineer-stock-data/tree/ac352597ddb64be31db63af46fd4bbfeb489016e
----
+# [Guide] 工程師選股網 10：用 GitHub Actions 定時抓 API，資料來源從哪裡來？
 
-系列：[1 本機啟動](./engineer-stock-01-local.md) · [2 股票 JSON](./engineer-stock-02-json.md) · [3 Actions](./engineer-stock-03-actions.md) · [4 Next.js 資料流](./engineer-stock-04-nextjs-data.md) · [5 篩選與圖表](./engineer-stock-05-screener-charts.md) · [6 註冊登入](./engineer-stock-06-auth.md) · [7 追蹤與 RLS](./engineer-stock-07-rls.md) · [8 Vercel 部署](./engineer-stock-08-vercel.md) · [9 核心架構與選型](./engineer-stock-09-architecture.md) · [10 Workflow 與 API 來源](./engineer-stock-10-workflow-api-sources.md)
+[查看線上最新版](https://ntustray.github.io/mr-blog/posts/engineer-stock-10-workflow-api-sources/) · [離線目錄](../README.md)
 
 有。`engineer-stock-data` 已有定時抓官方 API、驗證資料，再發布 JSON 的 Workflow。目前設定為**週一至週五，台灣時間 19:10、22:10**，不是一週七天都抓。
 
@@ -100,10 +53,9 @@ Path:     /exchangeReport/STOCK_DAY_ALL
 完整 URL: https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL
 ```
 
-<figure>
-  <a href="../images/10-twse-api.webp"><img src="../images/10-twse-api.webp" width="1348" height="926" alt="證交所官方 Swagger UI 實拍：展開 STOCK_DAY_ALL，顯示上市日成交資訊、No parameters 與 application/json 回應。" loading="lazy" decoding="async" /></a>
-  <figcaption>官方目錄實拍。這裡的 Example Value 是欄位格式範例；執行 GET 後收到的回應，才是實際資料。</figcaption>
-</figure>
+![證交所官方 Swagger UI 實拍：展開 STOCK_DAY_ALL，顯示上市日成交資訊、No parameters 與 application/json 回應。](../images/10-twse-api.webp)
+
+官方目錄實拍。這裡的 Example Value 是欄位格式範例；執行 GET 後收到的回應，才是實際資料。
 
 Swagger UI 是閱讀 API 規格的介面。TWSE 的原始規格是 [`v1/swagger.json`](https://openapi.twse.com.tw/v1/swagger.json)；TPEx 的是 [`openapi/swagger.json`](https://www.tpex.org.tw/openapi/swagger.json)。程式不需要先打開網頁，知道正式 URL 後就能送 HTTP GET。
 
@@ -341,10 +293,9 @@ jobs:
 
 同一個 concurrency group 會控制發布工作重疊，最後的 Git push 仍另外檢查遠端 SHA。排隊執行與避免覆蓋別人的新版本，是兩個不同問題。
 
-<figure>
-  <a href="../images/10-publish-decisions.svg"><img src="../images/10-publish-decisions.svg" width="1120" height="820" alt="Workflow 流程示意：觸發後 validate，收集 API 與驗證日期；失敗保留前版，內容相同略過，通過且不同時發布新 SHA。" loading="lazy" decoding="async" /></a>
-  <figcaption>流程示意。success 可能代表合法略過；只有發布摘要與 data SHA 才能判斷是否產生新版本。</figcaption>
-</figure>
+![Workflow 流程示意：觸發後 validate，收集 API 與驗證日期；失敗保留前版，內容相同略過，通過且不同時發布新 SHA。](../images/10-publish-decisions.svg)
+
+流程示意。success 可能代表合法略過；只有發布摘要與 data SHA 才能判斷是否產生新版本。
 
 ## 8. 抓完後怎麼變成網站讀得到的 JSON
 
@@ -364,10 +315,9 @@ jobs:
 
 Runner 的暫存檔不會自然變成下一次執行的持久資料。這個專案會載入 GitHub 上的舊快照，再合併新資料；網站則讀發布後的固定 SHA。
 
-<figure>
-  <a href="../images/10-data-path.svg"><img src="../images/10-data-path.svg" width="1120" height="820" alt="資料通路：官方 OpenAPI 經資料 Repo 抓取、驗證與正規化，發布 GitHub JSON；Next.js 固定 SHA 讀檔，再提供頁面或自己的股票 API 給瀏覽器。" loading="lazy" decoding="async" /></a>
-  <figcaption>資料通路示意。官方原始 API、GitHub 快照、Next.js 自己的 API 是三個不同邊界。</figcaption>
-</figure>
+![資料通路：官方 OpenAPI 經資料 Repo 抓取、驗證與正規化，發布 GitHub JSON；Next.js 固定 SHA 讀檔，再提供頁面或自己的股票 API 給瀏覽器。](../images/10-data-path.svg)
+
+資料通路示意。官方原始 API、GitHub 快照、Next.js 自己的 API 是三個不同邊界。
 
 快照包含 `manifest.json`、`index/screener.json`、個股與各種時間序列檔。選股站先解析 SHA 再讀取，避免索引與個股來自不同批次。細節接[第 9 篇的版本一致性與快取](./engineer-stock-09-architecture.md)。
 
@@ -377,10 +327,9 @@ Runner 的暫存檔不會自然變成下一次執行的持久資料。這個專�
 
 到 **Actions → Publish data → 一次執行紀錄**，依序看 event、job 與資料摘要。
 
-<figure>
-  <a href="../images/10-publish-run.webp"><img src="../images/10-publish-run.webp" width="1348" height="926" alt="現有 Publish data 成功紀錄實拍，顯示 Triggered via push、validate 與 publish 兩個 job 成功。" loading="lazy" decoding="async" /></a>
-  <figcaption>2026-10-31 的既有成功紀錄。畫面明確寫 push；它能證明該次工作成功，不能拿來當今日 schedule 已完成的截圖。</figcaption>
-</figure>
+![現有 Publish data 成功紀錄實拍，顯示 Triggered via push、validate 與 publish 兩個 job 成功。](../images/10-publish-run.webp)
+
+2026-10-31 的既有成功紀錄。畫面明確寫 push；它能證明該次工作成功，不能拿來當今日 schedule 已完成的截圖。
 
 | 檢查位置 | 要看什麼 | 可以回答什麼 |
 | --- | --- | --- |
@@ -432,4 +381,25 @@ bun run verify
 
 本文於 2026-11-02 對照資料 Repo commit `c1633aeffe68d4ad95e88ea403d1bfbc1585f70e`；API 回應只是本次觀察，之後請重新核對實際內容與日期。
 
+[下載系列程式片段、圖片與驗證紀錄](../README.md)
 
+## 參考資料
+
+- [資料 Repo（本文對照版本）](https://github.com/ntustRay/engineer-stock-data/tree/c1633aeffe68d4ad95e88ea403d1bfbc1585f70e)
+- [來源登記 sources.yml](https://github.com/ntustRay/engineer-stock-data/blob/c1633aeffe68d4ad95e88ea403d1bfbc1585f70e/config/sources.yml)
+- [現有 Publish data Workflow](https://github.com/ntustRay/engineer-stock-data/blob/c1633aeffe68d4ad95e88ea403d1bfbc1585f70e/.github/workflows/publish-data.yml)
+- [TWSE OpenAPI](https://openapi.twse.com.tw/)
+- [TWSE Swagger specification](https://openapi.twse.com.tw/v1/swagger.json)
+- [TPEx OpenAPI](https://www.tpex.org.tw/openapi/)
+- [TPEx OpenAPI specification](https://www.tpex.org.tw/openapi/swagger.json)
+- [TDCC OpenAPI](https://openapi.tdcc.com.tw/)
+- [TDCC 股權分散表說明](https://www.tdcc.com.tw/portal/zh/smWeb/qryStock)
+- [上市日成交資料集](https://data.gov.tw/dataset/11549)
+- [上櫃行情資料集](https://data.gov.tw/dataset/11370)
+- [集保戶股權分散資料集](https://data.gov.tw/dataset/11452)
+- [GitHub schedule events](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule)
+- [已核對的 Publish data push run](https://github.com/ntustRay/engineer-stock-data/actions/runs/41200225595)
+- [已核對的每週驗證 schedule run](https://github.com/ntustRay/engineer-stock-data/actions/runs/41291592723)
+- [本文固定讀取的 data commit](https://github.com/ntustRay/engineer-stock-data/tree/ac352597ddb64be31db63af46fd4bbfeb489016e)
+
+[回離線目錄](../README.md) · [上一章](./engineer-stock-09-architecture.md) · [下一章](./engineer-stock-11-actions-date-debug.md)
